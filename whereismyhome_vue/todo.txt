@@ -1,0 +1,5 @@
+nav focus : https://vuetifyjs.com/en/components/item-groups/#props
+
+front vanilla to vuetify
+
+apart divider : https://vuetifyjs.com/en/components/dividers/

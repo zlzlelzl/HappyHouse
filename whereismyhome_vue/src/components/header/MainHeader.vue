@@ -40,6 +40,7 @@
         </template>
         <v-list>
           <v-list-item
+            exact-active-class="itemsMap[item]"
             v-for="item in items"
             :key="item"
             :to="{

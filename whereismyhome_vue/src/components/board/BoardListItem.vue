@@ -2,9 +2,7 @@
   <tr>
     <td>{{ article.articleno }}</td>
     <td>
-      <router-link :to="`/board/view/${article.articleno}`">{{
-        article.subject
-      }}</router-link>
+      <router-link :to="`/board/view/${article.articleno}`">{{ article.subject }}</router-link>
     </td>
     <td>{{ article.userid }}</td>
     <td>{{ article.hit }}</td>
@@ -18,6 +16,12 @@ export default {
   props: {
     article: Object,
   },
+  data() {
+    return {
+      items: {},
+    }
+  },
+  created() {},
 }
 </script>
 

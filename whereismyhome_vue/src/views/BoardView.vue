@@ -1,20 +1,14 @@
 <template>
   <div id="content">
     <v-main>
-      <!-- <router-link to="/step00">step00</router-link> | <router-link to="/step01">step01</router-link> |
-      <router-link to="/step02">step02</router-link> | <router-link to="/step03">step03</router-link> |
-      -->
       <router-view />
-
-      <!-- <board-list></board-list> -->
     </v-main>
   </div>
 </template>
 
 <script>
-import BoardList from "@/components/board/BoardList.vue"
 export default {
-  components: { BoardList },
+  components: {},
   data() {
     return {
       search: "",

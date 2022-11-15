@@ -1,45 +1,62 @@
 <template>
-  <div class="regist">
-    <h1 class="underline">SSAFY 글 상세보기</h1>
-    <div class="regist_form">
-      <label> 글번호</label>
-      <div class="view">{{ article.articleno }}</div>
-      <label> 글제목</label>
-      <div class="view">{{ article.subject }}</div>
-      <label> 작성자</label>
-      <div class="view">{{ article.userid }}</div>
-      <label> 조회수</label>
-      <div class="view">{{ article.hit }}</div>
-      <label> 작성시간</label>
-      <div class="view">{{ article.regtime }}</div>
-      <label> 내용</label>
-      <div class="view">{{ article.content }}</div>
-
-      <div style="padding-top: 15px">
-        <router-link :to="{ name: 'boardmodify', params: { articleno: article.articleno } }">수정</router-link>
-        <router-link :to="{ name: 'boarddelete', params: { articleno: article.articleno } }">삭제</router-link>
-        <router-link :to="{ name: 'boardlist' }" class="btn">목록</router-link>
+  <div id="detailWrapper">
+      <div id="detailContents">
+        <div id="sectorOne">
+          <div class="cols">
+            <div style="margin-right:5px; font-weight:bold;">글번호</div>
+            <div class="view">{{ article.articleno }}</div>
+          </div>
+          <div class="cols">
+            <div style="margin-right:5px; font-weight:bold;">글제목</div>
+            <div class="view">{{ article.subject }}</div>
+          </div>
+        </div>
+        <div id="sectorTwo">
+          <div class="cols">
+            <div style="margin-right:5px; font-weight:bold;">작성자</div>
+            <div class="view">{{ article.userid }}</div>
+          </div>
+        </div>
+        <div id="sectorThree">
+          <div class="cols">
+            <div style="margin-right:5px; font-weight:bold;">조회수</div>
+            <div class="view">{{ article.hit }}</div>
+          </div>
+          <div class="cols">
+            <div style="margin-right:5px; font-weight:bold;">작성시간</div>
+            <div class="view">{{ article.regtime }}</div>
+          </div>
+        </div>
+        <div id="sectorFour">
+            <div style="font-weight:bold; margin-bottom:5px;">내용</div>
+            <div class="view">{{ article.content }}</div>
+        </div>
       </div>
-    </div>
+      
+      <div id="btnWrapper">
+        <!-- <router-link :to="{ name: 'boardmodify', params: { articleno: article.articleno } }">수정</router-link> -->
+        <v-btn elevation="2" color="primary" style="margin-right:5px">수정</v-btn>
+        <!-- <router-link :to="{ name: 'boarddelete', params: { articleno: article.articleno } }">삭제</router-link> -->
+        <v-btn elevation="2" color="error">삭제</v-btn>
+      </div>
+
   </div>
 </template>
 
 <script>
 import http from "@/util/http-common"
 export default {
-  name: "BoardView",
+  name: "BoardDetail",
+  props: ["articleno", "isModify"],
   data() {
     return {
+      isChildModify: false,
       article: Object,
     }
   },
   created() {
     // 비동기
     // TODO : 글번호에 해당하는 글정보 얻기.
-
-    http.get(`/board/${this.$route.params.articleno}`).then(({ data }) => {
-      this.article = data
-    })
     // this.article = {
     //   articleno: 10,
     //   userid: "안효인",
@@ -49,7 +66,60 @@ export default {
     //   regtime: "2022-11-08 17:03:15",
     // };
   },
+  mounted() {
+    http.get(`/board/${this.articleno}`).then(({ data }) => {
+      this.article = data
+    })
+  },
+  methods: {
+    toModify() {
+      return true
+    },
+  },
 }
 </script>
 
-<style></style>
+<style>
+#detailWrapper{
+  /* border:1px solid #EEEEEE; */
+  width:70%;
+  margin:3% 3%;
+  align-items: center;
+}
+#detailContents{
+  border:1px solid #EEEEEE;
+}
+#sectorOne{
+  border:1px solid #EEEEEE;
+  display:flex;
+  flex-direction: row;
+  /* margin-bottom: 3px; */
+}
+#sectorTwo{
+  border:1px solid #EEEEEE;
+  display:flex;
+  /* margin-bottom: 3px; */
+}
+#sectorThree{
+  border:1px solid #EEEEEE;
+  display:flex;
+  /* margin-bottom: 3px; */
+}
+#sectorFour{
+  border:1px solid #EEEEEE;
+  display:flex;
+  flex-direction: column;
+  height: 300px;
+}
+.cols{
+  display:flex;
+  flex-direction: row;
+  margin: 6px 20px 6px 0px;
+  justify-content: space-between;
+}
+#btnWrapper{
+  /* border:1px solid red; */
+  margin-top:5px;
+
+}
+</style>
