@@ -29,27 +29,7 @@
   </v-dialog>
 </template>
 
-<!-- <div class="regist">
-    <h1 class="underline">SSAFY 게시글 작성</h1>
-    <div class="regist_form">
-      <label for="userid">작성자</label>
-      <input type="text" id="userid" v-model="userid" ref="userid" /><br />
-      <label for="subject">제목</label>
-      <input type="text" id="subject" v-model="subject" ref="subject" /><br />
-      <label for="content">내용</label>
-      <br />
-      <textarea
-        id="content"
-        v-model="content"
-        ref="content"
-        cols="35"
-        rows="5"
-      ></textarea
-      ><br />
-      <button @click="checkValue">등록</button>
-      <button @click="moveList">목록</button>
-    </div>
-  </div> -->
+
 
 <script>
 import http from "@/util/http-common"
@@ -104,7 +84,7 @@ export default {
 
     moveList() {
       console.log("글목록 보러가자!!!")
-      this.$router.push({ name: "boardlist" })
+      this.$router.go(this.$router.currentRoute)
     },
   },
 }

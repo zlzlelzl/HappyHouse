@@ -15,7 +15,7 @@ export default {
     http.delete(`/board/${this.$route.params.articleno}`).then(({ data }) => {
       let msg = "삭제중 문제발생"
       if (data === "success") msg = "삭제 성공"
-      alert(msg)
+      // alert(msg)
       this.$router.push({ name: "boardlist" })
     })
   },

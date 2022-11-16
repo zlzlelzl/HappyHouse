@@ -69,9 +69,7 @@
                 <v-btn elevation="2" color="primary" style="margin-right: 5px" @click=";[toModify(), setValue(item)]"
                   >수정</v-btn
                 >
-                <v-btn elevation="2" color="error">
-                  <router-link :to="{ name: 'boarddelete', params: { articleno: item.articleno } }">삭제</router-link>
-                </v-btn>
+                <v-btn elevation="2" color="error"  @click="deleteArticle(item)">삭제</v-btn>
 
               </div>
             </div>
@@ -226,8 +224,19 @@ export default {
     },
     moveList() {
       console.log("글목록 보러가자!!!")
-      this.$router.push({ name: "boardlist" })
+      // this.$router.push({ name: "boardlist" })
+      this.$router.go(this.$router.currentRoute)
     },
+    deleteArticle(item){
+      // TODO : 글번호에 해당하는 글을 삭제.
+      http.delete(`/board/${item.articleno}`).then(({ data }) => {
+      let msg = "삭제중 문제발생"
+      if (data === "success") msg = "삭제 성공"
+      alert(msg)
+      // this.$router.push({ name: "boardlist" })
+      this.moveList();
+    })
+    }
   },
 }
 </script>
