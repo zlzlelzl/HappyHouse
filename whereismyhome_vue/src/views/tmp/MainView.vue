@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import BoardList from "@/components/board/BoardList.vue"
+import NoticeList from "@/components/notice/NoticeList.vue";
 export default {
-  components: { BoardList },
+  components: { NoticeList },
   data() {
     return {
       search: "",
@@ -24,7 +24,7 @@ export default {
           iron: "1%",
         },
       ],
-    }
+    };
   },
   computed: {
     headers() {
@@ -39,16 +39,16 @@ export default {
           text: "Calories",
           value: "calories",
           filter: (value) => {
-            if (!this.calories) return true
+            if (!this.calories) return true;
 
-            return value < parseInt(this.calories)
+            return value < parseInt(this.calories);
           },
         },
         { text: "Fat (g)", value: "fat" },
         { text: "Carbs (g)", value: "carbs" },
         { text: "Protein (g)", value: "protein" },
         { text: "Iron (%)", value: "iron" },
-      ]
+      ];
     },
   },
   methods: {
@@ -58,8 +58,8 @@ export default {
         search != null &&
         typeof value === "string" &&
         value.toString().toLocaleUpperCase().indexOf(search) !== -1
-      )
+      );
     },
   },
-}
+};
 </script>

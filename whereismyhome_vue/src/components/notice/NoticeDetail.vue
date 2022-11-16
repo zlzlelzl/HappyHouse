@@ -46,7 +46,7 @@
 <script>
 import http from "@/util/http-common"
 export default {
-  name: "BoardDetail",
+  name: "NoticeDetail",
   props: ["articleno", "isModify"],
   data() {
     return {

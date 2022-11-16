@@ -1,4 +1,4 @@
-<template>
+<!--<template>
   <div>
     <v-app id="app">
       <main-header></main-header>
@@ -18,4 +18,28 @@ export default {
   components: { MainHeader, MainView, MainFooter },
   data: () => ({}),
 }
+</script>
+-->
+<template>
+  <v-app>
+    <main-appbar></main-appbar>
+
+    <v-container class="mt-16">
+      <router-view></router-view>
+    </v-container>
+
+    <main-footer></main-footer>
+  </v-app>
+</template>
+
+<script>
+export default {
+  name: "App",
+
+  components: {
+    MainAppbar: () => import("@/components/layout/MainAppbar.vue"),
+    MainFooter: () => import("@/components/layout/MainfFooter.vue"),
+  },
+  data: () => ({}),
+};
 </script>
