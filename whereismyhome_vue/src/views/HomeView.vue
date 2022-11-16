@@ -81,6 +81,7 @@
                       </v-card-text>
                     </v-card> -->
                   <v-carousel>
+                  <!--
                     <v-carousel-item
                       src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
                       cover
@@ -95,6 +96,18 @@
                       src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
                       cover
                     ></v-carousel-item>
+                    -->
+                    <template v-for="(article, index) in articles" >
+                    <a :href="article.link">
+                      <v-carousel-item 
+                      src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                    >
+                        {{ article.title }}
+                        </br>
+                        {{ article.description }}
+                      </v-carousel-item>
+                    </a>
+                    </template>
                   </v-carousel>
                 </div>
               </v-hover>
@@ -197,10 +210,38 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "HomeView",
   components: {
     MainSidebar: () => import("@/components/details/MainSidebar"),
+  },
+  data() {
+    return{
+      articles:[],
+    }
+  },
+  created(){
+    this.getNaverNews();
+  },
+  methods: {
+    getNaverNews(){
+      const search="부동산";
+      let url = `/v1/search/news.json?query=${search}&sort=date`;
+      let config = {
+          headers:{
+              'Content-Type': 'text/json;charset=utf-8',
+              "Access-Control_Allow-Origin": '*',
+              "X-Naver-Client-Id":"t0HvsNpl7cfb2bainYVM",
+              "X-Naver-Client-Secret":"KstSGGZtNm",
+          }
+      };
+      
+      axios.get(url,config).then((response)=>{
+          console.log(response.data.items);
+          this.articles=response.data.items;
+      });
+    },
   },
 };
 </script>
