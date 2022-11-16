@@ -1,60 +1,62 @@
-import Vue from "vue"
-import VueRouter from "vue-router"
-import HomeView from "../views/HomeView.vue"
-import ApartView from "../views/ApartView.vue"
-Vue.use(VueRouter)
+import Vue from "vue";
+import VueRouter from "vue-router";
+import HomeView from "../views/HomeView.vue";
+Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "home",
+    name: "Home",
     component: HomeView,
   },
-
   {
-    path: "/board",
-    name: "board",
-    component: () => import("@/views/BoardView.vue"),
-    redirect: "/board/list",
+    path: "/apt",
+    name: "Apt",
+    component: () => import("@/views/CategoryView.vue"),
+  },
+  {
+    path: "/notice",
+    name: "Notice",
+    component: () => import("@/views/NoticeView.vue"),
+    redirect: "/notice/list",
     children: [
       {
         path: "list",
-        name: "boardlist",
-        component: () => import("@/components/board/BoardList.vue"),
+        name: "NoticeList",
+        component: () => import("@/components/notice/NoticeList.vue"),
       },
       {
         path: "write",
-        name: "boardwrite",
-        component: () => import("@/components/board/BoardWrite.vue"),
+        name: "NoticeWrite",
+        component: () => import("@/components/notice/NoticeWrite.vue"),
       },
       {
         path: "view/:articleno",
-        name: "boarddetail",
-        component: () => import("@/components/board/BoardDetail.vue"),
+        name: "NoticeDetail",
+        component: () => import("@/components/notice/NoticeDetail.vue"),
       },
       {
         path: "modify/:articleno",
-        name: "boardmodify",
-        component: () => import("@/components/board/BoardModify.vue"),
-      },
-      {
-        path: "delete/:articleno",
-        name: "boarddelete",
-        component: () => import("@/components/board/BoardDelete"),
+        name: "NoticeModify",
+        component: () => import("@/components/notice/NoticeModify.vue"),
       },
     ],
   },
   {
-    path: "/apt",
-    name: "apt",
-    component: ApartView,
-    children: [],
+    path: "/authors",
+    name: "Authors",
+    component: () => import("@/views/AuthorsView.vue"),
   },
-]
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/views/LoginView.vue"),
+  },
+];
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
-})
+});
 
-export default router
+export default router;

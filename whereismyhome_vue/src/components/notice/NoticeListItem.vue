@@ -2,7 +2,9 @@
   <tr>
     <td>{{ article.articleno }}</td>
     <td>
-      <router-link :to="`/board/view/${article.articleno}`">{{ article.subject }}</router-link>
+      <router-link :to="`/notice/view/${article.articleno}`">{{
+        article.subject
+      }}</router-link>
     </td>
     <td>{{ article.userid }}</td>
     <td>{{ article.hit }}</td>
@@ -12,17 +14,17 @@
 
 <script>
 export default {
-  name: "BoardListItem",
+  name: "NoticeListItem",
   props: {
     article: Object,
   },
   data() {
     return {
       items: {},
-    }
+    };
   },
   created() {},
-}
+};
 </script>
 
 <style></style>

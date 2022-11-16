@@ -29,65 +29,68 @@
   </v-dialog>
 </template>
 
-
-
 <script>
-import http from "@/util/http-common"
+import http from "@/util/http-common";
 export default {
-  name: "BoardWrite",
+  name: "NoticeWrite",
   data() {
     return {
       dialog: false,
       userid: null,
       subject: null,
       content: null,
-    }
+    };
   },
   methods: {
     // 입력값 체크하기 - 체크가 성공하면 registArticle 호출
     checkValue() {
       // 사용자 입력값 체크하기
       // 작성자아이디, 제목, 내용이 없을 경우 각 항목에 맞는 메세지를 출력
-      let err = true
-      let msg = ""
-      !this.userid && ((msg = "작성자 입력해주세요"), (err = false), this.$refs.userid.focus())
-      err && !this.subject && ((msg = "제목 입력해주세요"), (err = false), this.$refs.subject.focus())
-      err && !this.content && ((msg = "내용 입력해주세요"), (err = false), this.$refs.content.focus())
+      let err = true;
+      let msg = "";
+      !this.userid &&
+        ((msg = "작성자 입력해주세요"), (err = false), this.$refs.userid.focus());
+      err &&
+        !this.subject &&
+        ((msg = "제목 입력해주세요"), (err = false), this.$refs.subject.focus());
+      err &&
+        !this.content &&
+        ((msg = "내용 입력해주세요"), (err = false), this.$refs.content.focus());
 
-      if (!err) alert(msg)
+      if (!err) alert(msg);
       // 만약, 내용이 다 입력되어 있다면 registArticle 호출
-      else this.registArticle()
+      else this.registArticle();
     },
     registArticle() {
       // 비동기
       // TODO : 글번호에 해당하는 글정보 등록.
-      console.log("글작성 하러가자!!!!")
+      console.log("글작성 하러가자!!!!");
       let article = {
         userid: this.userid,
         subject: this.subject,
         content: this.content,
-      }
+      };
 
       http
         .post("/board", article)
         .then(({ data }) => {
-          let msg = "등록중 문제발생"
-          if (data === "success") msg = "등록 성공"
-          alert(msg)
+          let msg = "등록중 문제발생";
+          if (data === "success") msg = "등록 성공";
+          alert(msg);
 
-          this.moveList()
+          this.moveList();
         })
         .finally(() => {
-          this.dialog = false
-        })
+          this.dialog = false;
+        });
     },
 
     moveList() {
-      console.log("글목록 보러가자!!!")
-      this.$router.go(this.$router.currentRoute)
+      console.log("글목록 보러가자!!!");
+      this.$router.go(this.$router.currentRoute);
     },
   },
-}
+};
 </script>
 
 <style></style>
