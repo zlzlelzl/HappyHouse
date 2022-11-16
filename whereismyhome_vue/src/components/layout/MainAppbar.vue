@@ -54,14 +54,14 @@
               v-if="!$vuetify.breakpoint.mdAndUp"
               @click.stop="drawer = !drawer"
             />
+
             <v-toolbar-title
               class="font-weight-bold text-h5 primary--text"
               style="cursor: pointer"
               @click="$router.push('/')"
-            >
-              <v-icon color="primary" large>mdi-feather</v-icon>
-              Where is my
-              <span class="accent--text">HOME</span>
+              ><img src="@/assets/ssafy_logo.png" height="70px" />
+              <!-- Where is my
+              <span class="accent--text">HOME</span> -->
             </v-toolbar-title>
           </v-col>
 
