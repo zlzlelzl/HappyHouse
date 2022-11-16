@@ -1,5 +1,5 @@
 <template>
-  <div id="header">
+  <div id="board">
     <v-app-bar class="primary">
       <v-menu offset-y>
         <template v-slot:activator="{ on, attrs }">
@@ -40,7 +40,6 @@
         </template>
         <v-list>
           <v-list-item
-            exact-active-class="itemsMap[item]"
             v-for="item in items"
             :key="item"
             :to="{
@@ -56,13 +55,15 @@
 </template>
 
 <script>
+import http from "@/util/http-common"
+
 export default {
   data() {
     return {
-      items: ["홈", "공지사항", "아파트"],
-      itemsMap: { 홈: "home", 공지사항: "board", 아파트: "apt" },
+      items: {},
     }
   },
+  created() {},
 }
 </script>
 
