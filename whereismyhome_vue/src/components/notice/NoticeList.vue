@@ -10,17 +10,17 @@
       <v-data-table
         :headers="headers"
         :items="articles"
-        :single-expand="singleExpand"
+        :single-expand="true"
         :expanded.sync="expanded"
         :search="search"
         :custom-filter="filterOnlyCapsText"
-        hide-default-footer
         item-key="articleno"
         show-expand
         class="elevation-1"
         :page.sync="page"
         :items-per-page="itemsPerPage"
         @page-count="pageCount = totalPg"
+        hide-default-footer
       >
         <template v-slot:top>
           <v-toolbar flat>

@@ -73,4 +73,9 @@ public class QnaServiceImpl implements QnaService {
 		sqlSession.getMapper(QnaMapper.class).deleteMemo(articleno);
 		return sqlSession.getMapper(QnaMapper.class).deleteArticle(articleno) == 1;
 	}
+
+	@Override
+	public Integer getTotalCount(BoardParameterDto boardParameterDto) throws Exception {
+		return sqlSession.getMapper(QnaMapper.class).getTotalCount(boardParameterDto);
+	}
 }

@@ -83,4 +83,12 @@ public class QnaController {
 		}
 		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
 	}
+	
+	@ApiOperation(value = "페이지 사이즈", notes = "페이지 사이즈를 반환한다.", response = Integer.class)
+	@GetMapping("/totalPage")
+	public ResponseEntity<Integer> getTotalPage(@ApiParam(value = "게시글을 얻기위한 부가정보.", required = true) BoardParameterDto boardParameterDto) throws Exception {
+		logger.info("getTotalPage - 호출 {}",qnaService.getTotalCount(boardParameterDto));
+		int totalPage = (int)Math.ceil(1.0 * qnaService.getTotalCount(boardParameterDto) / 10);
+		return new ResponseEntity<Integer>(totalPage, HttpStatus.OK);	
+	}
 }

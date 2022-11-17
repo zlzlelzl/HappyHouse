@@ -64,6 +64,7 @@ export default {
         userid: this.userid,
         subject: this.subject,
         content: this.content,
+        parentno: "",
       }
 
       http

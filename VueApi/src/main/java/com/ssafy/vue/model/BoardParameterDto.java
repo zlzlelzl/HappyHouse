@@ -19,7 +19,7 @@ public class BoardParameterDto {
 	
 	public BoardParameterDto() {
 		pg = 1;
-		spp = 20;
+		spp = 10;
 	}
 
 	public int getPg() {
@@ -61,6 +61,12 @@ public class BoardParameterDto {
 
 	public void setWord(String word) {
 		this.word = word;
+	}
+
+	@Override
+	public String toString() {
+		return "BoardParameterDto [pg=" + pg + ", spp=" + spp + ", start=" + start + ", key=" + key + ", word=" + word
+				+ "]";
 	}
 
 }

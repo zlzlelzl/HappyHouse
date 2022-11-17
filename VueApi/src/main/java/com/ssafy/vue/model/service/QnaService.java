@@ -15,4 +15,5 @@ public interface QnaService {
 	public void updateHit(int articleno) throws Exception;
 	public boolean modifyArticle(QnaDto qnaDto) throws Exception;
 	public boolean deleteArticle(int articleno) throws Exception;
+	public Integer getTotalCount(BoardParameterDto boardParameterDto) throws Exception;
 }

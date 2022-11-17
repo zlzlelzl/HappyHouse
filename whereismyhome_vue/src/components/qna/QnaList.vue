@@ -18,6 +18,10 @@
         :item-class="setReplyRow"
         show-expand
         class="elevation-1"
+        :page.sync="page"
+        :items-per-page="itemsPerPage"
+        @page-count="pageCount = totalPg"
+        hide-default-footer
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -125,6 +129,7 @@
           </td>
         </template>
       </v-data-table>
+      <v-pagination @input="handlePagination($event)" v-model="page" :length="pageCount"></v-pagination>
     </v-card>
   </div>
 </template>
@@ -151,6 +156,9 @@ export default {
       search: "",
       qnano: "",
       parentno: "",
+      pg: "1",
+      page: 1,
+      pageCount: 0,
       dialog: false,
       isModify: false,
       headers: [
@@ -172,13 +180,21 @@ export default {
   created() {
     // 비동기
     // TODO : 글목록 얻기.
+
+    http.get(`/qna/totalPage`).then(({ data }) => {
+      this.totalPg = data
+    })
     this.pg = this.$route.params.pg == undefined ? "1" : this.$route.params.pg
+    this.page = Number(this.$route.params.pg)
     http.get(`/qna?pg=${this.pg}`).then(({ data }) => {
       this.articles = data
       console.log(data)
     })
   },
   methods: {
+    handlePagination(e) {
+      location.href = "./" + e
+    },
     setReplyRow(item) {
       return item.parentno == 0 ? "white" : "grey lighten-3"
     },

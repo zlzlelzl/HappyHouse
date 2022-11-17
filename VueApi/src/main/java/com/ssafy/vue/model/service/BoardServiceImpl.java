@@ -73,4 +73,10 @@ public class BoardServiceImpl implements BoardService {
 		sqlSession.getMapper(BoardMapper.class).deleteMemo(articleno);
 		return sqlSession.getMapper(BoardMapper.class).deleteArticle(articleno) == 1;
 	}
+
+	@Override
+	public Integer getTotalCount(BoardParameterDto boardParameterDto) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.getMapper(BoardMapper.class).getTotalCount(boardParameterDto);
+	}
 }

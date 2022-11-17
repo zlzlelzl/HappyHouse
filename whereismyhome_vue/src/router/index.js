@@ -18,10 +18,10 @@ const routes = [
     path: "/notice",
     name: "Notice",
     component: () => import("@/views/NoticeView.vue"),
-    redirect: "/notice/list",
+    redirect: "/notice/list/",
     children: [
       {
-        path: "list",
+        path: "list/",
         name: "NoticeList",
         component: () => import("@/components/notice/NoticeList.vue"),
       },
@@ -51,10 +51,10 @@ const routes = [
     path: "/qna",
     name: "Qna",
     component: () => import("@/views/QnaView.vue"),
-    redirect: "/qna/list",
+    redirect: "/qna/list/",
     children: [
       {
-        path: "list",
+        path: "list/",
         name: "QnaList",
         component: () => import("@/components/qna/QnaList.vue"),
       },

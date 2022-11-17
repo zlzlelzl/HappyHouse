@@ -24,7 +24,7 @@
 			end regtime,
 	        qnano as ancientno
 	        from qna
-	        where parentno is null
+	        where parentno is null or parentno = 0
 	        order by qnano desc
 	        ) as c
 			

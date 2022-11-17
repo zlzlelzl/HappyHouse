@@ -1,6 +1,7 @@
 package com.ssafy.vue.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,11 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.vue.model.BoardDto;
@@ -51,8 +54,8 @@ public class BoardController {
 	@ApiOperation(value = "게시판 글목록", notes = "모든 게시글의 정보를 반환한다.", response = List.class)
 	@GetMapping
 	public ResponseEntity<List<BoardDto>> listArticle(@ApiParam(value = "게시글을 얻기위한 부가정보.", required = true) BoardParameterDto boardParameterDto) throws Exception {
-		logger.info("listArticle - 호출");
-		return new ResponseEntity<List<BoardDto>>(boardService.listArticle(boardParameterDto), HttpStatus.OK);
+		logger.info("listArticle - 호출 {}",boardParameterDto);
+		return new ResponseEntity<List<BoardDto>>(boardService.listArticle(boardParameterDto), HttpStatus.OK);	
 	}
 	
 	@ApiOperation(value = "게시판 글보기", notes = "글번호에 해당하는 게시글의 정보를 반환한다.", response = BoardDto.class)
@@ -82,5 +85,13 @@ public class BoardController {
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 		}
 		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+	}
+	
+	@ApiOperation(value = "페이지 사이즈", notes = "페이지 사이즈를 반환한다.", response = Integer.class)
+	@GetMapping("/totalPage")
+	public ResponseEntity<Integer> getTotalPage(@ApiParam(value = "게시글을 얻기위한 부가정보.", required = true) BoardParameterDto boardParameterDto) throws Exception {
+		logger.info("getTotalPage - 호출 {}",boardService.getTotalCount(boardParameterDto));
+		int totalPage = (int)Math.ceil(1.0 * boardService.getTotalCount(boardParameterDto) / 10);
+		return new ResponseEntity<Integer>(totalPage, HttpStatus.OK);	
 	}
 }
