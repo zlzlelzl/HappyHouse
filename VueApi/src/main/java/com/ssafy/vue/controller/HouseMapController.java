@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.vue.model.HouseInfoDto;
 import com.ssafy.vue.model.SidoGugunCodeDto;
 import com.ssafy.vue.model.service.HouseMapService;
 
@@ -54,47 +55,12 @@ public class HouseMapController {
 		logger.info("gugun - 호출");
 		return new ResponseEntity<List<SidoGugunCodeDto>>(haHouseMapService.getGugunInSido(sido), HttpStatus.OK);
 	}
-//	
-//	@GetMapping("/apt-list/{regCode}/{year}/{month}")
-//	public ResponseEntity<String> doAptList(@PathVariable("lawd_cd") String lawdCd, @PathVariable("deal_ymd") String dealYmd) 
-//	
-//			throws IOException  {
-//
-//		try {
-//			logger.info("regCode : " + regCode);
-//			logger.info("year : " + year);
-//			logger.info("month : " + month);
-//
-//			Map<String, String> map = new HashMap<>();
-//
-//			map.put("regCode", regCode);
-//			map.put("year", year);
-//			map.put("month", month);
-//			List<DealInfo> arr = dealInfoservice.getDealInfos(map);
-//			request.setCharacterEncoding("utf-8");
-//			response.setContentType("text/html; charset=UTF-8");
-//
-//			logger.info("xml arr 결과 : {}", arr);
-//
-//			XmlMapper xmlMapper = new XmlMapper();
-//			String xml = xmlMapper.writeValueAsString(arr);
-//
-//			response.setContentType("application/xml");
-//			response.setCharacterEncoding("UTF-8");
-//
-//			logger.info("xml 결과 : {}", xml);
-//			return xml;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return "error/error";
-//		}
-//	}
 
 	@ApiOperation(value = "아파트 목록", notes = "지역코드와 매매계약월을 기준으로 아파트 목록을 반환한다.", response = List.class)
 	@GetMapping(value = "/aptlist/{lawd_cd}/{deal_ymd}", produces = "application/json;charset=utf-8")
 	public ResponseEntity<String> aptList(@PathVariable("lawd_cd") String lawdCd, @PathVariable("deal_ymd") String dealYmd) throws IOException {
 		logger.info("sido - 호출");
-		String serviceKey = "cO1KrpBH8DALiPiMGHopF8ZkfUIc6DjrsDE4AoZtTB6kzr1%2FbONuRxe%2B4t8k22v9cKXt1lDEwMt3BycjOhEfmA%3D%3D";
+		String serviceKey = "9Xo0vlglWcOBGUDxH8PPbuKnlBwbWU6aO7%2Bk3FV4baF9GXok1yxIEF%2BIwr2%2B%2F%2F4oVLT8bekKU%2Bk9ztkJO0wsBw%3D%3D";
 		StringBuilder urlBuilder = new StringBuilder(
 				"http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev"); /*
 																															 */
@@ -133,14 +99,14 @@ public class HouseMapController {
 		return new ResponseEntity<String>(jsonStr, HttpStatus.OK);
 	}
 
-//	@GetMapping("/dong")
-//	public ResponseEntity<List<HouseInfoDto>> dong(@RequestParam("gugun") String gugun) throws Exception {
-//		return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getDongInGugun(gugun), HttpStatus.OK);
-//	}
-//	
-//	@GetMapping("/apt")
-//	public ResponseEntity<List<HouseInfoDto>> apt(@RequestParam("dong") String dong) throws Exception {
-//		return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getAptInDong(dong), HttpStatus.OK);
-//	}
+	@GetMapping("/dong")
+	public ResponseEntity<List<HouseInfoDto>> dong(@RequestParam("gugun") String gugun) throws Exception {
+		return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getDongInGugun(gugun), HttpStatus.OK);
+	}
+	
+	@GetMapping("/apt")
+	public ResponseEntity<List<HouseInfoDto>> apt(@RequestParam("dong") String dong) throws Exception {
+		return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getAptInDong(dong), HttpStatus.OK);
+	}
 
 }
