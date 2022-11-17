@@ -4,23 +4,25 @@
       <v-card-title>
         공지사항
         <v-spacer></v-spacer>
-        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        >
         </v-text-field>
       </v-card-title>
       <v-data-table
         :headers="headers"
         :items="articles"
-        :single-expand="true"
+        :single-expand="singleExpand"
         :expanded.sync="expanded"
         :search="search"
         :custom-filter="filterOnlyCapsText"
         item-key="articleno"
         show-expand
         class="elevation-1"
-        :page.sync="page"
-        :items-per-page="itemsPerPage"
-        @page-count="pageCount = totalPg"
-        hide-default-footer
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -62,17 +64,31 @@
                 </div>
                 <div id="sectorFour">
                   <div style="font-weight: bold; margin-bottom: 5px">내용</div>
-                  <div class="view" style="border: 1px solid #eeeeee; margin: 5px; width: 95%; height: 200px">
+                  <div
+                    class="view"
+                    style="
+                      border: 1px solid #eeeeee;
+                      margin: 5px;
+                      width: 95%;
+                      height: 200px;
+                    "
+                  >
                     {{ item.content }}
                   </div>
                 </div>
               </div>
 
               <div id="btnWrapper">
-                <v-btn elevation="2" color="primary" style="margin-right: 5px" @click=";[toModify(), setValue(item)]"
+                <v-btn
+                  elevation="2"
+                  color="primary"
+                  style="margin-right: 5px"
+                  @click="[toModify(), setValue(item)]"
                   >수정</v-btn
                 >
-                <v-btn elevation="2" color="error" @click="deleteArticle(item)">삭제</v-btn>
+                <v-btn elevation="2" color="error" @click="deleteArticle(item)"
+                  >삭제</v-btn
+                >
               </div>
             </div>
           </td>
@@ -94,7 +110,12 @@
                     <div class="cols">
                       <div style="margin-right: 5px; font-weight: bold">작성자</div>
                       <div class="view">
-                        <input type="text" id="userid" v-model="modArticle.userid" ref="userid" />
+                        <input
+                          type="text"
+                          id="userid"
+                          v-model="modArticle.userid"
+                          ref="userid"
+                        />
                       </div>
                     </div>
                   </div>
@@ -111,13 +132,25 @@
                   <div id="sectorFour">
                     <div style="font-weight: bold; margin-bottom: 5px">내용</div>
                     <div class="view">
-                      <textarea id="content" v-model="modArticle.content" ref="content" cols="200" rows="5"></textarea>
+                      <textarea
+                        id="content"
+                        v-model="modArticle.content"
+                        ref="content"
+                        cols="200"
+                        rows="5"
+                      ></textarea>
                     </div>
                   </div>
                 </div>
 
                 <div id="btnWrapper">
-                  <v-btn elevation="2" color="primary" style="margin-right: 5px" @click="checkValue">확인</v-btn>
+                  <v-btn
+                    elevation="2"
+                    color="primary"
+                    style="margin-right: 5px"
+                    @click="checkValue"
+                    >확인</v-btn
+                  >
                   <v-btn elevation="2" color="error" @click="toDetail">취소</v-btn>
                 </div>
               </div>
@@ -125,17 +158,16 @@
           </td>
         </template>
       </v-data-table>
-      <v-pagination @input="handlePagination($event)" v-model="page" :length="pageCount"></v-pagination>
     </v-card>
   </div>
 </template>
 
 <script>
-import http from "@/api/http-common"
-import NoticeListItem from "@/components/notice/NoticeListItem"
-import NoticeDetail from "@/components/notice/NoticeDetail"
-import NoticeWrite from "@/components/notice/NoticeWrite"
-import NoticeModify from "@/components/notice/NoticeModify"
+import http from "@/api/http-common";
+import NoticeListItem from "@/components/notice/NoticeListItem";
+import NoticeDetail from "@/components/notice/NoticeDetail";
+import NoticeWrite from "@/components/notice/NoticeWrite";
+import NoticeModify from "@/components/notice/NoticeModify";
 
 export default {
   name: "NoticeList",
@@ -149,13 +181,8 @@ export default {
     return {
       search: "",
       articleno: "",
-      pg: "1",
-      page: 1,
-      pageCount: 0,
-      itemsPerPage: 10,
       dialog: false,
       isModify: false,
-      totalPg: 1,
       headers: [
         {
           text: "번호",
@@ -170,42 +197,35 @@ export default {
       ],
       articles: [],
       modArticle: {},
-    }
+    };
   },
   created() {
     // 비동기
     // TODO : 글목록 얻기.
-
-    http.get(`/board/totalPage`).then(({ data }) => {
-      this.totalPg = data
-    })
-    this.pg = this.$route.params.pg == undefined ? "1" : this.$route.params.pg
-    this.page = Number(this.$route.params.pg)
-    http.get(`/board?pg=${this.pg}`).then(({ data }) => {
-      this.articles = data
-      console.log(data)
-    })
+    http.get("/board").then(({ data }) => {
+      this.articles = data;
+      console.log(data);
+    });
   },
   methods: {
-    handlePagination(e) {
-      location.href = "./" + e
-      //   this.$router.push({ name: "NoticeListPg", params: { pg: e } })
-    },
     setValue(item) {
-      Object.assign(this.modArticle, item)
+      Object.assign(this.modArticle, item);
     },
 
     toDetail() {
-      this.isModify = false
+      this.isModify = false;
     },
     toModify() {
-      this.isModify = true
+      this.isModify = true;
     },
 
     filterOnlyCapsText(value, search, item) {
       return (
-        value != null && search != null && typeof value === "string" && item.subject.toString().indexOf(search) !== -1
-      )
+        value != null &&
+        search != null &&
+        typeof value === "string" &&
+        item.subject.toString().indexOf(search) !== -1
+      );
     },
     // headers() {
     //   return [
@@ -222,44 +242,49 @@ export default {
     checkValue() {
       // 사용자 입력값 체크하기
       // 작성자아이디, 제목, 내용이 없을 경우 각 항목에 맞는 메세지를 출력
-      let err = true
-      let msg = ""
-      !this.modArticle.userid && ((msg = "작성자 입력해주세요"), (err = false), this.$refs.userid.focus())
-      err && !this.modArticle.subject && ((msg = "제목 입력해주세요"), (err = false), this.$refs.subject.focus())
-      err && !this.modArticle.content && ((msg = "내용 입력해주세요"), (err = false), this.$refs.content.focus())
+      let err = true;
+      let msg = "";
+      !this.modArticle.userid &&
+        ((msg = "작성자 입력해주세요"), (err = false), this.$refs.userid.focus());
+      err &&
+        !this.modArticle.subject &&
+        ((msg = "제목 입력해주세요"), (err = false), this.$refs.subject.focus());
+      err &&
+        !this.modArticle.content &&
+        ((msg = "내용 입력해주세요"), (err = false), this.$refs.content.focus());
 
-      if (!err) alert(msg)
+      if (!err) alert(msg);
       // 만약, 내용이 다 입력되어 있다면 registArticle 호출
-      else this.modifyArticle()
+      else this.modifyArticle();
     },
     modifyArticle() {
-      console.log("글수정 하러가자!!!!")
+      console.log("글수정 하러가자!!!!");
       // 비동기
       // TODO : 글번호에 해당하는 글정보 수정.
       http.put("/board", this.modArticle).then(({ data }) => {
-        let msg = "수정중 문제발생"
-        if (data === "success") msg = "수정 성공"
-        alert(msg)
-        this.$router.go(this.$router.currentRoute)
-      })
+        let msg = "수정중 문제발생";
+        if (data === "success") msg = "수정 성공";
+        alert(msg);
+        this.$router.go(this.$router.currentRoute);
+      });
     },
     moveList() {
-      console.log("글목록 보러가자!!!")
+      console.log("글목록 보러가자!!!");
       // this.$router.push({ name: "boardlist" })
-      this.$router.go(this.$router.currentRoute)
+      this.$router.go(this.$router.currentRoute);
     },
     deleteArticle(item) {
       // TODO : 글번호에 해당하는 글을 삭제.
       http.delete(`/board/${item.articleno}`).then(({ data }) => {
-        let msg = "삭제중 문제발생"
-        if (data === "success") msg = "삭제 성공"
-        alert(msg)
+        let msg = "삭제중 문제발생";
+        if (data === "success") msg = "삭제 성공";
+        alert(msg);
         // this.$router.push({ name: "boardlist" })
-        this.moveList()
-      })
+        this.moveList();
+      });
     },
   },
-}
+};
 </script>
 
 <style>
