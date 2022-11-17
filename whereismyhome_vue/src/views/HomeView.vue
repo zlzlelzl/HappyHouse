@@ -210,7 +210,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapState,mapActions } from "vuex";
+import axios from "axios";
 
 const newsStore = "newsStore";
 
@@ -221,7 +222,6 @@ export default {
   },
   data() {
     return{
-      newsList:[],
     }
   },
   created(){
@@ -229,6 +229,12 @@ export default {
   },
   methods: {
     ...mapActions(newsStore,["getNews"]),
+  },
+  computed: {
+    ...mapState(newsStore, ["newsList"]),
+    // houses() {
+    //   return this.$store.state.houses;
+    // },
   },
 };
 </script>

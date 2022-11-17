@@ -3,16 +3,16 @@ import { getNaverNews } from "@/api/naver.js";
 const newsStore = {
   namespaced: true,
   state: {
-    news: [],
+    newsList: [],
   },
 
   getters: {},
   mutations: {
     SET_NEWS_LIST: (state, news) => {
-      state.news = news;
+      state.newsList = news;
     },
     CLEAR_NEWS_LIST: (state) => {
-      state.news = [];
+      state.newsList = [];
     },
   },
 
@@ -40,8 +40,8 @@ const newsStore = {
         params,
         header,
         ({ data }) => {
-          //   console.log(response.data.response.body.items.item);
-          commit("SET_NEWS_LIST", data);
+          //console.log(data.items);
+          commit("SET_NEWS_LIST", data.items);
         },
         (error) => {
           console.log(error);
