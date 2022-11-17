@@ -16,6 +16,8 @@ public class MemberDto {
 	private String email;
 	@ApiModelProperty(value = "회원 가입일")
 	private String joindate;
+	@ApiModelProperty(value = "탈퇴여부")
+	private int isdel;
 
 	public String getUserid() {
 		return userid;
@@ -57,4 +59,11 @@ public class MemberDto {
 		this.joindate = joindate;
 	}
 
+	public int getIsdel() {
+		return isdel;
+	}
+
+	public void setIsdel(int isdel) {
+		this.isdel = isdel;
+	}
 }
