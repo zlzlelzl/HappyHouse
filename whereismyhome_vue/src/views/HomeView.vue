@@ -97,14 +97,14 @@
                       cover
                     ></v-carousel-item>
                     -->
-                    <template v-for="(article, index) in articles" >
-                    <a :href="article.link">
+                    <template v-for="news in newsList" >
+                    <a :href="news.link">
                       <v-carousel-item 
                       src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
                     >
-                        {{ article.title }}
+                        {{ news.title }}
                         </br>
-                        {{ article.description }}
+                        {{ news.description }}
                       </v-carousel-item>
                     </a>
                     </template>
@@ -210,7 +210,10 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapActions } from "vuex";
+
+const newsStore = "newsStore";
+
 export default {
   name: "HomeView",
   components: {
@@ -218,30 +221,14 @@ export default {
   },
   data() {
     return{
-      articles:[],
+      newsList:[],
     }
   },
   created(){
-    this.getNaverNews();
+    this.getNews("부동산");
   },
   methods: {
-    getNaverNews(){
-      const search="부동산";
-      let url = `/v1/search/news.json?query=${search}&sort=date`;
-      let config = {
-          headers:{
-              'Content-Type': 'text/json;charset=utf-8',
-              "Access-Control_Allow-Origin": '*',
-              "X-Naver-Client-Id":"t0HvsNpl7cfb2bainYVM",
-              "X-Naver-Client-Secret":"KstSGGZtNm",
-          }
-      };
-      
-      axios.get(url,config).then((response)=>{
-          console.log(response.data.items);
-          this.articles=response.data.items;
-      });
-    },
+    ...mapActions(newsStore,["getNews"]),
   },
 };
 </script>

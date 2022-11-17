@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import http from "@/util/http-common";
+import http from "@/api/http-common";
 export default {
   name: "NoticeWrite",
   data() {

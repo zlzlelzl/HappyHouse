@@ -163,12 +163,11 @@
 </template>
 
 <script>
-import http from "@/util/http-common";
+import http from "@/api/http-common";
 import NoticeListItem from "@/components/notice/NoticeListItem";
 import NoticeDetail from "@/components/notice/NoticeDetail";
 import NoticeWrite from "@/components/notice/NoticeWrite";
 import NoticeModify from "@/components/notice/NoticeModify";
-import axios from "axios";
 
 export default {
   name: "NoticeList",
@@ -203,30 +202,12 @@ export default {
   created() {
     // 비동기
     // TODO : 글목록 얻기.
-    this.getNaverNews();
     http.get("/board").then(({ data }) => {
       this.articles = data;
       console.log(data);
     });
   },
   methods: {
-    getNaverNews() {
-      let search = "부동산";
-      let config = {
-        headers: {
-          "X-Naver-Client-Id": "t0HvsNpl7cfb2bainYVM",
-          "X-Naver-Client-Secret": "KstSGGZtNm",
-        },
-      };
-      axios
-        .get(
-          `https://openapi.naver.com/v1/search/blog.json?query=${search}&sort=date`,
-          config
-        )
-        .then((response) => {
-          console.log(response);
-        });
-    },
     setValue(item) {
       Object.assign(this.modArticle, item);
     },

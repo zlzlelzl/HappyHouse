@@ -4,12 +4,12 @@ module.exports = defineConfig({
   transpileDependencies: ["vuetify"],
   devServer: {
     proxy: {
-      '^/v1':{
-        "target":'https://openapi.naver.com/',
-        "pathRewrite":{'^/':''},
-        "changeOrigin":true,
-        "secure":false
-      }
+      "^/v1": {
+        target: "https://openapi.naver.com/",
+        pathRewrite: { "^/": "" },
+        changeOrigin: true,
+        secure: false,
+      },
     },
-  }
+  },
 });
