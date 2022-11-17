@@ -172,8 +172,8 @@ export default {
   created() {
     // 비동기
     // TODO : 글목록 얻기.
-    http.get("/qna").then(({ data }) => {
-      //   console.log(this.articles)
+    this.pg = this.$route.params.pg == undefined ? "1" : this.$route.params.pg
+    http.get(`/qna?pg=${this.pg}`).then(({ data }) => {
       this.articles = data
       console.log(data)
     })

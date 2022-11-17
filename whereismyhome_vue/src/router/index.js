@@ -26,6 +26,11 @@ const routes = [
         component: () => import("@/components/notice/NoticeList.vue"),
       },
       {
+        path: "list/:pg",
+        name: "NoticeListPg",
+        component: () => import("@/components/notice/NoticeList.vue"),
+      },
+      {
         path: "write",
         name: "NoticeWrite",
         component: () => import("@/components/notice/NoticeWrite.vue"),
@@ -51,6 +56,11 @@ const routes = [
       {
         path: "list",
         name: "QnaList",
+        component: () => import("@/components/qna/QnaList.vue"),
+      },
+      {
+        path: "list/:pg",
+        name: "QnaListPg",
         component: () => import("@/components/qna/QnaList.vue"),
       },
       {
