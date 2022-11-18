@@ -10,5 +10,14 @@ function apiInstance() {
     })
     return instance
 }
+function naverApiInstance() {
+  const instance = axios.create({
+    headers: {
+      baseURL: "",
+      "Content-type": "application/json;charset=utf-8",
+    },
+  });
+  return instance;
+}
 
-export { apiInstance }
+export { apiInstance, naverApiInstance };

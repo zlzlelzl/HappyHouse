@@ -1,4 +1,4 @@
-import { naverApiInstance } from "./http-naver.js";
+import {apiInstance, naverApiInstance } from "./http-common.js";
 
 const naver = naverApiInstance();
 
