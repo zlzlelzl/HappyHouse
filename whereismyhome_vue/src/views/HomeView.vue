@@ -211,6 +211,7 @@
 
 <script>
 import { mapState,mapActions } from "vuex";
+import axios from "axios";
 
 const newsStore = "newsStore";
 

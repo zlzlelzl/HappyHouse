@@ -14,7 +14,8 @@
         :expanded.sync="expanded"
         :search="search"
         :custom-filter="filterOnlyCapsText"
-        item-key="articleno"
+        item-key="qnano"
+        :item-class="setReplyRow"
         show-expand
         class="elevation-1"
         :page.sync="page"
@@ -25,7 +26,7 @@
         <template v-slot:top>
           <v-toolbar flat>
             <v-col class="text-right">
-              <notice-write></notice-write>
+              <qna-write></qna-write>
             </v-col>
           </v-toolbar>
         </template>
@@ -37,7 +38,7 @@
                 <div id="sectorOne">
                   <div class="cols">
                     <div style="margin-right: 5px; font-weight: bold">글번호</div>
-                    <div class="view">{{ item.articleno }}</div>
+                    <div class="view">{{ item.qnano }}</div>
                   </div>
                   <div class="cols">
                     <div style="margin-right: 5px; font-weight: bold">글제목</div>
@@ -69,6 +70,9 @@
               </div>
 
               <div id="btnWrapper">
+                <v-btn elevation="2" color="primary" style="margin-right: 5px" @click="reply">
+                  <qna-reply :parentno="item.qnano"></qna-reply>
+                </v-btn>
                 <v-btn elevation="2" color="primary" style="margin-right: 5px" @click=";[toModify(), setValue(item)]"
                   >수정</v-btn
                 >
@@ -83,7 +87,7 @@
                   <div id="sectorOne">
                     <div class="cols">
                       <div style="margin-right: 5px; font-weight: bold">글번호</div>
-                      <div class="view">{{ item.articleno }}</div>
+                      <div class="view">{{ item.qnano }}</div>
                     </div>
                     <div class="cols">
                       <div style="margin-right: 5px; font-weight: bold">글제목</div>
@@ -132,36 +136,37 @@
 
 <script>
 import http from "@/api/http-common"
-import NoticeListItem from "@/components/notice/NoticeListItem"
-import NoticeDetail from "@/components/notice/NoticeDetail"
-import NoticeWrite from "@/components/notice/NoticeWrite"
-import NoticeModify from "@/components/notice/NoticeModify"
+import QnaListItem from "@/components/qna/QnaListItem"
+import QnaDetail from "@/components/qna/QnaDetail"
+import QnaWrite from "@/components/qna/QnaWrite"
+import QnaModify from "@/components/qna/QnaModify"
+import QnaReply from "@/components/qna/QnaReply"
 
 export default {
-  name: "NoticeList",
+  name: "QnaList",
   components: {
-    NoticeListItem,
-    NoticeDetail,
-    NoticeWrite,
-    NoticeModify,
+    QnaListItem,
+    QnaDetail,
+    QnaWrite,
+    QnaModify,
+    QnaReply,
   },
   data() {
     return {
       search: "",
-      articleno: "",
+      qnano: "",
+      parentno: "",
       pg: "1",
       page: 1,
       pageCount: 0,
-      itemsPerPage: 10,
       dialog: false,
       isModify: false,
-      totalPg: 1,
       headers: [
         {
           text: "번호",
           //   align: "start",
           //   sortable: false,
-          value: "articleno",
+          value: "qnano",
         },
         { text: "제목", value: "subject" },
         { text: "작성자", value: "userid" },
@@ -176,12 +181,12 @@ export default {
     // 비동기
     // TODO : 글목록 얻기.
 
-    http.get(`/board/totalPage`).then(({ data }) => {
+    http.get(`/qna/totalPage`).then(({ data }) => {
       this.totalPg = data
     })
     this.pg = this.$route.params.pg == undefined ? "1" : this.$route.params.pg
     this.page = Number(this.$route.params.pg)
-    http.get(`/board?pg=${this.pg}`).then(({ data }) => {
+    http.get(`/qna?pg=${this.pg}`).then(({ data }) => {
       this.articles = data
       console.log(data)
     })
@@ -189,7 +194,9 @@ export default {
   methods: {
     handlePagination(e) {
       location.href = "./" + e
-      //   this.$router.push({ name: "NoticeListPg", params: { pg: e } })
+    },
+    setReplyRow(item) {
+      return item.parentno == 0 ? "white" : "grey lighten-3"
     },
     setValue(item) {
       Object.assign(this.modArticle, item)
@@ -236,7 +243,7 @@ export default {
       console.log("글수정 하러가자!!!!")
       // 비동기
       // TODO : 글번호에 해당하는 글정보 수정.
-      http.put("/board", this.modArticle).then(({ data }) => {
+      http.put("/qna", this.modArticle).then(({ data }) => {
         let msg = "수정중 문제발생"
         if (data === "success") msg = "수정 성공"
         alert(msg)
@@ -245,16 +252,16 @@ export default {
     },
     moveList() {
       console.log("글목록 보러가자!!!")
-      // this.$router.push({ name: "boardlist" })
+      // this.$router.push({ name: "qnalist" })
       this.$router.go(this.$router.currentRoute)
     },
     deleteArticle(item) {
       // TODO : 글번호에 해당하는 글을 삭제.
-      http.delete(`/board/${item.articleno}`).then(({ data }) => {
+      http.delete(`/qna/${item.qnano}`).then(({ data }) => {
         let msg = "삭제중 문제발생"
         if (data === "success") msg = "삭제 성공"
         alert(msg)
-        // this.$router.push({ name: "boardlist" })
+        // this.$router.push({ name: "qnalist" })
         this.moveList()
       })
     },
