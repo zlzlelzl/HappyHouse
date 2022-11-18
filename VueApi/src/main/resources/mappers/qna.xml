@@ -72,6 +72,7 @@
 		</if>
 	</select>
 	
+	
 	<select id="getArticle" parameterType="int" resultType="qnaDto">
 		select qnano, userid, subject, content, hit, regtime
 		from qna

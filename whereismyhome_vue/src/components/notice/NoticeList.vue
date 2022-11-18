@@ -23,6 +23,10 @@
         item-key="articleno"
         show-expand
         class="elevation-1"
+
+        :page.sync="page"
+        @page-count="pageCount = totalPg"
+        hide-default-footer
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -158,16 +162,19 @@
           </td>
         </template>
       </v-data-table>
+      <v-pagination @input="handlePagination($event)" v-model="page" :length="pageCount" :total-visible="7"></v-pagination>
     </v-card>
   </div>
 </template>
 
 <script>
-import http from "@/api/http-common";
 import NoticeListItem from "@/components/notice/NoticeListItem";
 import NoticeDetail from "@/components/notice/NoticeDetail";
 import NoticeWrite from "@/components/notice/NoticeWrite";
 import NoticeModify from "@/components/notice/NoticeModify";
+import { apiInstance } from "@/api/http-common";
+
+const http = apiInstance();
 
 export default {
   name: "NoticeList",
@@ -183,6 +190,9 @@ export default {
       articleno: "",
       dialog: false,
       isModify: false,
+      pg: "1",
+      page: 1,
+      pageCount: 0,
       headers: [
         {
           text: "번호",
@@ -208,6 +218,9 @@ export default {
     });
   },
   methods: {
+    handlePagination(e) {
+      location.href = "./" + e
+    },
     setValue(item) {
       Object.assign(this.modArticle, item);
     },

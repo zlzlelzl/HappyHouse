@@ -168,6 +168,10 @@ export default {
         to: "/notice",
       },
       {
+        title: "Q&A",
+        to: "/qna",
+      },
+      {
         title: "Authors",
         to: "/authors",
       },

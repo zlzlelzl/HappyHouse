@@ -16,7 +16,9 @@
 </template>
 
 <script>
-import http from "@/api/http-common"
+import { apiInstance } from "@/api/http-common";
+
+const http = apiInstance();
 export default {
   name: "QnaModify",
   data() {
