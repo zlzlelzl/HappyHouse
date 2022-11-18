@@ -1,6 +1,9 @@
 const boardStore = {
   namespaced: true,
-  state: {},
+  state: {
+    markers:[],
+    
+  },
   getters: {},
   mutations: {},
   actions: {},
