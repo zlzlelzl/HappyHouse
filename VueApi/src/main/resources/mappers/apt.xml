@@ -35,5 +35,30 @@
 		where dongCode = #{dong} 
 		order by aptName
 	</select>
+
+    <select id="getAptDeal" parameterType="string" resultType="houseDealDto">
+        select 
+            phd.no
+            ,phd.aptCode
+            ,phd.dealAmount
+            ,phd.dealYear
+            ,phd.dealMonth
+            ,phd.dealDay
+            ,phd.area
+            ,phd.floor
+
+            ,hi.aptName
+            ,dc.dongCode
+            ,dc.dongName
+            ,phi.roadName
+            ,phi.roadNamebonbun
+
+        from houseinfo hi
+        join dongCode dc on hi.dongCode = dc.dongCode
+        join phouseinfo phi on hi.dongCode = phi.dongCode and hi.aptName = phi.apartmentName
+        join phousedeal phd on phi.aptCode = phd.aptCode
+        where hi.aptCode = #{aptCode}
+        order by phd.dealYear, phd.dealDay
+    </select>
 	
 </mapper>
