@@ -28,11 +28,36 @@
 <script>
 import AppResult from './AppResult.vue';
 import AppSearch from './AppSearch.vue';
+
+import { apiInstance } from "@/api/http-common";
+
+const http = apiInstance();
+
 export default {
   components: { AppResult, AppSearch },
   name: "MapApp",
   data() {
     return {
+
+        map:{
+            app : {
+                search : {
+                    // 서치리스트에서 클릭할 경우 typename을 기반으로 확대 레벨별 클러스터링 또는 houseinfo 검색
+                    types : {}
+                },
+                result : {
+                    // 전체 데이터
+                    // dongcodes:[],
+                    dongcode:{},
+                    // 타입이 houseinfo 검색일 경우 houseinfo 데이터가 들어감
+                    houseinfos:[],
+                    // houseinfo 기준 거래내역
+                    housedeals:[]
+                }
+            },
+            infra : {}
+        },
+
       markerPositions1: [
         [33.452278, 126.567803],
         [33.452671, 126.574792],
@@ -65,7 +90,23 @@ export default {
       this.setMarker();
     }
   },
+  created() {
+    // this.getHouseInfos("1111010100"),
+    this.getHouseDeals("45")
+  },
   methods: {
+    getHouseInfos(dongcode){
+        http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
+            this.map.app.result.houseinfos = data
+            console.log(data)
+        });
+    },
+    getHouseDeals(aptCode){
+        http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
+            this.map.app.result.housedeals = data
+            console.log(data)
+        });
+    },
     initMap() {
       const container = document.getElementById("map");
       const options = {
