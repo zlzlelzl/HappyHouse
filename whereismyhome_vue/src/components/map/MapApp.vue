@@ -1,6 +1,19 @@
 <template>
   <div>
-    <div id="map" style="width: 100%; height: 800px"></div>
+    <div id="map" class="pa-5" style="width: 100%; height: 800px">
+      <v-card
+        elevation="15"
+        width="30%"
+        height="100%"
+        style='z-index:2; opacity: 0.8;'
+      >
+        <!-- seacrh -->
+        <app-search></app-search>
+        <!-- result -->
+        <app-result></app-result>
+      </v-card>
+    </div>
+
     <div class="button-group">
       <button @click="changeSize(0)">Hide</button>
       <button @click="changeSize(1200)">show</button>
@@ -13,8 +26,11 @@
 </template>
 
 <script>
+import AppResult from './AppResult.vue';
+import AppSearch from './AppSearch.vue';
 export default {
-  name: "KakaoMap",
+  components: { AppResult, AppSearch },
+  name: "MapApp",
   data() {
     return {
       markerPositions1: [

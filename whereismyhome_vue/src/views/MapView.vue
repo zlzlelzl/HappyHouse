@@ -8,7 +8,7 @@
 export default {
   name: "KakaoMap",
   components: {
-    MainMap: () => import("@/components/map/MainMap.vue"),
+    MapApp: () => import("@/components/map/MapApp.vue"),
   },
 };
 </script>
