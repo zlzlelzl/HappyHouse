@@ -29,6 +29,7 @@
 import AppResult from './AppResult.vue';
 import AppSearch from './AppSearch.vue';
 
+
 import { apiInstance } from "@/api/http-common";
 
 const http = apiInstance();
