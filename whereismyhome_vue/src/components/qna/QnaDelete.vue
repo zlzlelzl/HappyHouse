@@ -6,7 +6,9 @@
 </template>
 
 <script>
-import http from "@/api/http-common"
+import { apiInstance } from "@/api/http-common";
+
+const http = apiInstance();
 export default {
   name: "QnaDelete",
   created() {
@@ -15,9 +17,9 @@ export default {
     http.delete(`/qna/${this.$route.params.qnano}`).then(({ data }) => {
       let msg = "삭제중 문제발생"
       if (data === "success") msg = "삭제 성공"
-      // alert(msg)
+    //   alert(msg)
       this.$router.go({ name: "QnaList" })
-    })
+    }).catch((err)=>{console.log(err)})
   },
 }
 </script>
