@@ -1,14 +1,15 @@
 <template>
   <div>
-    <main-map></main-map>
+    <map-app></map-app>
   </div>
 </template>
 
 <script>
+import MapApp from '@/components/map/MapApp.vue';
 export default {
   name: "KakaoMap",
   components: {
-    MainMap: () => import("@/components/map/MainMap.vue"),
+    MapApp,
   },
 };
 </script>

@@ -2,13 +2,17 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import createPersistedState from "vuex-persistedstate";
-Vue.use(Vuex);
 
+import boardStore from "@/store/modules/boardStore";
+import houseStore from "@/store/modules/houseStore";
 import newsStore from "@/store/modules/newsStore.js";
 import memberStore from "@/store/modules/memberStore.js";
 
+Vue.use(Vuex);
 export default new Vuex.Store({
   modules: {
+    boardStore,
+    houseStore,
     newsStore,
     memberStore,
   },
