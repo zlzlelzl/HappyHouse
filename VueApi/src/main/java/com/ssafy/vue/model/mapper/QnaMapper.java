@@ -17,6 +17,7 @@ public interface QnaMapper {
 	public QnaDto getArticle(int articleno) throws SQLException;
 	public void updateHit(int articleno) throws SQLException;
 	public int modifyArticle(QnaDto qnaDto) throws SQLException;
+	public void deleteMemo(int articleno) throws SQLException;
 	public int deleteArticle(int articleno) throws SQLException;
 	
 }
