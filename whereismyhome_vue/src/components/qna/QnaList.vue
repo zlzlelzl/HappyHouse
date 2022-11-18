@@ -19,7 +19,6 @@
         show-expand
         class="elevation-1"
         :page.sync="page"
-        :items-per-page="itemsPerPage"
         @page-count="pageCount = totalPg"
         hide-default-footer
       >
@@ -129,13 +128,15 @@
           </td>
         </template>
       </v-data-table>
-      <v-pagination @input="handlePagination($event)" v-model="page" :length="pageCount"></v-pagination>
+      <v-pagination @input="handlePagination($event)" v-model="page" :length="pageCount" :total-visible="7"></v-pagination>
     </v-card>
   </div>
 </template>
 
 <script>
-import http from "@/api/http-common"
+import { apiInstance } from "@/api/http-common";
+
+const http = apiInstance();
 import QnaListItem from "@/components/qna/QnaListItem"
 import QnaDetail from "@/components/qna/QnaDetail"
 import QnaWrite from "@/components/qna/QnaWrite"

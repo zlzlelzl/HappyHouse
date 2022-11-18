@@ -1,11 +1,3 @@
-nav focus : https://vuetifyjs.com/en/components/item-groups/#props
-
-front vanilla to vuetify
-
-apart divider : https://vuetifyjs.com/en/components/dividers/
-
-
-
 지도 기능
 클러스터링(온클릭, 확대레벨별 도, 시, 구군, 동별),
 검색(왼쪽 위 검색바 : 모달),
