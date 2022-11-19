@@ -22,4 +22,6 @@ public interface HouseMapMapper {
 
     List<HouseDealDto> getAptDeal(String aptCode) throws SQLException;
 
+	List<HouseDealDto> getSearchList(String inputMsg) throws SQLException;
+
 }

@@ -18,4 +18,5 @@ public interface HouseMapService {
 
     List<HouseDealDto> getAptDeal(String aptCode) throws Exception;
 
+    List<HouseDealDto> getSearchList(String inputMsg) throws Exception;
 }
