@@ -89,7 +89,8 @@ export default {
 
     moveList() {
       console.log("글목록 보러가자!!!");
-      this.$router.go(this.$router.currentRoute);
+      location.href = `/notice/list?pg=1&key=&word=`
+    //   this.$router.go(this.$router.currentRoute);
     },
   },
 };

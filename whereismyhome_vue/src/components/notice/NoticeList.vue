@@ -1,24 +1,47 @@
 <template>
   <div>
     <v-card>
-      <v-card-title>
+        <v-container>
+    
+      <v-card-title >
+        <v-row>
+    <v-col md="6">
         공지사항
-        <v-spacer></v-spacer>
+        </v-col>
+    
+    <v-col md="2">
+        <v-select
+          :items="keys"
+          v-model="queryKey"
+          label="선택"
+          single-line
+          hide-details
+        ></v-select>
+        </v-col>
+    <v-col  md="4">
+
         <v-text-field
-          v-model="search"
+          v-model="queryWord"
           append-icon="mdi-magnify"
-          label="Search"
+          @click:append.prevent="getQueryList(1)"
+          @keyup.enter="getQueryList(1)"
+          label=""
           single-line
           hide-details
         >
         </v-text-field>
+        </v-col>
+    </v-row
+    >
       </v-card-title>
+      </v-container>
+      <!-- :search="search" -->
       <v-data-table
         :headers="headers"
         :items="articles"
-        :single-expand="singleExpand"
+        :single-expand="true"
         :expanded.sync="expanded"
-        :search="search"
+        
         :custom-filter="filterOnlyCapsText"
         item-key="articleno"
         show-expand
@@ -191,6 +214,7 @@ export default {
       dialog: false,
       isModify: false,
       pg: "1",
+      totalPg:1,
       page: 1,
       pageCount: 0,
       headers: [
@@ -205,24 +229,26 @@ export default {
         { text: "조회수", value: "hit" },
         { text: "작성일", value: "regtime" },
       ],
+      keys:["subject","userid"],
+      keyMap:{"subject":"제목","userid":"작성자"},
+      queryKey:this.$route.query.key,
+      queryWord:this.$route.query.word,
       articles: [],
       modArticle: {},
-    };
+    }
   },
   created() {
     // 비동기
     // TODO : 글목록 얻기.
-    http.get("/board").then(({ data }) => {
-      this.articles = data;
-      console.log(data);
-    });
+    this.moveList(this.$route.query.pg)
+    
   },
   methods: {
     handlePagination(e) {
-      location.href = "./" + e
+        this.getQueryList(e)
     },
     setValue(item) {
-      Object.assign(this.modArticle, item);
+      Object.assign(this.modArticle, item)
     },
 
     toDetail() {
@@ -252,11 +278,19 @@ export default {
     //   ];
     // },
 
+    getQueryList(e){
+        // this.moveList()
+        // console.log(this.querySubject, this.queryWord)
+        location.href = `/notice/list?pg=${!e?1:e}&key=${!this.queryKey?"":this.queryKey}&word=${!this.queryWord?"":this.queryWord}`
+        // this.$router.go(`/notice/list?pg=1&subject=${this.querySubject}&word=${this.queryWord}`)
+        // this.$router.go(this.$router.currentRoute);
+    },
+
     checkValue() {
       // 사용자 입력값 체크하기
       // 작성자아이디, 제목, 내용이 없을 경우 각 항목에 맞는 메세지를 출력
-      let err = true;
-      let msg = "";
+      let err = true
+      let msg = ""
       !this.modArticle.userid &&
         ((msg = "작성자 입력해주세요"), (err = false), this.$refs.userid.focus());
       err &&
@@ -266,12 +300,12 @@ export default {
         !this.modArticle.content &&
         ((msg = "내용 입력해주세요"), (err = false), this.$refs.content.focus());
 
-      if (!err) alert(msg);
+      if (!err) alert(msg)
       // 만약, 내용이 다 입력되어 있다면 registArticle 호출
-      else this.modifyArticle();
+      else this.modifyArticle()
     },
     modifyArticle() {
-      console.log("글수정 하러가자!!!!");
+      console.log("글수정 하러가자!!!!")
       // 비동기
       // TODO : 글번호에 해당하는 글정보 수정.
       http.put("/board", this.modArticle).then(({ data }) => {
@@ -281,10 +315,25 @@ export default {
         this.$router.go(this.$router.currentRoute);
       });
     },
-    moveList() {
+    moveList(pg) {
       console.log("글목록 보러가자!!!");
       // this.$router.push({ name: "boardlist" })
-      this.$router.go(this.$router.currentRoute);
+
+        console.log(this.queryKey, this.queryWord)
+         
+    http.get(`/board/totalPage?key=${!this.queryKey?"":this.queryKey}&word=${!this.queryWord?"":this.queryWord}`).then(({ data }) => {
+      this.totalPg = data
+      console.log(data)
+    })
+    this.pg = pg == undefined ? "1" : pg
+    this.page = Number(pg)
+    http.get(`/board?pg=${this.pg}&key=${!this.queryKey?"":this.queryKey}&word=${!this.queryWord?"":this.queryWord}`).then(({ data }) => {
+      this.articles = data
+      console.log(data)
+    })
+    
+
+    //   this.$router.go(this.$router.currentRoute);
     },
     deleteArticle(item) {
       // TODO : 글번호에 해당하는 글을 삭제.

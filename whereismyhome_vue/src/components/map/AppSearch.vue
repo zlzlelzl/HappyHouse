@@ -41,7 +41,7 @@
         </transition>
       </v-col>
       <v-col cols="1" >
-        <v-btn icon>
+        <v-btn icon @click="func">
         <v-icon size="30">mdi-magnify</v-icon>
         </v-btn>
       </v-col>
@@ -50,6 +50,7 @@
   
   <script>
   import vClickOutside from 'v-click-outside'
+  import axios from "axios"
   export default {
     name: "AppSearch",
     data() {
@@ -93,7 +94,7 @@
         str = str.replace(/\s/g,'+')            //스페이스바 +로 치환
         const reg = /[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9|+]/.test(str);         //특문검사 정규식
         if(!reg && str !== ""){
-          this.$axios.get("book/complete/" + str)
+            axios.get("/map/complete/" + str)
               .then(response => {
                 this.completeData = response.data
               }).catch(error => {
@@ -105,6 +106,15 @@
       onClickOutside () {
         this.autoSearchList = false
       },
+      //검색 버튼
+      func(){
+        axios.get(`/map/search/${this.inputMsg}`)
+              .then(response => {
+                this.item = response.data
+              }).catch(error => {
+            console.log(error.response);
+            });
+        },
     },
   };
   </script>

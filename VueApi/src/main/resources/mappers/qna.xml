@@ -14,7 +14,7 @@
 			SELECT qnano, parentno, link, lv, userid, subject, content, hit, regtime, ancientno
 			FROM (select qnano,
 			parentno,
-			cast(qnano as char(100)) as link,
+			cast(qnano as char(10000)) as link,
 			0 as lv,
 			
 			userid, subject, content, hit,
@@ -33,7 +33,7 @@
 			SELECT
 			a.qnano,
 			a.parentno,
-			concat(link, ",", cast(a.qnano as char(100))),
+			concat(link, ",", cast(a.qnano as char(10000))),
 			lv + 1,
 			
 			a.userid, concat(REPEAT("RE : ", lv+1), a.subject), a.content, a.hit,
