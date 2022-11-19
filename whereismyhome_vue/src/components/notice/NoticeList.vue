@@ -39,7 +39,7 @@
       <v-data-table
         :headers="headers"
         :items="articles"
-        :single-expand="singleExpand"
+        :single-expand="true"
         :expanded.sync="expanded"
         
         :custom-filter="filterOnlyCapsText"
@@ -235,7 +235,7 @@ export default {
       queryWord:this.$route.query.word,
       articles: [],
       modArticle: {},
-    };
+    }
   },
   created() {
     // 비동기
@@ -248,7 +248,7 @@ export default {
         this.getQueryList(e)
     },
     setValue(item) {
-      Object.assign(this.modArticle, item);
+      Object.assign(this.modArticle, item)
     },
 
     toDetail() {
@@ -289,8 +289,8 @@ export default {
     checkValue() {
       // 사용자 입력값 체크하기
       // 작성자아이디, 제목, 내용이 없을 경우 각 항목에 맞는 메세지를 출력
-      let err = true;
-      let msg = "";
+      let err = true
+      let msg = ""
       !this.modArticle.userid &&
         ((msg = "작성자 입력해주세요"), (err = false), this.$refs.userid.focus());
       err &&
@@ -300,12 +300,12 @@ export default {
         !this.modArticle.content &&
         ((msg = "내용 입력해주세요"), (err = false), this.$refs.content.focus());
 
-      if (!err) alert(msg);
+      if (!err) alert(msg)
       // 만약, 내용이 다 입력되어 있다면 registArticle 호출
-      else this.modifyArticle();
+      else this.modifyArticle()
     },
     modifyArticle() {
-      console.log("글수정 하러가자!!!!");
+      console.log("글수정 하러가자!!!!")
       // 비동기
       // TODO : 글번호에 해당하는 글정보 수정.
       http.put("/board", this.modArticle).then(({ data }) => {
