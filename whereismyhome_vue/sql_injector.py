@@ -11,7 +11,7 @@ cur = con.cursor()
 # %%
 s = time.process_time()
 
-for _ in range(int(1e2)):
+for _ in range(int(1e6)):
     # sql = "select * from board"
 
     sql = f"insert into qna(parentno, userid,subject,content) values({random.randint(0,_)},'ssafy','2','3')"
