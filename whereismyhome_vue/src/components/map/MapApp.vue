@@ -21,6 +21,7 @@
       <button @click="displayMarker(markerPositions2)">marker set 2</button>
       <button @click="displayMarker([])">marker set 3 (empty)</button>
       <button @click="displayInfoWindow">infowindow</button>
+      <button @click="displayInfra">infra</button>
     </div>
   </div>
 </template>
@@ -31,8 +32,10 @@ import AppSearch from './AppSearch.vue';
 
 
 import { apiInstance } from "@/api/http-common";
+import axios from "axios";
 
 const http = apiInstance();
+
 
 export default {
   components: { AppResult, AppSearch },
@@ -75,6 +78,31 @@ export default {
       ],
       markers: [],
       infowindow: null,
+
+         
+        pos : [37.59535896822048, 126.94482118274179],
+    categoryGroupCodes : [
+        { Name: "MT1", Description: "대형마트" },
+        { Name: "CS2", Description: "편의점" },
+        { Name: "PS3", Description: "어린이집, 유치원" },
+        { Name: "SC4", Description: "학교" },
+        { Name: "AC5", Description: "학원" },
+        { Name: "PK6", Description: "주차장" },
+        { Name: "OL7", Description: "주유소, 충전소" },
+        { Name: "SW8", Description: "지하철역" },
+        { Name: "BK9", Description: "은행" },
+        { Name: "CT1", Description: "문화시설" },
+        { Name: "AG2", Description: "중개업소" },
+        { Name: "PO3", Description: "공공기관" },
+        { Name: "AT4", Description: "관광명소" },
+        { Name: "AD5", Description: "숙박" },
+        { Name: "FD6", Description: "음식점" },
+        { Name: "CE7", Description: "카페" },
+        { Name: "HP8", Description: "병원" },
+        { Name: "PM9", Description: "약국" },
+    ],
+      infra: {},
+    //   headers:{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}
     };
   },
   mounted() {
@@ -93,9 +121,29 @@ export default {
   },
   created() {
     // this.getHouseInfos("1111010100"),
-    this.getHouseDeals("45")
+    // this.getHouseDeals("45")
+    // this.getInfra(this.categoryGroupCodes[0]["Name"])
+    this.getAllInfra()
   },
   methods: {
+    getAllInfra(){
+        for (let i=0;i<this.categoryGroupCodes.length;i++) {
+            let code = this.categoryGroupCodes[i]["Name"]
+            this.getInfra(code)
+            console.log(this.infra)
+        }
+    },
+    getInfra(code){
+        // console.log(code)
+        axios
+        .get(`https://dapi.kakao.com/v2/local/search/category.json?x=${this.pos[0]}&y=${this.pos[1]}&radius=1000&category_group_code=${code}&sort=distance`,
+        {"headers":{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}})
+        .then(({data}) => {
+            // this.map.app.result.housedeals = data
+            this.infra[code] = data
+            console.log(this.infra)
+        });
+    },
     getHouseInfos(dongcode){
         http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
             this.map.app.result.houseinfos = data

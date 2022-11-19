@@ -20,7 +20,8 @@
                 <!-- // 마우스 오버 시 효과를 주기위한 v-hover -->
                 <v-hover v-slot="{ hover }"
                         v-for="(item,index) in completeData"
-                        :key="index" 
+                        :key="index"
+                        style='z-index:20; opacity: 1;'
                 >   
                   <!-- // 자동완성 결과값들의 리스트 -->
                   <v-list-item
