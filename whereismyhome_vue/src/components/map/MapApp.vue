@@ -1,5 +1,17 @@
 <template>
   <div>
+    <Bar
+        :chart-options="chartOptions"
+        :chart-data="chartData"
+        :chart-id="chartId"
+        :dataset-id-key="datasetIdKey"
+        :plugins="plugins"
+        :css-classes="cssClasses"
+        :styles="styles"
+        :width="width"
+        :height="height"
+    />
+
     <div id="map" class="pa-5" style="width: 100%; height: 800px">
       <v-card
         elevation="15"
@@ -27,22 +39,63 @@
 </template>
 
 <script>
+
 import AppResult from './AppResult.vue';
 import AppSearch from './AppSearch.vue';
-
 
 import { apiInstance } from "@/api/http-common";
 import axios from "axios";
 
 const http = apiInstance();
 
+import { Bar } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+
 
 export default {
-  components: { AppResult, AppSearch },
+  components: { AppResult, AppSearch, Bar },
+  props:{
+chartId: {
+      type: String,
+      default: 'bar-chart'
+    },
+    datasetIdKey: {
+      type: String,
+      default: 'label'
+    },
+    width: {
+      type: Number,
+      default: 400
+    },
+    height: {
+      type: Number,
+      default: 400
+    },
+    cssClasses: {
+      default: '',
+      type: String
+    },
+    styles: {
+      type: Object,
+      default: () => {}
+    },
+    plugins: {
+      type: Object,
+      default: () => {}
+    }
+  },
   name: "MapApp",
   data() {
     return {
-
+    chartData: {
+        labels: [ 'January', 'February', 'March' ],
+        datasets: [ { data: [40, 20, 12] } ]
+      },
+      chartOptions: {
+        responsive: true
+      },
         map:{
             app : {
                 search : {
@@ -122,10 +175,10 @@ export default {
   },
   created() {
     // this.getHouseInfos("1111010100"),
-    // this.getHouseDeals("45")
+    this.getHouseDeals("45")
     // this.getInfra(this.categoryGroupCodes[0]["Name"])
     // this.getAllInfra()
-    this.calcInfraScore(this.pos)
+    // this.calcInfraScore(this.pos)
   },
   methods: {
     displayChart(){
