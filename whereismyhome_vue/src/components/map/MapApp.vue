@@ -21,7 +21,7 @@
       <button @click="displayMarker(markerPositions2)">marker set 2</button>
       <button @click="displayMarker([])">marker set 3 (empty)</button>
       <button @click="displayInfoWindow">infowindow</button>
-      <button @click="displayInfra">infra</button>
+      <button @click="displayChart">chart</button>
     </div>
   </div>
 </template>
@@ -102,6 +102,7 @@ export default {
         { Name: "PM9", Description: "약국" },
     ],
       infra: {},
+      chart:false, // 차트는 자식 컴포넌트에서 사용
     //   headers:{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}
     };
   },
@@ -123,25 +124,49 @@ export default {
     // this.getHouseInfos("1111010100"),
     // this.getHouseDeals("45")
     // this.getInfra(this.categoryGroupCodes[0]["Name"])
-    this.getAllInfra()
+    // this.getAllInfra()
+    this.calcInfraScore(this.pos)
   },
   methods: {
-    getAllInfra(){
+    displayChart(){
+        this.chart = true
+    },
+    async calcInfraScore(pos){
+        // 인프라 가져오기
+        await this.getAllInfra()
+
+        let score = 0
+
         for (let i=0;i<this.categoryGroupCodes.length;i++) {
             let code = this.categoryGroupCodes[i]["Name"]
-            this.getInfra(code)
-            console.log(this.infra)
+            // 0~1000m, 0m에 가까울수록 고득점
+            // console.log(this.infra[code][0])
+            if(this.infra[code].length != 0){
+                score += 1000 - this.infra[code][0].distance
+            }
+            // console.log(this.infra)
         }
+        // await 때문에 조금 느림
+        console.log(score)
     },
-    getInfra(code){
+    async getAllInfra(){
+        for (let i=0;i<this.categoryGroupCodes.length;i++) {
+            let code = this.categoryGroupCodes[i]["Name"]
+            await this.getInfra(code)
+        }
+        
+        //  console.log(this.infra)
+    },
+    async getInfra(code){
         // console.log(code)
-        axios
-        .get(`https://dapi.kakao.com/v2/local/search/category.json?x=${this.pos[0]}&y=${this.pos[1]}&radius=1000&category_group_code=${code}&sort=distance`,
+        await axios
+        .get(`https://dapi.kakao.com/v2/local/search/category.json?x=${this.pos[1]}&y=${this.pos[0]}&radius=1000&category_group_code=${code}&sort=distance`,
         {"headers":{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}})
         .then(({data}) => {
             // this.map.app.result.housedeals = data
-            this.infra[code] = data
-            console.log(this.infra)
+            this.infra[code] = data.documents
+            // console.log(this.infra[code])
+            
         });
     },
     getHouseInfos(dongcode){
