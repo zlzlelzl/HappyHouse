@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Bar
+    <!-- <v-container v-if="isChart"> -->
+    <div style="width:500px">
+    <LineChart
         :chart-options="chartOptions"
         :chart-data="chartData"
         :chart-id="chartId"
@@ -11,6 +13,23 @@
         :width="width"
         :height="height"
     />
+    </div>
+    <div>
+    <RadarChart
+        :chart-options="chartOptions"
+        :chart-data="chartData"
+        :chart-id="chartId"
+        :dataset-id-key="datasetIdKey"
+        :plugins="plugins"
+        :css-classes="cssClasses"
+        :styles="styles"
+        :width="width"
+        :height="height"
+    />
+  </div>
+    <!-- </v-container> -->
+  
+    
 
     <div id="map" class="pa-5" style="width: 100%; height: 800px">
       <v-card
@@ -48,18 +67,39 @@ import axios from "axios";
 
 const http = apiInstance();
 
-import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import { Line as LineChart, Radar as RadarChart } from 'vue-chartjs'
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  RadialLinearScale
+} from 'chart.js'
+
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  RadialLinearScale,
+)
 
 
 export default {
-  components: { AppResult, AppSearch, Bar },
+    name: "MapApp",
+  components: { AppResult, AppSearch, LineChart, RadarChart},
   props:{
-chartId: {
+    chartId: {
       type: String,
-      default: 'bar-chart'
+      default: 'line-chart'
     },
     datasetIdKey: {
       type: String,
@@ -67,11 +107,11 @@ chartId: {
     },
     width: {
       type: Number,
-      default: 400
+      default: 500
     },
     height: {
       type: Number,
-      default: 400
+      default: 500
     },
     cssClasses: {
       default: '',
@@ -82,19 +122,65 @@ chartId: {
       default: () => {}
     },
     plugins: {
-      type: Object,
-      default: () => {}
+      type: Array,
+      default: () => []
     }
   },
-  name: "MapApp",
+  
   data() {
     return {
     chartData: {
-        labels: [ 'January', 'February', 'March' ],
-        datasets: [ { data: [40, 20, 12] } ]
+        labels :[
+            1432220400000,
+            1443625200000,
+            1474038000000,
+            1471618800000,
+            1463756400000,
+            1486911600000,
+            1511622000000,
+            1536591600000,
+            1556895600000,
+            1572015600000,
+            1594825200000,
+            1601218800000,
+            1633618800000,
+            1632754800000],
+        datasets: [
+          {
+            xAxisID: 'x',
+            label: 'Data One',
+            backgroundColor: '#f87979',
+            
+
+        data :[
+        33000,
+        37400,
+        39800,
+        38400,
+        38400,
+        38000,
+        44000,
+        54500,
+        53000,
+        53800,
+        62000,
+        68250,
+        83000,
+        83500],
+    fill:false,
+    
+          }
+        ]
       },
+      
       chartOptions: {
-        responsive: true
+        responsive: true,
+        position: "relative",
+        scales: {
+            x: {
+                type: 'linear'
+            }
+        }
       },
         map:{
             app : {
@@ -155,7 +241,9 @@ chartId: {
         { Name: "PM9", Description: "약국" },
     ],
       infra: {},
-      chart:false, // 차트는 자식 컴포넌트에서 사용
+      areaMap: {},
+      areaOrder: {},
+      isChart:false, // 차트는 자식 컴포넌트에서 사용
     //   headers:{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}
     };
   },
@@ -175,14 +263,16 @@ chartId: {
   },
   created() {
     // this.getHouseInfos("1111010100"),
-    this.getHouseDeals("45")
+    // this.getHouseDeals("45")
+    // this.setChartData("45")
+    this.setChart("45")
     // this.getInfra(this.categoryGroupCodes[0]["Name"])
     // this.getAllInfra()
     // this.calcInfraScore(this.pos)
   },
   methods: {
     displayChart(){
-        this.chart = true
+        this.isChart = true
     },
     async calcInfraScore(pos){
         // 인프라 가져오기
@@ -228,11 +318,42 @@ chartId: {
             console.log(data)
         });
     },
-    getHouseDeals(aptCode){
-        http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
+    async getHouseDeals(aptCode){
+        await http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
             this.map.app.result.housedeals = data
-            console.log(data)
+            // console.log(data)
         });
+    },
+    async setChart(aptCode){
+        await this.setChartData(aptCode)
+        console.log(this.areaMap, this.areaOrder)
+    },
+    async setChartData(aptCode){
+        await this.getHouseDeals(aptCode)
+
+        this.areaMap = {}
+        this.areaOrder = []
+        let deals = this.map.app.result.housedeals
+        for(let i=0;i<deals.length;i++){
+            if(!this.areaMap[deals[i]["area"]]){
+                this.areaMap[deals[i]["area"]] = []
+                this.areaOrder.push(deals[i]["area"])
+            }
+            this.areaMap[deals[i]["area"]].push({x:new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), y:deals[i].dealAmount})
+        }
+        this.areaOrder.sort()
+        // console.log(this.areaMap)
+        for(let i=0;i<this.areaOrder.length;i++){
+            this.areaMap[this.areaOrder[i]].sort((a,b)=>a.x-b.x)
+        }
+        // console.log(this.areaMap)
+            
+
+        // for(let i=0;i<deals.length;i++){
+        //     if(deals[i].area=="59.98")
+        //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
+        // }
+        
     },
     initMap() {
       const container = document.getElementById("map");
