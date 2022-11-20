@@ -1,19 +1,36 @@
 <template>
   <div>
-    <div id="map" class="pa-5" style="width: 100%; height: 800px">
+    <div id="map" class="pa-5" style="width: 100%; height: 100%">
       <v-card
         elevation="15"
         width="30%"
         height="100%"
-        style='z-index:2; opacity: 0.8;'
+        style="z-index: 2; opacity: 0.8"
       >
         <!-- seacrh -->
         <app-search></app-search>
         <!-- result -->
-        <app-result></app-result>
+        <app-result :map="map"></app-result>
       </v-card>
     </div>
-
+    <div>
+      <v-card>
+        <v-list>
+          <v-list-item-group color="primary">
+            <v-list-item
+              v-for="(item, i) in items"
+              :key="i"
+              ref="list"
+              @click="changeMarker(item.type),test=2"
+            >
+              <v-list-item-icon>
+                <v-icon v-text="item.icon"></v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-card>
+    </div>
     <div class="button-group">
       <button @click="changeSize(0)">Hide</button>
       <button @click="changeSize(1200)">show</button>
@@ -26,130 +43,157 @@
 </template>
 
 <script>
-import AppResult from './AppResult.vue';
-import AppSearch from './AppSearch.vue';
-
-
+/* global kakao */
+import AppResult from "./AppResult.vue";
+import AppSearch from "./AppSearch.vue";
 import { apiInstance } from "@/api/http-common";
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 
+const mapStore = "mapStore";
 const http = apiInstance();
 
 export default {
+  namespaced: true,
   components: { AppResult, AppSearch },
   name: "MapApp",
   data() {
     return {
-
-        map:{
-            app : {
-                search : {
-                    // 서치리스트에서 클릭할 경우 typename을 기반으로 확대 레벨별 클러스터링 또는 houseinfo 검색
-                    types : {}
-                },
-                result : {
-                    // 전체 데이터
-                    // dongcodes:[],
-                    dongcode:{},
-                    // 타입이 houseinfo 검색일 경우 houseinfo 데이터가 들어감
-                    houseinfos:[],
-                    // houseinfo 기준 거래내역
-                    housedeals:[]
-                }
-            },
-            infra : {}
-        },
-
-      markerPositions1: [
-        [33.452278, 126.567803],
-        [33.452671, 126.574792],
-        [33.451744, 126.572441],
+      test:"1",
+      map: {},
+      coffeeMarkers: [],
+      storeMarkers: [],
+      carparkMarkers: [],
+      coffeePositions: [],
+      storePositions: [],
+      carparkPositions: [],
+      items: [
+        { icon: "mdi-clock", type: "coffee", name: "커피숍" },
+        { icon: "mdi-account", type: "store", name: "편의점" },
+        { icon: "mdi-flag", type: "carpark", name: "주차장" },
       ],
-      markerPositions2: [
-        [37.499590490909185, 127.0263723554437],
-        [37.499427948430814, 127.02794423197847],
-        [37.498553760499505, 127.02882598822454],
-        [37.497625593121384, 127.02935713582038],
-        [37.49629291770947, 127.02587362608637],
-        [37.49754540521486, 127.02546694890695],
-        [37.49646391248451, 127.02675574250912],
-      ],
-      markers: [],
-      infowindow: null,
     };
   },
   mounted() {
-    if (window.kakao && window.kakao.maps) {
-      this.initMap();
-      this.setMarker();
-    } else {
-      const script = document.createElement("script");
-      /* global kakao */
-      script.onload = () => kakao.maps.load(this.initMap);
-      script.src =
-        "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=915cffed372954b7b44804ed422b9cf0";
-      document.head.appendChild(script);
-      this.setMarker();
-    }
+    this.init();
+    // this.initMap();
+    // this.setSeoulMarker();
+  },
+  updated() {
+    this.createCoffeeMarkers(); // 커피숍 마커를 생성하고 커피숍 마커 배열에 추가합니다
+    this.createStoreMarkers(); // 편의점 마커를 생성하고 편의점 마커 배열에 추가합니다
+    this.createCarparkMarkers(); // 주차장 마커를 생성하고 주차장 마커 배열에 추가합니다
+
+    this.changeMarker("store");
   },
   created() {
     // this.getHouseInfos("1111010100"),
-    this.getHouseDeals("45")
+    // this.getHouseDeals("45");
+  },
+  computed: {
+    ...mapState(mapStore, [
+      "house",
+      "houses",
+      "markers",
+      "infowindow",
+      "clusterer",
+      "isUse",
+    ]),
+    ...mapGetters(mapStore, ["getMarkers", "getClusterer"]),
   },
   methods: {
-    getHouseInfos(dongcode){
-        http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
-            this.map.app.result.houseinfos = data
-            console.log(data)
-        });
+    ...mapActions(mapStore, ["detailHouse", "getHouseList", "searchByType"]),
+    ...mapMutations(mapStore, [
+      "SET_HOUSE_LIST",
+      "CLEAR_APT_LIST",
+      "SET_DETAIL_HOUSE",
+      "CLEAR_DETAIL_APT",
+      "CLEAR_IS_USE",
+      "SET_IS_USE",
+      "SET_MARKERS",
+      "SET_INFO_WINDOW",
+      "CLEAR_MARKERS",
+      "CLEAR_INFO_WINDOW",
+      "SET_CLUSTERER",
+    ]),
+    init() {
+      if (window.kakao && window.kakao.maps) {
+        this.initMap();
+      } else {
+        const script = document.createElement("script");
+        script.onload = () => kakao.maps.load(this.initMap);
+        script.async = true;
+        script.src =
+          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9549d558e1a1a37bc6398c7bedc83d2c&libraries=services,clusterer";
+        document.head.appendChild(script);
+      }
     },
-    getHouseDeals(aptCode){
-        http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
-            this.map.app.result.housedeals = data
-            console.log(data)
-        });
-    },
+    // getHouseInfos(dongcode) {
+    //   http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
+    //     // this.map.app.result.houseinfos = data;
+    //     console.log(data);
+    //   });
+    // },
+    // getHouseDeals(aptCode) {
+    //   http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
+    //     // this.map.app.result.housedeals = data;
+    //     console.log(data);
+    //   });
+    // },
     initMap() {
       const container = document.getElementById("map");
       const options = {
-        center: new kakao.maps.LatLng(33.450701, 126.570667),
+        center: new kakao.maps.LatLng(37.5642135, 127.0016985),
         level: 5,
       };
 
       //지도 객체를 등록합니다.
       //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
       this.map = new kakao.maps.Map(container, options);
+      console.log("initmpa");
+      console.log(this.map);
+      var clusterer = new kakao.maps.MarkerClusterer({
+        map: this.map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
+        averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+        minLevel: 5, // 클러스터 할 최소 지도 레벨
+      });
+      this.SET_CLUSTERER(clusterer);
     },
     changeSize(size) {
       const container = document.getElementById("map");
       container.style.height = `800px`;
       this.map.relayout();
     },
-    displayMarker(markerPositions) {
-      if (this.markers.length > 0) {
-        this.markers.forEach((marker) => marker.setMap(null));
+    displayMarker(data) {
+      //마커 초기화
+      let markers = this.getMarkers;
+      if (markers.length > 0) {
+        markers.forEach((marker) => marker.setMap(null));
       }
-
-      const positions = markerPositions.map(
-        (position) => new kakao.maps.LatLng(...position)
+      const positions = data.map(
+        (position) => new kakao.maps.LatLng(position.lat, position.lng)
       );
 
       if (positions.length > 0) {
-        this.markers = positions.map(
+        markers = positions.map(
           (position) =>
             new kakao.maps.Marker({
               map: this.map,
               position,
             })
         );
-
-        const bounds = positions.reduce(
-          (bounds, latlng) => bounds.extend(latlng),
-          new kakao.maps.LatLngBounds()
-        );
-
-        this.map.setBounds(bounds);
+        // const bounds = positions.reduce(
+        //   (bounds, latlng) => bounds.extend(latlng),
+        //   new kakao.maps.LatLngBounds()
+        // );
+        // this.map.setBounds(bounds);
+        console.log(this.getClusterer);
+        let clusterer = this.getClusterer;
+        clusterer.addMarkers(markers);
+        this.SET_CLUSTERER(clusterer);
+        this.SET_MARKERS(markers);
       }
     },
+
     displayInfoWindow() {
       if (this.infowindow && this.infowindow.getMap()) {
         //이미 생성한 인포윈도우가 있기 때문에 지도 중심좌표를 인포윈도우 좌표로 이동시킨다.
@@ -161,62 +205,277 @@ export default {
         iwPosition = new kakao.maps.LatLng(33.450701, 126.570667), //인포윈도우 표시 위치입니다
         iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
 
-      this.infowindow = new kakao.maps.InfoWindow({
-        map: this.map, // 인포윈도우가 표시될 지도
-        position: iwPosition,
-        content: iwContent,
-        removable: iwRemoveable,
-      });
+      // this.infowindow = new kakao.maps.InfoWindow({
+      //   map: this.map, // 인포윈도우가 표시될 지도
+      //   position: iwPosition,
+      //   content: iwContent,
+      //   removable: iwRemoveable,
+      // });
 
       this.map.setCenter(iwPosition);
     },
-    //   setMarker() {
-    //     // 지도에 마커를 표시합니다
-    //     var marker = new kakao.maps.Marker({
-    //       map: map,
-    //       position: new kakao.maps.LatLng(33.450701, 126.570667),
-    //     });
 
-    //     // 커스텀 오버레이에 표시할 컨텐츠 입니다
-    //     // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
-    //     // 별도의 이벤트 메소드를 제공하지 않습니다
-    //     var content =
-    //       '<div class="wrap">' +
-    //       '    <div class="info">' +
-    //       '        <div class="title">' +
-    //       "            카카오 스페이스닷원" +
-    //       '            <div class="close" onclick="closeOverlay()" title="닫기"></div>' +
-    //       "        </div>" +
-    //       '        <div class="body">' +
-    //       '            <div class="img">' +
-    //       '                <img src="https://cfile181.uf.daum.net/image/250649365602043421936D" width="73" height="70">' +
-    //       "           </div>" +
-    //       '            <div class="desc">' +
-    //       '                <div class="ellipsis">제주특별자치도 제주시 첨단로 242</div>' +
-    //       '                <div class="jibun ellipsis">(우) 63309 (지번) 영평동 2181</div>' +
-    //       '                <div><a href="https://www.kakaocorp.com/main" target="_blank" class="link">홈페이지</a></div>' +
-    //       "            </div>" +
-    //       "        </div>" +
-    //       "    </div>" +
-    //       "</div>";
+    setCluster() {},
+    setMarker() {
+      // 지도에 마커를 표시합니다
+      //   var marker = new window.kakao.maps.Marker({
+      //     map: this.map,
+      //     position: new window.kakao.maps.LatLng(33.450701, 126.570667),
+      //   });
+      //   // 커스텀 오버레이에 표시할 컨텐츠 입니다
+      //   // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
+      //   // 별도의 이벤트 메소드를 제공하지 않습니다
+      //   var content =
+      //     '<div class="wrap">' +
+      //     '    <div class="info">' +
+      //     '        <div class="title">' +
+      //     "            카카오 스페이스닷원" +
+      //     '            <div class="close" onclick="closeOverlay()" title="닫기"></div>' +
+      //     "        </div>" +
+      //     '        <div class="body">' +
+      //     '            <div class="img">' +
+      //     '                <img src="https://cfile181.uf.daum.net/image/250649365602043421936D" width="73" height="70">' +
+      //     "           </div>" +
+      //     '            <div class="desc">' +
+      //     '                <div class="ellipsis">제주특별자치도 제주시 첨단로 242</div>' +
+      //     '                <div class="jibun ellipsis">(우) 63309 (지번) 영평동 2181</div>' +
+      //     '                <div><a href="https://www.kakaocorp.com/main" target="_blank" class="link">홈페이지</a></div>' +
+      //     "            </div>" +
+      //     "        </div>" +
+      //     "    </div>" +
+      //     "</div>";
+      //   // 마커 위에 커스텀오버레이를 표시합니다
+      //   // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
+      //   var overlay = new kakao.maps.CustomOverlay({
+      //     content: content,
+      //     map: map,
+      //     position: marker.getPosition(),
+      //   });
+      //   // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
+      //   kakao.maps.event.addListener(marker, "click", function () {
+      //     overlay.setMap(map);
+      //   });
+      // },
+      // // 커스텀 오버레이를 닫기 위해 호출되는 함수입니다
+      // closeOverlay() {
+      //   overlay.setMap(null);
+    },
+    changeList(datas) {
+      let lists = [];
+      datas.forEach((data) => {
+        //console.log(data);
+        let d1 = data.roadName;
+        let d2 = data.roadNumber;
+        lists.push(d1 + " " + d2);
+        console.log(d1 + " " + d2);
+      });
+      return lists;
+    },
+    changeLatLng(lists) {
+      let geocoder = new kakao.maps.services.Geocoder();
+      let retList = [];
+      lists.forEach((data) => {
+        geocoder.addressSearch(data, function (result, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === kakao.maps.services.Status.OK) {
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+            let info = {
+              lat: result[0].y,
+              lng: result[0].x,
+            };
+            retList.push(info);
+          }
+        });
+      });
+      console.log(retList);
+      return retList;
+    },
+    setSeoulMarker() {
+      http
+        .get(`/map/apt/type?name=서울특별시&type=시`)
+        .then((response) => {
+          console.log(response);
+          this.SET_MARKERS(this.displayMarker(response.data));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    changeMarker(type) {
+      var coffeeMenu = this.$refs.list[0];
+      var storeMenu = this.$refs.list[1];
+      var carparkMenu = this.$refs.list[2];
 
-    //     // 마커 위에 커스텀오버레이를 표시합니다
-    //     // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
-    //     var overlay = new kakao.maps.CustomOverlay({
-    //       content: content,
-    //       map: map,
-    //       position: marker.getPosition(),
-    //     });
+      // 커피숍 카테고리가 클릭됐을 때
+      if (type === "coffee") {
+        // 커피숍 카테고리를 선택된 스타일로 변경하고
+        // coffeeMenu.className = "menu_selected";
+        // // 편의점과 주차장 카테고리는 선택되지 않은 스타일로 바꿉니다
+        // storeMenu.className = "";
+        // carparkMenu.className = "";
+        // // 커피숍 마커들만 지도에 표시하도록 설정합니다
+        this.setCoffeeMarkers(this.map);
+        this.setStoreMarkers(null);
+        this.setCarparkMarkers(null);
+      } else if (type === "store") {
+        this.setCoffeeMarkers(null);
+        this.setStoreMarkers(this.map);
+        this.setCarparkMarkers(null);
+      } else if (type === "carpark") {
+        this.setCoffeeMarkers(null);
+        this.setStoreMarkers(null);
+        this.setCarparkMarkers(this.map);
+      }
+    },
+    // changeMarker2(type,idx) {
+    //   for(let i=0;i<this.infra.length;++i){
+    //     if(i==idx){
+    //       this.setMarkers(this.map,idx);
+    //     }else{
+    //       this.setMarkers(null,idx);
+    //     }
+    //   }
+    // },
+    // setMarkers(map,idx){
+    //   for(let i=0;i<this.infraMarker[idx].length;++i){
+    //     this.infraMarker[idx][i].setMap(map);
+    //   }
+    // },
+    createAllMarker(idx,position, image) {
+      infra.forEach((data,idx1)=>{
+        data.forEach((data2,idx2)=>{
+          let imageSize = new kakao.maps.Size(22, 26),
+          imageOptions = {
+            spriteOrigin: new kakao.maps.Point(10, 72),
+            spriteSize: new kakao.maps.Size(36, 98),
+          };
+          // 마커이미지와 마커를 생성합니다
+          var markerImage = this.createMarkerImage(
+              this.items[idx2].icon,
+              imageSize,
+              imageOptions
+            ),
+            marker = this.createMarker(this.infra[idx][j], markerImage);
 
-    //     // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
-    //     kakao.maps.event.addListener(marker, "click", function () {
-    //       overlay.setMap(map);
-    //     });
-    //   },
-    //   // 커스텀 오버레이를 닫기 위해 호출되는 함수입니다
-    //   closeOverlay() {
-    //     overlay.setMap(null);
-    //   },
+          // 생성된 마커를 주차장 마커 배열에 추가합니다
+          this.infraMarker[i].push(marker);
+        })
+      });
+    },
+    setCarparkMarkers(map) {
+      for (var i = 0; i < this.carparkMarkers.length; i++) {
+        this.carparkMarkers[i].setMap(map);
+      }
+    },
+    createCarparkMarkers() {
+      var carparkPositions = [
+        new kakao.maps.LatLng(37.49966168796031, 127.03007039430118),
+        new kakao.maps.LatLng(37.499463762912974, 127.0288828824399),
+        new kakao.maps.LatLng(37.49896834100913, 127.02833986892401),
+        new kakao.maps.LatLng(37.49893267508434, 127.02673400572665),
+        new kakao.maps.LatLng(37.49872543597439, 127.02676785815386),
+        new kakao.maps.LatLng(37.49813096097184, 127.02591949495914),
+        new kakao.maps.LatLng(37.497680616783086, 127.02518427952202),
+      ];
+      for (var i = 0; i < carparkPositions.length; i++) {
+        var imageSize = new kakao.maps.Size(22, 26),
+          imageOptions = {
+            spriteOrigin: new kakao.maps.Point(10, 72),
+            spriteSize: new kakao.maps.Size(36, 98),
+          };
+
+        // 마커이미지와 마커를 생성합니다
+        var markerImage = this.createMarkerImage(
+            this.items[2].icon,
+            imageSize,
+            imageOptions
+          ),
+          marker = this.createMarker(carparkPositions[i], markerImage);
+
+        // 생성된 마커를 주차장 마커 배열에 추가합니다
+        this.carparkMarkers.push(marker);
+      }
+    },
+    setStoreMarkers(map) {
+      for (var i = 0; i < this.storeMarkers.length; i++) {
+        this.storeMarkers[i].setMap(map);
+      }
+    },
+    createStoreMarkers() {
+      var storePositions = [
+        new kakao.maps.LatLng(37.497535461505684, 127.02948149502778),
+        new kakao.maps.LatLng(37.49671536281186, 127.03020491448352),
+        new kakao.maps.LatLng(37.496201943633714, 127.02959405469642),
+        new kakao.maps.LatLng(37.49640072567703, 127.02726459882308),
+        new kakao.maps.LatLng(37.49640098874988, 127.02609983175294),
+        new kakao.maps.LatLng(37.49932849491523, 127.02935780247945),
+        new kakao.maps.LatLng(37.49996818951873, 127.02943721562295),
+      ];
+      for (var i = 0; i < storePositions.length; i++) {
+        var imageSize = new kakao.maps.Size(22, 26),
+          imageOptions = {
+            spriteOrigin: new kakao.maps.Point(10, 36),
+            spriteSize: new kakao.maps.Size(36, 98),
+          };
+
+        // 마커이미지와 마커를 생성합니다
+        var markerImage = this.createMarkerImage(
+            this.items[1].icon,
+            imageSize,
+            imageOptions
+          ),
+          marker = this.createMarker(storePositions[i], markerImage);
+
+        // 생성된 마커를 편의점 마커 배열에 추가합니다
+        this.storeMarkers.push(marker);
+      }
+    },
+    setCoffeeMarkers(map) {
+      for (var i = 0; i < this.coffeeMarkers.length; i++) {
+        this.coffeeMarkers[i].setMap(map);
+      }
+    },
+    createCoffeeMarkers() {
+      var coffeePositions = [
+        new kakao.maps.LatLng(37.499590490909185, 127.0263723554437),
+        new kakao.maps.LatLng(37.499427948430814, 127.02794423197847),
+        new kakao.maps.LatLng(37.498553760499505, 127.02882598822454),
+        new kakao.maps.LatLng(37.497625593121384, 127.02935713582038),
+        new kakao.maps.LatLng(37.49646391248451, 127.02675574250912),
+        new kakao.maps.LatLng(37.49629291770947, 127.02587362608637),
+        new kakao.maps.LatLng(37.49754540521486, 127.02546694890695),
+      ];
+      for (var i = 0; i < coffeePositions.length; i++) {
+        var imageSize = new kakao.maps.Size(22, 26),
+          imageOptions = {
+            spriteOrigin: new kakao.maps.Point(10, 0),
+            spriteSize: new kakao.maps.Size(36, 98),
+          };
+
+        // 마커이미지와 마커를 생성합니다
+        var markerImage = this.createMarkerImage(
+            this.items[0].icon,
+            imageSize,
+            imageOptions
+          ),
+          marker = this.createMarker(coffeePositions[i], markerImage);
+
+        // 생성된 마커를 커피숍 마커 배열에 추가합니다
+        this.coffeeMarkers.push(marker);
+      }
+    },
+    createMarker(position, image) {
+      var marker = new kakao.maps.Marker({
+        position: position,
+        image: image,
+      });
+
+      return marker;
+    },
+    createMarkerImage(src, size, options) {
+      var markerImage = new kakao.maps.MarkerImage('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/category.png', size, options);
+      return markerImage;
+    },
   },
 };
 </script>
