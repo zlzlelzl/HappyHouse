@@ -42,4 +42,9 @@ public class HouseMapServiceImpl implements HouseMapService {
         return sqlSession.getMapper(HouseMapMapper.class).getAptDeal(aptCode);
     }
 
+	@Override
+	public List<HouseDealDto> getSearchList(String inputMsg) throws Exception {
+		return sqlSession.getMapper(HouseMapMapper.class).getSearchList(inputMsg);
+	}
+
 }

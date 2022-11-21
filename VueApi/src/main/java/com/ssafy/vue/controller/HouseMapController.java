@@ -115,5 +115,8 @@ public class HouseMapController {
     public ResponseEntity<List<HouseDealDto>> deal(@RequestParam("aptCode") String aptCode) throws Exception {
         return new ResponseEntity<List<HouseDealDto>>(haHouseMapService.getAptDeal(aptCode), HttpStatus.OK);
     }
-
+    @GetMapping("/searchlist")
+    public ResponseEntity<List<HouseDealDto>> search(@RequestParam("inputmsg") String inputMsg) throws Exception {
+        return new ResponseEntity<List<HouseDealDto>>(haHouseMapService.getSearchList(inputMsg), HttpStatus.OK);
+    }
 }
