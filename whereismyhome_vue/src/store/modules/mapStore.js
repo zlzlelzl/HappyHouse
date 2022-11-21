@@ -5,7 +5,7 @@ const http = apiInstance();
 const mapStore = {
   namespaced: true,
   state: {
-    map: {
+    mapdata: {
       app: {
         search: {
           // 서치리스트에서 클릭할 경우 typename을 기반으로 확대 레벨별 클러스터링 또는 houseinfo 검색
@@ -17,11 +17,23 @@ const mapStore = {
           dongcode: {},
           // 타입이 houseinfo 검색일 경우 houseinfo 데이터가 들어감
           houseinfos: [],
-          // houseinfo 기준 거래내역
-          housedeals: [],
+
+          detail: {
+            //detail의 houseinfo
+            houseinfo: {},
+
+            // houseinfo 기준 거래내역
+            housedeals: [],
+
+            isUse: false,
+          },
         },
+        markers: [],
+        clusterer: {},
       },
-      infra: {},
+      infra: {
+        markers: [],
+      },
     },
     houses: [],
     house: null,
@@ -33,32 +45,38 @@ const mapStore = {
     infraMarkers: [],
   },
   getters: {
-    getMap(state) {
-      return state.map;
+    getMapData(state) {
+      return state.mapdata;
     },
     getMarkers(state) {
-      return state.markers;
+      return state.mapdata.app.markers;
     },
     getClusterer(state) {
-      return state.clusterer;
+      return state.mapdata.app.clusterer;
     },
   },
   mutations: {
     CLEAR_APT_LIST(state) {
-      state.houses = [];
-      state.house = null;
-      state.isUse = false;
+      state.mapdata.app.result.houseinfos = [];
+      state.mapdata.app.result.detail.housedeals = null;
+      state.mapdata.app.result.detail.isUse = false;
     },
     CLEAR_DETAIL_APT(state) {
-      state.house = null;
-      state.isUse = false;
+      state.mapdata.app.result.detail.houseinfo = null;
+      state.mapdata.app.result.detail.housedeals = null;
+      state.mapdata.app.result.detail.isUse = false;
+      // state.house = null;
+      // state.isUse = false;
     },
     SET_HOUSE_LIST(state, houses) {
       state.houses = houses;
     },
-    SET_DETAIL_HOUSE(state, house) {
-      state.house = house;
-      state.isUse = true;
+    SET_HOUSE_DEAL(state, house) {
+      state.mapdata.app.result.detail.housedeals = house;
+      state.mapdata.app.result.detail.isUse = true;
+    },
+    SET_DEATAIL_HOUSE(state, house) {
+      state.mapdata.app.result.detail.houseinfo = house;
     },
     CLEAR_IS_USE(state) {
       state.isUse = false;
@@ -67,7 +85,7 @@ const mapStore = {
       state.isUse = bool;
     },
     SET_MARKERS(state, markers) {
-      state.markers = markers;
+      state.mapdata.app.markers = markers;
     },
     SET_INFO_WINDOW(state, infowindow) {
       state.infowindow = infowindow;
@@ -79,10 +97,10 @@ const mapStore = {
       state.infowindow = null;
     },
     SET_CLUSTERER(state, clusterer) {
-      state.clusterer = clusterer;
+      state.mapdata.app.clusterer = clusterer;
     },
-    SET_MAP(state, map) {
-      state.map = map;
+    SET_MAP_DATA(state, mapdata) {
+      state.mapdata = mapdata;
     },
   },
   actions: {
@@ -92,8 +110,10 @@ const mapStore = {
         .get(`/map/apt/type?name=${data.name}&type=${data.type}`)
         .then((response) => {
           console.log("s");
-          commit("SET_HOUSE_LIST", response.data);
-          commit("SET_IS_USE", false);
+          state.mapdata.app.result.houseinfos = response.data;
+          state.mapdata.app.result.detail.isUse = false;
+          // commit("SET_HOUSE_LIST", response.data);
+          // commit("SET_IS_USE", false);
           console.log(state.houses);
         })
         .catch((error) => {
@@ -101,7 +121,7 @@ const mapStore = {
           console.log(error);
         });
     },
-    getHouseList: ({ commit }, gugunCode) => {
+    getHouseList: ({ commit, state }, gugunCode) => {
       const params = {
         LAWD_CD: gugunCode,
         DEAL_YMD: "202207",
@@ -110,16 +130,18 @@ const mapStore = {
       houseList(
         params,
         ({ data }) => {
-          commit("SET_HOUSE_LIST", data.response.body.items.item);
+          state.mapdata.app.result.houseinfos = data.response.body.items.item;
+          // commit("SET_HOUSE_LIST", data.response.body.items.item);
         },
         (error) => {
           console.log(error);
         }
       );
     },
-    detailHouse: ({ commit }, house) => {
+    detailHouse: ({ commit, state }, house) => {
       // 나중에 house.일련번호를 이용하여 API 호출
-      commit("SET_DETAIL_HOUSE", house);
+      state.mapdata.app.result.detail.houseinfo = house;
+      // commit("SET_DETAIL_HOUSE", house);
     },
   },
 };

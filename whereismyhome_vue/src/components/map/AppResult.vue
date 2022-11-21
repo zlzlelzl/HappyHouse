@@ -7,12 +7,12 @@
 
     <v-list dense class="overflow-y-auto ma-3" height="98%">
       <v-subheader>아파트 검색 결과</v-subheader>
-      <v-list-item-group v-if="houses.length == 0">
+      <v-list-item-group v-if="mapdata.app.result.houseinfos.length == 0">
         <v-list-item>검색 결과가 없습닌다.</v-list-item>
       </v-list-item-group>
       <v-list-item-group v-else>
         <v-list-item
-          v-for="(house, i) in houses"
+          v-for="(house, i) in mapdata.app.result.houseinfos"
           :key="i"
           @click="setHouseDetailInfo(house)"
         >
@@ -56,32 +56,24 @@ export default {
   },
   watch: {},
   computed: {
-    ...mapState(mapStore, ["house", "houses", "isUse"]),
-    ...mapGetters(mapStore, ["getMap"]),
+    ...mapState(mapStore, ["mapdata"]),
+    ...mapGetters(mapStore, ["getMapData"]),
     isUseCheck() {
-      return this.isUse;
+      return this.mapdata.app.result.detail.isUse;
     },
   },
   methods: {
-    ...mapActions(mapStore, ["detailHouse", "getHouseList"]),
-    ...mapMutations(mapStore, [
-      "SET_HOUSE_LIST",
-      "CLEAR_APT_LIST",
-      "SET_DETAIL_HOUSE",
-      "CLEAR_DETAIL_APT",
-      "SET_MAP",
-    ]),
+    ...mapMutations(mapStore, ["CLEAR_APT_LIST", "SET_HOUSE_DEAL", "SET_DEATAIL_HOUSE"]),
     setHouseDetailInfo(house) {
       http
         .get(`/map/deal?aptCode=${house.aptCode}`)
         .then((response) => {
           console.log("setHouseDetailInfo - s " + response);
           console.log(response.data);
-          this.SET_DETAIL_HOUSE(response.data);
-          let map = this.getMap;
-          map.app.result.houseinfos = house;
-          console.log("map", map);
-          this.SET_MAP(map);
+          this.SET_HOUSE_DEAL(response.data);
+          this.SET_DEATAIL_HOUSE(house);
+          // let map = this.getMap;
+          // map.app.result.detail.houseinfo = house;
           this.moveMapLocation(house);
         })
         .catch((error) => {
