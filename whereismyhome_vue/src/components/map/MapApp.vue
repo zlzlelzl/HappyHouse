@@ -1,43 +1,7 @@
 <template>
   <div>
-    <!-- <v-container v-if="isChart"> -->
-    <div style="width:500px">
-    <LineChart
-        :chart-options="chartOptions"
-        :chart-data="chartData"
-        :chart-id="chartId"
-        :dataset-id-key="datasetIdKey"
-        :plugins="plugins"
-        :css-classes="cssClasses"
-        :styles="styles"
-        :width="width"
-        :height="height"
-    />
-    </div>
-    <div>
-    <RadarChart
-        :chart-options="chartOptions"
-        :chart-data="chartData"
-        :chart-id="chartId"
-        :dataset-id-key="datasetIdKey"
-        :plugins="plugins"
-        :css-classes="cssClasses"
-        :styles="styles"
-        :width="width"
-        :height="height"
-    />
-  </div>
-    <!-- </v-container> -->
-  
-    
-
     <div id="map" class="pa-5" style="width: 100%; height: 800px">
-      <v-card
-        elevation="15"
-        width="30%"
-        height="100%"
-        style="z-index: 2; opacity: 0.8"
-      >
+      <v-card elevation="15" width="30%" height="100%" style="z-index: 2; opacity: 0.8">
         <!-- seacrh -->
         <app-search></app-search>
         <!-- result -->
@@ -52,7 +16,7 @@
               v-for="(item, i) in items"
               :key="i"
               ref="list"
-              @click="changeMarker(item.type),test=2"
+              @click="changeMarker(item.type), (test = 2)"
             >
               <v-list-item-icon>
                 <v-icon v-text="item.icon"></v-icon>
@@ -80,194 +44,64 @@ import AppResult from "./AppResult.vue";
 import AppSearch from "./AppSearch.vue";
 import { apiInstance } from "@/api/http-common";
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
+import axios from "axios";
 
 const mapStore = "mapStore";
 const http = apiInstance();
 
-import { Line as LineChart, Radar as RadarChart } from 'vue-chartjs'
-
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  LinearScale,
-  CategoryScale,
-  PointElement,
-  RadialLinearScale
-} from 'chart.js'
-
-ChartJS.register(
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  LinearScale,
-  CategoryScale,
-  PointElement,
-  RadialLinearScale,
-)
-
-
 export default {
-    name: "MapApp",
-  components: { AppResult, AppSearch, LineChart, RadarChart},
-  props:{
-    chartId: {
-      type: String,
-      default: 'line-chart'
-    },
-    datasetIdKey: {
-      type: String,
-      default: 'label'
-    },
-    width: {
-      type: Number,
-      default: 500
-    },
-    height: {
-      type: Number,
-      default: 500
-    },
-    cssClasses: {
-      default: '',
-      type: String
-    },
-    styles: {
-      type: Object,
-      default: () => {}
-    },
-    plugins: {
-      type: Array,
-      default: () => []
-    }
-  },
-  
+  namespaced: true,
+  name: "MapApp",
+  components: { AppResult, AppSearch },
+  props: {},
+
   data() {
     return {
-    chartData: {
-        labels :[
-            1432220400000,
-            1443625200000,
-            1474038000000,
-            1471618800000,
-            1463756400000,
-            1486911600000,
-            1511622000000,
-            1536591600000,
-            1556895600000,
-            1572015600000,
-            1594825200000,
-            1601218800000,
-            1633618800000,
-            1632754800000],
-        datasets: [
-          {
-            xAxisID: 'x',
-            label: 'Data One',
-            backgroundColor: '#f87979',
-            
-
-        data :[
-        33000,
-        37400,
-        39800,
-        38400,
-        38400,
-        38000,
-        44000,
-        54500,
-        53000,
-        53800,
-        62000,
-        68250,
-        83000,
-        83500],
-    fill:false,
-    
-          }
-        ]
-      },
-      
-      chartOptions: {
-        responsive: true,
-        position: "relative",
-        scales: {
-            x: {
-                type: 'linear'
-            }
-        }
-      },
-        map:{
-            app : {
-                search : {
-                    // 서치리스트에서 클릭할 경우 typename을 기반으로 확대 레벨별 클러스터링 또는 houseinfo 검색
-                    types : {}
-                },
-                result : {
-                    // 전체 데이터
-                    // dongcodes:[],
-                    dongcode:{},
-                    // 타입이 houseinfo 검색일 경우 houseinfo 데이터가 들어감
-                    houseinfos:[],
-                    // houseinfo 기준 거래내역
-                    housedeals:[]
-                }
-            },
-            infra : {}
+      map: {
+        app: {
+          search: {
+            // 서치리스트에서 클릭할 경우 typename을 기반으로 확대 레벨별 클러스터링 또는 houseinfo 검색
+            types: {},
+          },
+          result: {
+            // 전체 데이터
+            // dongcodes:[],
+            dongcode: {},
+            // 타입이 houseinfo 검색일 경우 houseinfo 데이터가 들어감
+            houseinfos: [],
+            // houseinfo 기준 거래내역
+            housedeals: [],
+          },
         },
+        infra: {},
+      },
 
-      markerPositions1: [
-        [33.452278, 126.567803],
-        [33.452671, 126.574792],
-        [33.451744, 126.572441],
+      test: "1",
+      // map: {},
+      coffeeMarkers: [],
+      storeMarkers: [],
+      carparkMarkers: [],
+      coffeePositions: [],
+      storePositions: [],
+      carparkPositions: [],
+      items: [
+        { icon: "mdi-clock", type: "coffee", name: "커피숍" },
+        { icon: "mdi-account", type: "store", name: "편의점" },
+        { icon: "mdi-flag", type: "carpark", name: "주차장" },
       ],
-      markerPositions2: [
-        [37.499590490909185, 127.0263723554437],
-        [37.499427948430814, 127.02794423197847],
-        [37.498553760499505, 127.02882598822454],
-        [37.497625593121384, 127.02935713582038],
-        [37.49629291770947, 127.02587362608637],
-        [37.49754540521486, 127.02546694890695],
-        [37.49646391248451, 127.02675574250912],
-      ],
-      markers: [],
-      infowindow: null,
+      pos: [37.59535896822048, 126.94482118274179],
 
-         
-        pos : [37.59535896822048, 126.94482118274179],
-    categoryGroupCodes : [
-        { Name: "MT1", Description: "대형마트" },
-        { Name: "CS2", Description: "편의점" },
-        { Name: "PS3", Description: "어린이집, 유치원" },
-        { Name: "SC4", Description: "학교" },
-        { Name: "AC5", Description: "학원" },
-        { Name: "PK6", Description: "주차장" },
-        { Name: "OL7", Description: "주유소, 충전소" },
-        { Name: "SW8", Description: "지하철역" },
-        { Name: "BK9", Description: "은행" },
-        { Name: "CT1", Description: "문화시설" },
-        { Name: "AG2", Description: "중개업소" },
-        { Name: "PO3", Description: "공공기관" },
-        { Name: "AT4", Description: "관광명소" },
-        { Name: "AD5", Description: "숙박" },
-        { Name: "FD6", Description: "음식점" },
-        { Name: "CE7", Description: "카페" },
-        { Name: "HP8", Description: "병원" },
-        { Name: "PM9", Description: "약국" },
-    ],
       infra: {},
       areaMap: {},
       areaOrder: {},
-      isChart:false, // 차트는 자식 컴포넌트에서 사용
-    //   headers:{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}
+      isChart: false, // 차트는 자식 컴포넌트에서 사용
+      //   headers:{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}
     };
   },
   mounted() {
     this.init();
     // this.initMap();
-    // this.setSeoulMarker();
+    this.setSeoulMarker();
   },
   updated() {
     this.createCoffeeMarkers(); // 커피숍 마커를 생성하고 커피숍 마커 배열에 추가합니다
@@ -280,95 +114,134 @@ export default {
     // this.getHouseInfos("1111010100"),
     // this.getHouseDeals("45")
     // this.setChartData("45")
-    this.setChart("45")
+    this.setChart("45");
     // this.getInfra(this.categoryGroupCodes[0]["Name"])
     // this.getAllInfra()
     // this.calcInfraScore(this.pos)
   },
+  computed: {
+    ...mapState(mapStore, [
+      "house",
+      "houses",
+      "markers",
+      "infowindow",
+      "clusterer",
+      "isUse",
+    ]),
+    ...mapGetters(mapStore, ["getMarkers", "getClusterer"]),
+  },
   methods: {
-    displayChart(){
-        this.isChart = true
+    ...mapActions(mapStore, ["detailHouse", "getHouseList", "searchByType"]),
+    ...mapMutations(mapStore, [
+      "SET_HOUSE_LIST",
+      "CLEAR_APT_LIST",
+      "SET_DETAIL_HOUSE",
+      "CLEAR_DETAIL_APT",
+      "CLEAR_IS_USE",
+      "SET_IS_USE",
+      "SET_MARKERS",
+      "SET_INFO_WINDOW",
+      "CLEAR_MARKERS",
+      "CLEAR_INFO_WINDOW",
+      "SET_CLUSTERER",
+    ]),
+    init() {
+      if (window.kakao && window.kakao.maps) {
+        this.initMap();
+      } else {
+        const script = document.createElement("script");
+        script.onload = () => kakao.maps.load(this.initMap);
+        script.async = true;
+        script.src =
+          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9549d558e1a1a37bc6398c7bedc83d2c&libraries=services,clusterer";
+        document.head.appendChild(script);
+      }
     },
-    async calcInfraScore(pos){
-        // 인프라 가져오기
-        await this.getAllInfra()
+    displayChart() {
+      this.isChart = true;
+    },
+    async calcInfraScore(pos) {
+      // 인프라 가져오기
+      await this.getAllInfra();
 
-        let score = 0
+      let score = 0;
 
-        for (let i=0;i<this.categoryGroupCodes.length;i++) {
-            let code = this.categoryGroupCodes[i]["Name"]
-            // 0~1000m, 0m에 가까울수록 고득점
-            // console.log(this.infra[code][0])
-            if(this.infra[code].length != 0){
-                score += 1000 - this.infra[code][0].distance
-            }
-            // console.log(this.infra)
+      for (let i = 0; i < this.categoryGroupCodes.length; i++) {
+        let code = this.categoryGroupCodes[i]["Name"];
+        // 0~1000m, 0m에 가까울수록 고득점
+        // console.log(this.infra[code][0])
+        if (this.infra[code].length != 0) {
+          score += 1000 - this.infra[code][0].distance;
         }
-        // await 때문에 조금 느림
-        console.log(score)
+        // console.log(this.infra)
+      }
+      // await 때문에 조금 느림
+      console.log(score);
     },
-    async getAllInfra(){
-        for (let i=0;i<this.categoryGroupCodes.length;i++) {
-            let code = this.categoryGroupCodes[i]["Name"]
-            await this.getInfra(code)
-        }
-        
-        //  console.log(this.infra)
+    async getAllInfra() {
+      for (let i = 0; i < this.categoryGroupCodes.length; i++) {
+        let code = this.categoryGroupCodes[i]["Name"];
+        await this.getInfra(code);
+      }
+
+      //  console.log(this.infra)
     },
-    async getInfra(code){
-        // console.log(code)
-        await axios
-        .get(`https://dapi.kakao.com/v2/local/search/category.json?x=${this.pos[1]}&y=${this.pos[0]}&radius=1000&category_group_code=${code}&sort=distance`,
-        {"headers":{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}})
-        .then(({data}) => {
-            // this.map.app.result.housedeals = data
-            this.infra[code] = data.documents
-            // console.log(this.infra[code])
-            
+    async getInfra(code) {
+      // console.log(code)
+      await axios
+        .get(
+          `https://dapi.kakao.com/v2/local/search/category.json?x=${this.pos[1]}&y=${this.pos[0]}&radius=1000&category_group_code=${code}&sort=distance`,
+          { headers: { Authorization: "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f" } }
+        )
+        .then(({ data }) => {
+          // this.map.app.result.housedeals = data
+          this.infra[code] = data.documents;
+          // console.log(this.infra[code])
         });
     },
-    getHouseInfos(dongcode){
-        http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
-            this.map.app.result.houseinfos = data
-            console.log(data)
-        });
+    getHouseInfos(dongcode) {
+      http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
+        this.map.app.result.houseinfos = data;
+        console.log(data);
+      });
     },
-    async getHouseDeals(aptCode){
-        await http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
-            this.map.app.result.housedeals = data
-            // console.log(data)
-        });
+    async getHouseDeals(aptCode) {
+      await http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
+        this.map.app.result.housedeals = data;
+        // console.log(data)
+      });
     },
-    async setChart(aptCode){
-        await this.setChartData(aptCode)
-        console.log(this.areaMap, this.areaOrder)
+    async setChart(aptCode) {
+      await this.setChartData(aptCode);
+      console.log(this.areaMap, this.areaOrder);
     },
-    async setChartData(aptCode){
-        await this.getHouseDeals(aptCode)
+    async setChartData(aptCode) {
+      await this.getHouseDeals(aptCode);
 
-        this.areaMap = {}
-        this.areaOrder = []
-        let deals = this.map.app.result.housedeals
-        for(let i=0;i<deals.length;i++){
-            if(!this.areaMap[deals[i]["area"]]){
-                this.areaMap[deals[i]["area"]] = []
-                this.areaOrder.push(deals[i]["area"])
-            }
-            this.areaMap[deals[i]["area"]].push({x:new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), y:deals[i].dealAmount})
+      this.areaMap = {};
+      this.areaOrder = [];
+      let deals = this.map.app.result.housedeals;
+      for (let i = 0; i < deals.length; i++) {
+        if (!this.areaMap[deals[i]["area"]]) {
+          this.areaMap[deals[i]["area"]] = [];
+          this.areaOrder.push(deals[i]["area"]);
         }
-        this.areaOrder.sort()
-        // console.log(this.areaMap)
-        for(let i=0;i<this.areaOrder.length;i++){
-            this.areaMap[this.areaOrder[i]].sort((a,b)=>a.x-b.x)
-        }
-        // console.log(this.areaMap)
-            
+        this.areaMap[deals[i]["area"]].push({
+          x: new Date(deals[i].dealYear, deals[i].dealMonth, deals[i].dealDay).getTime(),
+          y: deals[i].dealAmount,
+        });
+      }
+      this.areaOrder.sort();
+      // console.log(this.areaMap)
+      for (let i = 0; i < this.areaOrder.length; i++) {
+        this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x);
+      }
+      // console.log(this.areaMap)
 
-        // for(let i=0;i<deals.length;i++){
-        //     if(deals[i].area=="59.98")
-        //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
-        // }
-        
+      // for(let i=0;i<deals.length;i++){
+      //     if(deals[i].area=="59.98")
+      //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
+      // }
     },
     initMap() {
       const container = document.getElementById("map");
@@ -572,14 +445,14 @@ export default {
     //     this.infraMarker[idx][i].setMap(map);
     //   }
     // },
-    createAllMarker(idx,position, image) {
-      infra.forEach((data,idx1)=>{
-        data.forEach((data2,idx2)=>{
+    createAllMarker(idx, position, image) {
+      infra.forEach((data, idx1) => {
+        data.forEach((data2, idx2) => {
           let imageSize = new kakao.maps.Size(22, 26),
-          imageOptions = {
-            spriteOrigin: new kakao.maps.Point(10, 72),
-            spriteSize: new kakao.maps.Size(36, 98),
-          };
+            imageOptions = {
+              spriteOrigin: new kakao.maps.Point(10, 72),
+              spriteSize: new kakao.maps.Size(36, 98),
+            };
           // 마커이미지와 마커를 생성합니다
           var markerImage = this.createMarkerImage(
               this.items[idx2].icon,
@@ -590,7 +463,7 @@ export default {
 
           // 생성된 마커를 주차장 마커 배열에 추가합니다
           this.infraMarker[i].push(marker);
-        })
+        });
       });
     },
     setCarparkMarkers(map) {
@@ -704,7 +577,11 @@ export default {
       return marker;
     },
     createMarkerImage(src, size, options) {
-      var markerImage = new kakao.maps.MarkerImage('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/category.png', size, options);
+      var markerImage = new kakao.maps.MarkerImage(
+        "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/category.png",
+        size,
+        options
+      );
       return markerImage;
     },
   },

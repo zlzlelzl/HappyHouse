@@ -17,8 +17,9 @@ export default new Vuex.Store({
     memberStore,
   },
   plugins: [
-    createPersistedState({
-      storage: sessionStorage,
-    }),
+    createPersistedState,
+    // ({
+    //   storage: sessionStorage,
+    // }),
   ],
 });

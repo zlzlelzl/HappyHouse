@@ -1,0 +1,213 @@
+<template>
+  <div style="width: 100%">
+    <RadarChartGen
+      :chart-options="chartOptions"
+      :chart-data="chartData"
+      :chart-id="chartId"
+      :dataset-id-key="datasetIdKey"
+      :plugins="plugins"
+      :css-classes="cssClasses"
+      :styles="styles"
+      :width="width"
+      :height="height"
+    />
+  </div>
+</template>
+
+<script>
+import { Radar as RadarChartGen } from "vue-chartjs";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  RadialLinearScale,
+} from "chart.js";
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  RadialLinearScale
+);
+export default {
+  namespaced: true,
+  name: "RadarChart",
+  components: { RadarChartGen },
+  props: {
+    chartId: {
+      type: String,
+      default: "line-chart",
+    },
+    datasetIdKey: {
+      type: String,
+      default: "label",
+    },
+    width: {
+      type: Number,
+      default: 500,
+    },
+    height: {
+      type: Number,
+      default: 500,
+    },
+    cssClasses: {
+      default: "",
+      type: String,
+    },
+    styles: {
+      type: Object,
+      default: () => {},
+    },
+    plugins: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  data() {
+    return {
+      chartData: {
+        labels: [
+          1432220400000, 1443625200000, 1474038000000, 1471618800000, 1463756400000,
+          1486911600000, 1511622000000, 1536591600000, 1556895600000, 1572015600000,
+          1594825200000, 1601218800000, 1633618800000, 1632754800000,
+        ],
+        datasets: [
+          {
+            xAxisID: "x",
+            label: "Data One",
+            backgroundColor: "#f87979",
+
+            data: [
+              33000, 37400, 39800, 38400, 38400, 38000, 44000, 54500, 53000, 53800, 62000,
+              68250, 83000, 83500,
+            ],
+            fill: false,
+          },
+        ],
+      },
+      chartOptions: {
+        responsive: true,
+        position: "relative",
+        scales: {
+          x: {
+            type: "linear",
+          },
+        },
+      },
+      categoryGroupCodes: [
+        { Name: "MT1", Description: "대형마트" },
+        { Name: "CS2", Description: "편의점" },
+        { Name: "PS3", Description: "어린이집, 유치원" },
+        { Name: "SC4", Description: "학교" },
+        { Name: "AC5", Description: "학원" },
+        { Name: "PK6", Description: "주차장" },
+        { Name: "OL7", Description: "주유소, 충전소" },
+        { Name: "SW8", Description: "지하철역" },
+        { Name: "BK9", Description: "은행" },
+        { Name: "CT1", Description: "문화시설" },
+        { Name: "AG2", Description: "중개업소" },
+        { Name: "PO3", Description: "공공기관" },
+        { Name: "AT4", Description: "관광명소" },
+        { Name: "AD5", Description: "숙박" },
+        { Name: "FD6", Description: "음식점" },
+        { Name: "CE7", Description: "카페" },
+        { Name: "HP8", Description: "병원" },
+        { Name: "PM9", Description: "약국" },
+      ],
+    };
+  },
+  actions: {
+    async calcInfraScore(pos) {
+      // 인프라 가져오기
+      await this.getAllInfra();
+
+      let score = 0;
+
+      for (let i = 0; i < this.categoryGroupCodes.length; i++) {
+        let code = this.categoryGroupCodes[i]["Name"];
+        // 0~1000m, 0m에 가까울수록 고득점
+        // console.log(this.infra[code][0])
+        if (this.infra[code].length != 0) {
+          score += 1000 - this.infra[code][0].distance;
+        }
+        // console.log(this.infra)
+      }
+      // await 때문에 조금 느림
+      console.log(score);
+    },
+    async getAllInfra() {
+      for (let i = 0; i < this.categoryGroupCodes.length; i++) {
+        let code = this.categoryGroupCodes[i]["Name"];
+        await this.getInfra(code);
+      }
+
+      //  console.log(this.infra)
+    },
+    async getInfra(code) {
+      // console.log(code)
+      await axios
+        .get(
+          `https://dapi.kakao.com/v2/local/search/category.json?x=${this.pos[1]}&y=${this.pos[0]}&radius=1000&category_group_code=${code}&sort=distance`,
+          { headers: { Authorization: "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f" } }
+        )
+        .then(({ data }) => {
+          // this.map.app.result.housedeals = data
+          this.infra[code] = data.documents;
+          // console.log(this.infra[code])
+        });
+    },
+    getHouseInfos(dongcode) {
+      http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
+        this.map.app.result.houseinfos = data;
+        console.log(data);
+      });
+    },
+    async getHouseDeals(aptCode) {
+      await http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
+        this.map.app.result.housedeals = data;
+        // console.log(data)
+      });
+    },
+    async setChart(aptCode) {
+      await this.setChartData(aptCode);
+      console.log(this.areaMap, this.areaOrder);
+    },
+    async setChartData(aptCode) {
+      await this.getHouseDeals(aptCode);
+
+      this.areaMap = {};
+      this.areaOrder = [];
+      let deals = this.map.app.result.housedeals;
+      for (let i = 0; i < deals.length; i++) {
+        if (!this.areaMap[deals[i]["area"]]) {
+          this.areaMap[deals[i]["area"]] = [];
+          this.areaOrder.push(deals[i]["area"]);
+        }
+        this.areaMap[deals[i]["area"]].push({
+          x: new Date(deals[i].dealYear, deals[i].dealMonth, deals[i].dealDay).getTime(),
+          y: deals[i].dealAmount,
+        });
+      }
+      this.areaOrder.sort();
+      // console.log(this.areaMap)
+      for (let i = 0; i < this.areaOrder.length; i++) {
+        this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x);
+      }
+      // console.log(this.areaMap)
+
+      // for(let i=0;i<deals.length;i++){
+      //     if(deals[i].area=="59.98")
+      //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
+      // }
+    },
+  },
+};
+</script>

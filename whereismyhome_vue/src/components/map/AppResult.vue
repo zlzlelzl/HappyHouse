@@ -1,11 +1,6 @@
 <template>
   <!-- result -->
-  <v-card
-    class="pa-0 ma-3"
-    height="82%"
-    width="93%"
-    style="position: absolute; top: 15%"
-  >
+  <v-card class="pa-0 ma-3" height="82%" width="93%" style="position: absolute; top: 15%">
     <template v-if="isUseCheck">
       <app-result-detail></app-result-detail>
     </template>
@@ -54,7 +49,7 @@ export default {
     return {};
   },
   props: {
-    map:{},
+    map: {},
   },
   created() {
     this.CLEAR_APT_LIST();
@@ -88,7 +83,7 @@ export default {
     },
     moveMapLocation(data) {
       var moveLatLon = new kakao.maps.LatLng(data.lat, data.lng);
-          console.log(this.map);
+      console.log(this.map);
       this.map.setCenter(moveLatLon);
     },
   },
