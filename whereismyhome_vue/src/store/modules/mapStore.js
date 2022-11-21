@@ -143,6 +143,28 @@ const mapStore = {
       state.mapdata.app.result.detail.houseinfo = house;
       // commit("SET_DETAIL_HOUSE", house);
     },
+    setHouseDetail({ state }, house) {
+      state.mapdata.app.result.detail.isUse = false;
+      http
+        .get(`/map/deal?aptCode=${house.aptCode}`)
+        .then((response) => {
+          // console.log("setHouseDetailInfo - s " + response);
+          // console.log(response.data);
+          // this.SET_HOUSE_DEAL(response.data);
+          // this.SET_DEATAIL_HOUSE(house);
+          // let map = this.getMap;
+          state.mapdata.app.result.detail.houseinfo = house;
+          state.mapdata.app.result.detail.housedeals = response.data;
+          state.mapdata.app.result.detail.isUse = true;
+          // this.moveMapLocation(house);
+          // var moveLatLon = new kakao.maps.LatLng(house.lat, house.lng);
+          // console.log(this.map);//
+          // this.map.setCenter(moveLatLon);
+        })
+        .catch((error) => {
+          console.log("setHouseDetailInfo - e " + error);
+        });
+    },
   },
 };
 

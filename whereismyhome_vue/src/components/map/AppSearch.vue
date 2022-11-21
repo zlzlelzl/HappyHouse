@@ -175,6 +175,11 @@ export default {
         this.searchByType({ name: this.inputMsg, type: this.inputType })
       }
     },
+    searchByTypeClick(item) {
+      this.inputMsg = item.name;
+      this.inputType = item.type;
+      this.searchByType({ name: this.inputMsg, type: this.inputType });
+    },
   },
 }
 </script>
