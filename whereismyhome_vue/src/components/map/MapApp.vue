@@ -135,6 +135,7 @@ export default {
   },
   methods: {
     ...mapMutations(mapStore, ["SET_MARKERS", "SET_CLUSTERER"]),
+    ...mapActions(mapStore, ["setHouseDetail"]),
     //카카오맵 init---------------------------------------------------------------------
     init() {
       if (window.kakao && window.kakao.maps) {
@@ -365,16 +366,30 @@ export default {
       if (markers.length > 0) {
         markers.forEach((marker) => marker.setMap(null))
       }
-      const positions = data.map((position) => new kakao.maps.LatLng(position.lat, position.lng))
 
-      if (positions.length > 0) {
-        markers = positions.map(
-          (position) =>
-            new kakao.maps.Marker({
-              map: this.map,
-              position,
-            })
-        )
+      if (data.length > 0) {
+        markers = [];
+        data.forEach((d) => {
+          let marker = new kakao.maps.Marker({
+            map: this.map,
+            position: new kakao.maps.LatLng(d.lat, d.lng),
+            title: JSON.stringify(d),
+          });
+          markers.push(marker);
+          // 마커에 클릭이벤트를 등록합니다
+          kakao.maps.event.addListener(marker, "click", () => {
+            // 마커 위에 인포윈도우를 표시합니다
+            console.log(JSON.parse(marker.getTitle()));
+            this.setHouseDetailInfo(JSON.parse(marker.getTitle()));
+          });
+        });
+        // markers = positions.map(
+        //   (p) =>
+        //     new kakao.maps.Marker({
+        //       map: this.map,
+        //       p,
+        //     })
+        // );
         // const bounds = positions.reduce(
         //   (bounds, latlng) => bounds.extend(latlng),
         //   new kakao.maps.LatLngBounds()
@@ -398,6 +413,17 @@ export default {
         .catch((error) => {
           console.log(error)
         })
+    },
+    setHouseDetailInfo(house) {
+      // console.log("setHouseDetail st");
+      // console.log(house);
+      this.setHouseDetail(house);
+      this.moveMapLocation(house);
+    },
+    moveMapLocation(data) {
+      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005);
+      console.log(this.map);
+      this.map.setCenter(moveLatLon);
     },
     //마커---------------------------------------------------------------------------
     changeMarker(type) {

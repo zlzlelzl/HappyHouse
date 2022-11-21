@@ -64,21 +64,10 @@ export default {
   },
   methods: {
     ...mapMutations(mapStore, ["CLEAR_APT_LIST", "SET_HOUSE_DEAL", "SET_DEATAIL_HOUSE"]),
+    ...mapActions(mapStore, ["setHouseDetail"]),
     setHouseDetailInfo(house) {
-      http
-        .get(`/map/deal?aptCode=${house.aptCode}`)
-        .then((response) => {
-          console.log("setHouseDetailInfo - s " + response);
-          console.log(response.data);
-          this.SET_HOUSE_DEAL(response.data);
-          this.SET_DEATAIL_HOUSE(house);
-          // let map = this.getMap;
-          // map.app.result.detail.houseinfo = house;
-          this.moveMapLocation(house);
-        })
-        .catch((error) => {
-          console.log("setHouseDetailInfo - e " + error);
-        });
+      this.setHouseDetail(house);
+      this.moveMapLocation(house);
     },
     moveMapLocation(data) {
       var moveLatLon = new kakao.maps.LatLng(data.lat, data.lng);
