@@ -34,7 +34,7 @@
 
 <script>
 import AppResultDetail from "./AppResultDetail.vue";
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import { apiInstance } from "@/api/http-common";
 
 const mapStore = "mapStore";
@@ -57,6 +57,7 @@ export default {
   watch: {},
   computed: {
     ...mapState(mapStore, ["house", "houses", "isUse"]),
+    ...mapGetters(mapStore, ["getMap"]),
     isUseCheck() {
       return this.isUse;
     },
@@ -68,13 +69,19 @@ export default {
       "CLEAR_APT_LIST",
       "SET_DETAIL_HOUSE",
       "CLEAR_DETAIL_APT",
+      "SET_MAP",
     ]),
     setHouseDetailInfo(house) {
       http
         .get(`/map/deal?aptCode=${house.aptCode}`)
         .then((response) => {
           console.log("setHouseDetailInfo - s " + response);
+          console.log(response.data);
           this.SET_DETAIL_HOUSE(response.data);
+          let map = this.getMap;
+          map.app.result.houseinfos = house;
+          console.log("map", map);
+          this.SET_MAP(map);
           this.moveMapLocation(house);
         })
         .catch((error) => {

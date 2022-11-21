@@ -10,12 +10,22 @@
     <VBtn color="rgb(255, 255, 255, 1)" icon @click="closeDetail">
       <VIcon>mdi-close</VIcon>
     </VBtn>
+    <!-- 로드뷰 -->
+    <v-card class="mb-10" height="25%">
+      <div id="roadview" style="width: 100%; height: 300px"></div>
+    </v-card>
+
+    <!-- 라인차트 거래가추이 -->
     <v-card class="mb-10" height="25%">
       <line-chart></line-chart>
     </v-card>
+
+    <!-- 다각형차트 인프라점수 -->
     <v-card class="mb-10" height="25%">
       <radar-chart></radar-chart>
     </v-card>
+
+    <!-- 거래내역 -->
     <v-list dense class="overflow-y-auto rounded" height="55%">
       <v-subheader>아파트 거래내역</v-subheader>
       <v-list-item-group v-if="house.length == 0">
@@ -42,7 +52,8 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+/* global kakao */
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import { apiInstance } from "@/api/http-common";
 import LineChart from "./LineChart.vue";
 import RadarChart from "./RadarChart.vue";
@@ -58,9 +69,13 @@ export default {
     return {};
   },
   created() {},
+  mounted() {
+    this.setRoadView();
+  },
   watch: {},
   computed: {
-    ...mapState(mapStore, ["house", "houses", "isUse"]),
+    ...mapState(mapStore, ["house", "houses", "isUse", "map"]),
+    ...mapGetters(mapStore, ["getMap"]),
   },
   methods: {
     ...mapActions(mapStore, ["detailHouse", "getHouseList"]),
@@ -70,20 +85,26 @@ export default {
       "SET_DETAIL_HOUSE",
       "CLEAR_DETAIL_APT",
     ]),
-    // setHouseDetailInfo(aptCode){
-    //   http
-    //     .get(`/map/deal?aptCode=${aptCode}`)
-    //     .then((response)=>{
-    //       console.log("setHouseDetailInfo - s "+response);
-    //       this.SET_DETAIL_HOUSE(response.data);
-    //       console.log(response.data);
-    //     })
-    //     .catch((error)=>{
-    //       console.log("setHouseDetailInfo - e "+error);
-    //     });
-    // },
+    //디테일창 닫기 버튼
     closeDetail() {
       this.CLEAR_DETAIL_APT();
+    },
+
+    // <!-- 로드뷰 -->
+    setRoadView() {
+      var roadviewContainer = document.getElementById("roadview"); //로드뷰를 표시할 div
+      var roadview = new kakao.maps.Roadview(roadviewContainer); //로드뷰 객체
+      var roadviewClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+
+      let map = this.getMap;
+      let houseInfos = map.app.result.houseinfos;
+
+      var position = new kakao.maps.LatLng(houseInfos.lat, houseInfos.lng);
+
+      // 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+      roadviewClient.getNearestPanoId(position, 50, function (panoId) {
+        roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+      });
     },
   },
 };
