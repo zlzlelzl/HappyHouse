@@ -131,13 +131,14 @@ public class HouseMapController {
 		if (type.compareTo(NAME_TYPE) == 0) {
 			return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getAptByName(name), HttpStatus.OK);
 		} else if (type.compareTo(DONG_TYPE) == 0) {
-			String dongCode = haHouseMapService.getDongByName(name);
+
+			String dongCode = haHouseMapService.getDongByName(name.split(" ")[2]);
 			return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getAptInDong(dongCode), HttpStatus.OK);
 		} else if (type.compareTo(GUGUN_TYPE) == 0) {
-			String gugunCode = haHouseMapService.getGugunByName(name);
+			String gugunCode = haHouseMapService.getGugunByName(name.split(" ")[1]);
 			return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getAptInGugun(gugunCode), HttpStatus.OK);
 		} else if (type.compareTo(SIDO_TYPE) == 0) {
-			String sidoCode = haHouseMapService.getSidoByName(name);
+			String sidoCode = haHouseMapService.getSidoByName(name.split(" ")[0]);
 			return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getAptInSido(sidoCode), HttpStatus.OK);
 		} else {
 			// error

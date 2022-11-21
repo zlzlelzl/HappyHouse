@@ -37,9 +37,7 @@
                   <v-list-item
                     class="pa-3 pl-5"
                     :class="{ 'on-hover': hover }"
-                    @click="(inputMsg = item.name), (inputType = item.type)"
-                    @keydown.up="movePreSearchList(index)"
-                    @keydown.down="moveNextSearchList(index)"
+                    @click="searchByTypeClick(item)"
                   >
                     <v-list-item-content class="">
                       <v-list-item-title>
@@ -179,6 +177,11 @@ export default {
         this.inputType = this.completeData[0].type;
         this.searchByType({ name: this.inputMsg, type: this.inputType });
       }
+    },
+    searchByTypeClick(item) {
+      this.inputMsg = item.name;
+      this.inputType = item.type;
+      this.searchByType({ name: this.inputMsg, type: this.inputType });
     },
   },
 };
