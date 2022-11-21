@@ -9,7 +9,7 @@ public class SearchResponseDto {
 	@ApiModelProperty(value = "검색 문자열")
 	private String name;
 	@ApiModelProperty(value = "(0 = 시) (1 = 구군) (2 = 도) (3 = 아파트이름)")
-	private int type;
+	private String type;
 	@ApiModelProperty(value = "지도의 줌 레벨")
 	private int maxlevel;
 	
@@ -17,32 +17,41 @@ public class SearchResponseDto {
 		super();
 	}
 
-	public SearchResponseDto(String name, int type, int maxlevel) {
+	public SearchResponseDto(String name, String type, int maxlevel) {
 		super();
 		this.name = name;
 		this.type = type;
 		this.maxlevel = maxlevel;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getType() {
+
+	public String getType() {
 		return type;
 	}
-	public void setType(int type) {
+
+	public void setType(String type) {
 		this.type = type;
 	}
+
 	public int getMaxlevel() {
 		return maxlevel;
 	}
+
 	public void setMaxlevel(int maxlevel) {
 		this.maxlevel = maxlevel;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "SearchResponseDto [name=" + name + ", type=" + type + ", maxlevel=" + maxlevel + "]";
+	}
 
 }
 

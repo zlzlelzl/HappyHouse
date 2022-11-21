@@ -1,7 +1,7 @@
 <template>
     <!-- seacrh -->
-    <v-container class ="overflow-visible">
-    <v-row class="pa-3">
+    <v-container class ="" >
+    <v-row class="pa-3" style="height: 85vh">
       <v-col cols="10" v-click-outside="onClickOutside">
         <v-text-field
             v-model="inputMsg"
@@ -9,35 +9,45 @@
             outlined
             dense
             @focus="autoSearchList = true"
-            @click.enter="searchByAptCode"
-            style='z-index:10; opacity: 1;'
+            style="z-index:10; opacity: 1;"
+            @keyup.enter="insertSearchBar"
+            ref="searchBar"
+            @keydown.up="movePreSearchList(-1)"
+            @keydown.down="moveNextSearchList(-1)"
+            
         >
         </v-text-field>
         <transition name="top-slide" mode="in-out">
-          <div class="justify-center align-center flex-column d-flex" >
-            <v-list class="pa-0 ma-0 search-list" v-show="autoSearchList" light>
+          <div class="align-center flex-column d-flex"  style="height: 50vmin;">
+            <v-list 
+            outlined
+            style="z-index:12; width:100%;" 
+            class="pa-0 ma-0 search-list overflow-y-auto" 
+            v-show="autoSearchList" light 
+            >
               <v-list-item-group>
                 <!-- // 마우스 오버 시 효과를 주기위한 v-hover -->
                 <v-hover v-slot="{ hover }"
-                        v-for="(item,index) in completeData"
-                        :key="index"
-                        style='z-index:20; opacity: 1;'
+                  v-for="(item,index) in completeData"
+                  :key="index" 
+                  ref="test"
                 >   
                   <!-- // 자동완성 결과값들의 리스트 -->
                   <v-list-item
-                      class="pa-3 pl-5 top-list"
-                      :class="{ 'on-hover': hover }"
-                      @click="inputMsg=item"
-                      
+                    class="pa-3 pl-5"
+                    :class="{ 'on-hover': hover }"
+                    @click="inputMsg=item.name,inputType=item.type"
+                    @keydown.up="movePreSearchList(index)"
+                    @keydown.down="moveNextSearchList(index)"                    
                   >                      
-                    <!-- <v-list-item-content class="pl-8"> -->
-                      <!-- <v-list-item-title> -->
-                        <span class="search-list-title" @click="detailView(item.bid)"> {{item}} </span>
-                      <!-- </v-list-item-title> -->
-                      <!-- <v-list-item-subtitle class="pt-2">
-                        <span class="search-list-subtitle"> {{ item }} | {{item}}</span>
-                      </v-list-item-subtitle> -->
-                    <!-- </v-list-item-content> -->
+                    <v-list-item-content class="">
+                      <v-list-item-title>
+                        <span class="search-list-title"> {{item.name}} </span>
+                      </v-list-item-title>
+                      <v-list-item-subtitle class="pt-2">
+                        <span class="search-list-subtitle"> {{ item.type }}</span>
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
                   </v-list-item>
                 </v-hover>
               </v-list-item-group>
@@ -46,7 +56,7 @@
         </transition>
       </v-col>
       <v-col cols="1" >
-        <v-btn icon @click="searchByAptCode">
+        <v-btn icon @click="insertSearchBar">
         <v-icon size="30">mdi-magnify</v-icon>
         </v-btn>
       </v-col>
@@ -58,7 +68,9 @@
   <script>
   import vClickOutside from 'v-click-outside'
   import { apiInstance } from "@/api/http-common";
+  import { mapState, mapActions, mapMutations } from "vuex";
 
+  const mapStore = "mapStore";
   const http = apiInstance();
   export default {
     name: "AppSearch",
@@ -66,8 +78,9 @@
       return {
         item:[],
         inputMsg:"",
+        inputType:"",
         autoSearchList:false,
-        completeData:[],
+        completeData:null,
       };
     },
     mounted() {
@@ -77,17 +90,22 @@
         if (!val) {
           this.completeData=[]
         }
+        this.autoSearchList = true;
         this.fetchEntriesDebounced()
       },
     },
     directives: {
       clickOutside: vClickOutside.directive
     },
+    computed:{
+      ...mapState(mapStore, ["house", "houses"]),
+    },
     methods: {
+      ...mapActions(mapStore, ["detailHouse", "getHouseList","searchByType"]),
+      ...mapMutations(mapStore,["SET_HOUSE_LIST","CLEAR_APT_LIST","SET_DETAIL_HOUSE"]),
       //DB에 불필요한 데이터 입력 방지위해 입력 기다리기
       fetchEntriesDebounced() {
         this.completeData = null;
-      
         clearTimeout(this._timerId);
         // 0.5초 동안 동작이 없으면 completeSearch 함수 호출
         this._timerId = setTimeout(() => {
@@ -115,20 +133,52 @@
       },
       //자동검색 리스트에서 바깥부분 클릭시 리스트 닫음
       onClickOutside () {
-        this.autoSearchList = false
+        this.autoSearchList = false;
       },
+      // moveNextSearchList(idx){
+      //   if(!this.completeData)return;
+      //   else if(this.completeData.length>idx+1){
+      //     //다음 리스트로 포커스 이동
+      //       console.log("nextmove - "+(idx+1));
+      //       console.log(this.$refs);
+      //     this.$refs.test[(idx+1)].focus;
+      //   }
+      // },
+      // movePreSearchList(idx){
+      //   if(!this.completeData)return;
+      //   else if(idx==-1){
+      //     //첫번째 리스트로 포커스 이동
+      //       console.log("nextmove - last");
+      //     this.$refs.test[0].focus;
+      //   }
+      //   else if(idx>0){
+      //     //이전 리스트로 포커스 이동
+      //       console.log("nextmove - "+(idx-1));
+      //     this.$refs.test[(idx-1)].focus;
+      //   }
+      // },
       //검색 버튼
-      searchByAptCode(){
-        http.get(`/map/deal?aptCode=${this.inputMsg}`)
-              .then(response => {
-                this.item = response.data
-            console.log("s");
-            console.log(response);
-              }).catch(error => {
-            console.log("e");
-            console.log(error);
-            });
-        },
+      // searchByType(){
+      //   http
+      //     .get(`/map/apt/type?name=${this.inputMsg}&type=${this.inputType}`)
+      //     .then(response => {
+      //       console.log("s");
+      //       this.SET_HOUSE_LIST(response.data);
+      //       this.autoSearchList=false;
+      //       console.log(this.houses);
+      //     })
+      //     .catch(error => {
+      //       console.log("e");
+      //       console.log(error);
+      //     });
+      // },   
+      insertSearchBar () {
+        if(this.completeData!=null){
+          this.inputMsg=this.completeData[0].name;
+          this.inputType=this.completeData[0].type;
+          this.searchByType({"name":this.inputMsg, "type":this.inputType});
+        }
+      },
     },
   };
   </script>
