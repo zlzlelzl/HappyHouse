@@ -61,11 +61,62 @@
         order by phd.dealYear, phd.dealDay
     </select>
 	
-	<select id="getSearchList" parameterType="string" resultType="string">
+	<select id="getSearchList" parameterType="string" resultType="searchResponseDto">
         select 
-            name
+            name, type, maxlevel
         from searchlist
-        where name like CONCAT(#{inputMsg}, '%')
-        order by type
+        where name like CONCAT('%',#{inputMsg}, '%')
+		order by FIELD(type, "시", "구군", "동","아파트명");
     </select>
+    
+   	<select id="getAptInGugun" parameterType="string" resultType="houseInfoDto">
+		select h.aptCode, h.aptName, h.buildyear, h.dongCode, h.dongName, h.jibun, h.lat, h.lng, si.sidoname, gu.gugunname,
+				(select dealAmount from housedeal where aptCode = h.aptCode and no = (select max(no) from housedeal where aptCode = h.aptCode)) recentPrice
+		from houseinfo h
+		left join sidocode si
+		on left(h.dongcode,2) = left(si.sidocode,2)
+		left join guguncode gu
+		on left(h.dongcode,5) = left(gu.guguncode,5)
+		where left(h.dongcode,5) = left(#{gugun},5)
+		order by aptName
+		limit 10;
+	</select>
+	
+	<select id="getAptInSido" parameterType="string" resultType="houseInfoDto">
+		select h.aptCode, h.aptName, h.buildyear, h.dongCode, h.dongName, h.jibun, h.lat, h.lng, si.sidoname,
+				(select dealAmount from housedeal where aptCode = h.aptCode and no = (select max(no) from housedeal where aptCode = h.aptCode)) recentPrice
+		from houseinfo h
+		left join sidocode si
+		on left(h.dongcode,2) = left(si.sidocode,2)
+		where left(h.dongcode,2) = left(#{sido},2)
+		order by aptName
+		limit 500;
+	</select>
+	
+	<select id="getAptByName" parameterType="string" resultType="houseInfoDto">
+		select h.aptCode, h.aptName, h.buildyear, h.dongCode, h.dongName, h.jibun, h.lat, h.lng,
+				(select dealAmount from housedeal where aptCode = h.aptCode and no = (select max(no) from housedeal where aptCode = h.aptCode)) recentPrice
+		from houseinfo h
+		where aptName like #{name} 
+		order by aptName
+		limit 10;
+	</select>
+	
+	<select id="getSidoByName" parameterType="string" resultType="string">
+		select left(sidoCode,2) sidoCode, sidoName
+		from sidocode
+		where sidoName = #{name}
+	</select>	
+		
+	<select id="getGugunByName" parameterType="string" resultType="string">
+		select left(gugunCode,5) gugunCode, gugunName
+		from guguncode
+		where gugunName = #{name}
+	</select>
+	
+	<select id="getDongByName" parameterType="string" resultType="string">
+		select dongCode, dongName
+		from dongcode
+		where dongName = #{name}
+	</select>
 </mapper>

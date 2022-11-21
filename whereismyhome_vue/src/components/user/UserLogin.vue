@@ -78,8 +78,6 @@ export default {
     };
   },
   created() { 
-    // Kakao Developers에서 요약 정보 -> JavaScript 키
-    window.Kakao.init('9549d558e1a1a37bc6398c7bedc83d2c')
   },
   computed: {
     ...mapState(memberStore, ["isLogin", "isLoginError", "userInfo"]),
