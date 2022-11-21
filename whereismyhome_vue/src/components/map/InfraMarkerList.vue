@@ -4,8 +4,14 @@
     style="z-index: 100; background-color: rgba(255, 255, 255, 0)"
     v-if="isUseCheck"
   >
-    <v-btn-toggle multiple>
-      <v-btn v-for="(item, i) in mapdata.infra.categoryGroupCodes" :key="i" class="ma-0">
+    <v-btn-toggle multiple v-model="isToggle">
+      <v-btn
+        v-for="(item ,i) in mapdata.infra.categoryGroupCodes"
+        :key="i"
+        class="ma-0"
+      >
+      
+      <!-- @click="clickInfraButton(item)" -->
         <v-icon v-text="item.icon"> </v-icon>
       </v-btn>
     </v-btn-toggle>
@@ -17,7 +23,7 @@
 import { apiInstance } from "@/api/http-common";
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 import axios from "axios";
-
+import img from "@/assets/logo.png";
 const mapStore = "mapStore";
 const http = apiInstance();
 
@@ -27,13 +33,29 @@ export default {
   props: { map: null },
 
   data() {
-    return {};
+    return {
+      isToggle: [],
+      buttonMapping: [
+        "MT1",
+        "CS2",
+        "PS3",
+        "SC4",
+        "PK6",
+        "OL7",
+        "SW8",
+        "BK9",
+        "FD6",
+        "CE7",
+        "HP8",
+        "PM9",
+      ],
+    };
   },
   mounted() {
-    this.init();
-    this.setSeoulMarker();
-    console.log(this.getMapData);
+    // this.mapdata.infra=[];
+    console.log(this.mapdata.infra);
   },
+
   updated() {
     // this.createCoffeeMarkers(); // 커피숍 마커를 생성하고 커피숍 마커 배열에 추가합니다
     // this.createStoreMarkers(); // 편의점 마커를 생성하고 편의점 마커 배열에 추가합니다
@@ -49,6 +71,19 @@ export default {
     // this.getAllInfra()
     // this.calcInfraScore(this.pos)
   },
+  watch: {
+    async isUseCheck(val) {
+      if (val) {
+        await this.getAllInfra();
+        // await this.clearAllMarker();
+        await this.createAllMarker();
+      }
+    },  
+    async isToggle (val){
+      console.log(val);
+      await this.clickInfraButton(val);
+    }
+  },
   computed: {
     ...mapState(mapStore, ["mapdata"]),
     ...mapGetters(mapStore, ["getMapData", "getClusterer", "getMarkers"]),
@@ -62,27 +97,6 @@ export default {
   methods: {
     ...mapMutations(mapStore, ["SET_MARKERS", "SET_CLUSTERER"]),
     ...mapActions(mapStore, ["setHouseDetail"]),
-    drawCircleFromHouse() {
-      //이전 원 지우기
-      if (circle != null) {
-        circle.setMap(null);
-      }
-      const pos = this.getHouseInfo;
-      // 지도에 표시할 원을 생성합니다
-      let circle = new kakao.maps.Circle({
-        center: new kakao.maps.LatLng(pos.lat, pos.lng), // 원의 중심좌표 입니다
-        radius: 500, // 미터 단위의 원의 반지름입니다
-        strokeWeight: 5, // 선의 두께입니다
-        strokeColor: "#75B8FA", // 선의 색깔입니다
-        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-        strokeStyle: "dashed", // 선의 스타일 입니다
-        fillColor: "#CFE7FF", // 채우기 색깔입니다
-        fillOpacity: 0.7, // 채우기 불투명도 입니다
-      });
-
-      // 지도에 원을 표시합니다
-      circle.setMap(map);
-    },
     //차트 ------------------------------------------------------------------------------
     displayChart() {
       this.isChart = true;
@@ -90,15 +104,13 @@ export default {
     async calcInfraScore(pos) {
       // 인프라 가져오기
       await this.getAllInfra();
-
       let score = 0;
-
-      for (let i = 0; i < this.categoryGroupCodes.length; i++) {
-        let code = this.categoryGroupCodes[i]["Name"];
+      for (let i = 0; i < this.mapdata.infra.categoryGroupCodes.length; i++) {
+        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"];
         // 0~1000m, 0m에 가까울수록 고득점
         // console.log(this.infra[code][0])
-        if (this.infra[code].length != 0) {
-          score += 1000 - this.infra[code][0].distance;
+        if (this.mapdata.infra.data[code].length != 0) {
+          score += 1000 - this.infra.data[code][0].distance;
         }
         // console.log(this.infra)
       }
@@ -106,24 +118,32 @@ export default {
       console.log(score);
     },
     async getAllInfra() {
-      for (let i = 0; i < this.categoryGroupCodes.length; i++) {
-        let code = this.categoryGroupCodes[i]["Name"];
+      for (let i = 0; i < this.mapdata.infra.categoryGroupCodes.length; i++) {
+        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"];
         await this.getInfra(code);
       }
 
       //  console.log(this.infra)
     },
     async getInfra(code) {
-      // console.log(code)
+      // console.log("giet infra")
+      // console.log(this.mapdata.app.result.detail.houseinfo.lat+ " "+this.mapdata.app.result.detail.houseinfo.lng)
       await axios
         .get(
-          `https://dapi.kakao.com/v2/local/search/category.json?x=${this.pos[1]}&y=${this.pos[0]}&radius=1000&category_group_code=${code}&sort=distance`,
-          { headers: { Authorization: "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f" } }
+          `https://dapi.kakao.com/v2/local/search/category.json?x=${this.mapdata.app.result.detail.houseinfo.lng}&y=${this.mapdata.app.result.detail.houseinfo.lat}&radius=1000&category_group_code=${code}&sort=distance`,
+          {
+            headers: {
+              Authorization: "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f",
+            },
+          }
         )
         .then(({ data }) => {
           // this.map.app.result.housedeals = data
-          this.infra[code] = data.documents;
-          // console.log(this.infra[code])
+          // console.log(this.mapdata.infra.data[code]);
+          this.mapdata.infra.data[code] = data.documents;
+          // console.log("get infra");
+          // console.log(this.mapdata.infra.data[code]);
+          // console.log(this.mapdata.infra.data[code])
         });
     },
     getHouseInfos(dongcode) {
@@ -154,7 +174,11 @@ export default {
           this.areaOrder.push(deals[i]["area"]);
         }
         this.areaMap[deals[i]["area"]].push({
-          x: new Date(deals[i].dealYear, deals[i].dealMonth, deals[i].dealDay).getTime(),
+          x: new Date(
+            deals[i].dealYear,
+            deals[i].dealMonth,
+            deals[i].dealDay
+          ).getTime(),
           y: deals[i].dealAmount,
         });
       }
@@ -232,44 +256,38 @@ export default {
       this.moveMapLocation(house);
     },
     moveMapLocation(data) {
-      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005);
+      var moveLatLon = new kakao.maps.LatLng(
+        data.lat,
+        Number(data.lng) - 0.005
+      );
       console.log(this.map);
       this.map.setCenter(moveLatLon);
     },
     //마커---------------------------------------------------------------------------
-    changeMarker(type) {
-      var coffeeMenu = this.$refs.list[0];
-      var storeMenu = this.$refs.list[1];
-      var carparkMenu = this.$refs.list[2];
+    // changeMarker(type) {
+    //   var coffeeMenu = this.$refs.list[0];
+    //   var storeMenu = this.$refs.list[1];
+    //   var carparkMenu = this.$refs.list[2];
 
-      // 커피숍 카테고리가 클릭됐을 때
-      if (type === "coffee") {
-        // 커피숍 카테고리를 선택된 스타일로 변경하고
-        // coffeeMenu.className = "menu_selected";
-        // // 편의점과 주차장 카테고리는 선택되지 않은 스타일로 바꿉니다
-        // storeMenu.className = "";
-        // carparkMenu.className = "";
-        // // 커피숍 마커들만 지도에 표시하도록 설정합니다
-        this.setCoffeeMarkers(this.map);
-        this.setStoreMarkers(null);
-        this.setCarparkMarkers(null);
-      } else if (type === "store") {
-        this.setCoffeeMarkers(null);
-        this.setStoreMarkers(this.map);
-        this.setCarparkMarkers(null);
-      } else if (type === "carpark") {
-        this.setCoffeeMarkers(null);
-        this.setStoreMarkers(null);
-        this.setCarparkMarkers(this.map);
-      }
-    },
-    // changeMarker2(type,idx) {
-    //   for(let i=0;i<this.infra.length;++i){
-    //     if(i==idx){
-    //       this.setMarkers(this.map,idx);
-    //     }else{
-    //       this.setMarkers(null,idx);
-    //     }
+    //   // 커피숍 카테고리가 클릭됐을 때
+    //   if (type === "coffee") {
+    //     // 커피숍 카테고리를 선택된 스타일로 변경하고
+    //     // coffeeMenu.className = "menu_selected";
+    //     // // 편의점과 주차장 카테고리는 선택되지 않은 스타일로 바꿉니다
+    //     // storeMenu.className = "";
+    //     // carparkMenu.className = "";
+    //     // // 커피숍 마커들만 지도에 표시하도록 설정합니다
+    //     this.setCoffeeMarkers(this.map);
+    //     this.setStoreMarkers(null);
+    //     this.setCarparkMarkers(null);
+    //   } else if (type === "store") {
+    //     this.setCoffeeMarkers(null);
+    //     this.setStoreMarkers(this.map);
+    //     this.setCarparkMarkers(null);
+    //   } else if (type === "carpark") {
+    //     this.setCoffeeMarkers(null);
+    //     this.setStoreMarkers(null);
+    //     this.setCarparkMarkers(this.map);
     //   }
     // },
     // setMarkers(map,idx){
@@ -277,144 +295,112 @@ export default {
     //     this.infraMarker[idx][i].setMap(map);
     //   }
     // },
-    createAllMarker(idx, position, image) {
-      infra.forEach((data, idx1) => {
-        data.forEach((data2, idx2) => {
-          let imageSize = new kakao.maps.Size(22, 26),
-            imageOptions = {
-              spriteOrigin: new kakao.maps.Point(10, 72),
-              spriteSize: new kakao.maps.Size(36, 98),
-            };
-          // 마커이미지와 마커를 생성합니다
-          var markerImage = this.createMarkerImage(
-              this.items[idx2].icon,
-              imageSize,
-              imageOptions
-            ),
-            marker = this.createMarker(this.infra[idx][j], markerImage);
-
-          // 생성된 마커를 주차장 마커 배열에 추가합니다
-          this.infraMarker[i].push(marker);
+    clearAllMarker() {
+      console.log("cls all marker");
+      if (
+        this.mapdata.infra.markers == null ||
+        this.mapdata.infra.markers == undefined
+      )
+        return;
+      this.mapdata.infra.markers.forEach((list) => {
+        if (list == null || list == undefined) return;
+        list.forEach((data) => {
+          data.setMap(null);
         });
+        list = [];
       });
     },
-    setCarparkMarkers(map) {
-      for (var i = 0; i < this.carparkMarkers.length; i++) {
-        this.carparkMarkers[i].setMap(map);
+    createAllMarker() {
+      console.log("insert all marker");
+      // let imageSize = new kakao.maps.Size(22, 26);
+      // let imageOptions = {
+      //   spriteOrigin: new kakao.maps.Point(10, 72),
+      //   spriteSize: new kakao.maps.Size(36, 98),
+      // };
+      for (let i = 0; i < this.buttonMapping.length; ++i) {
+        // it.forEach((data)=>{console.log(data)})
+        let markers = [];
+        this.mapdata.infra.data[this.buttonMapping[i]].forEach((info) => {
+          // var markerImage = this.createMarkerImage(
+          //   img,
+          //   imageSize,
+          //   imageOptions
+          // );
+          let position =  new kakao.maps.LatLng(info.x, info.y);
+          // let marker = this.createMarker(position, markerImage);
+          let marker = this.createMarker(position);
+          markers.push(marker);
+        });
+        this.mapdata.infra.markers[this.buttonMapping[i]] = markers;
       }
+      console.log("insert all marker done");
     },
-    createCarparkMarkers() {
-      var carparkPositions = [
-        new kakao.maps.LatLng(37.49966168796031, 127.03007039430118),
-        new kakao.maps.LatLng(37.499463762912974, 127.0288828824399),
-        new kakao.maps.LatLng(37.49896834100913, 127.02833986892401),
-        new kakao.maps.LatLng(37.49893267508434, 127.02673400572665),
-        new kakao.maps.LatLng(37.49872543597439, 127.02676785815386),
-        new kakao.maps.LatLng(37.49813096097184, 127.02591949495914),
-        new kakao.maps.LatLng(37.497680616783086, 127.02518427952202),
-      ];
-      for (var i = 0; i < carparkPositions.length; i++) {
-        var imageSize = new kakao.maps.Size(22, 26),
-          imageOptions = {
-            spriteOrigin: new kakao.maps.Point(10, 72),
-            spriteSize: new kakao.maps.Size(36, 98),
-          };
-
-        // 마커이미지와 마커를 생성합니다
-        var markerImage = this.createMarkerImage(
-            this.items[2].icon,
-            imageSize,
-            imageOptions
-          ),
-          marker = this.createMarker(carparkPositions[i], markerImage);
-
-        // 생성된 마커를 주차장 마커 배열에 추가합니다
-        this.carparkMarkers.push(marker);
-      }
-    },
-    setStoreMarkers(map) {
-      for (var i = 0; i < this.storeMarkers.length; i++) {
-        this.storeMarkers[i].setMap(map);
-      }
-    },
-    createStoreMarkers() {
-      var storePositions = [
-        new kakao.maps.LatLng(37.497535461505684, 127.02948149502778),
-        new kakao.maps.LatLng(37.49671536281186, 127.03020491448352),
-        new kakao.maps.LatLng(37.496201943633714, 127.02959405469642),
-        new kakao.maps.LatLng(37.49640072567703, 127.02726459882308),
-        new kakao.maps.LatLng(37.49640098874988, 127.02609983175294),
-        new kakao.maps.LatLng(37.49932849491523, 127.02935780247945),
-        new kakao.maps.LatLng(37.49996818951873, 127.02943721562295),
-      ];
-      for (var i = 0; i < storePositions.length; i++) {
-        var imageSize = new kakao.maps.Size(22, 26),
-          imageOptions = {
-            spriteOrigin: new kakao.maps.Point(10, 36),
-            spriteSize: new kakao.maps.Size(36, 98),
-          };
-
-        // 마커이미지와 마커를 생성합니다
-        var markerImage = this.createMarkerImage(
-            this.items[1].icon,
-            imageSize,
-            imageOptions
-          ),
-          marker = this.createMarker(storePositions[i], markerImage);
-
-        // 생성된 마커를 편의점 마커 배열에 추가합니다
-        this.storeMarkers.push(marker);
-      }
-    },
-    setCoffeeMarkers(map) {
-      for (var i = 0; i < this.coffeeMarkers.length; i++) {
-        this.coffeeMarkers[i].setMap(map);
-      }
-    },
-    createCoffeeMarkers() {
-      var coffeePositions = [
-        new kakao.maps.LatLng(37.499590490909185, 127.0263723554437),
-        new kakao.maps.LatLng(37.499427948430814, 127.02794423197847),
-        new kakao.maps.LatLng(37.498553760499505, 127.02882598822454),
-        new kakao.maps.LatLng(37.497625593121384, 127.02935713582038),
-        new kakao.maps.LatLng(37.49646391248451, 127.02675574250912),
-        new kakao.maps.LatLng(37.49629291770947, 127.02587362608637),
-        new kakao.maps.LatLng(37.49754540521486, 127.02546694890695),
-      ];
-      for (var i = 0; i < coffeePositions.length; i++) {
-        var imageSize = new kakao.maps.Size(22, 26),
-          imageOptions = {
-            spriteOrigin: new kakao.maps.Point(10, 0),
-            spriteSize: new kakao.maps.Size(36, 98),
-          };
-
-        // 마커이미지와 마커를 생성합니다
-        var markerImage = this.createMarkerImage(
-            this.items[0].icon,
-            imageSize,
-            imageOptions
-          ),
-          marker = this.createMarker(coffeePositions[i], markerImage);
-
-        // 생성된 마커를 커피숍 마커 배열에 추가합니다
-        this.coffeeMarkers.push(marker);
-      }
-    },
-    createMarker(position, image) {
-      var marker = new kakao.maps.Marker({
-        position: position,
-        image: image,
+    changeMarker(type, flg) {
+      // console.log("ch marker");
+      // console.log(type, flg);
+      var val = null;
+      if (flg==1) val = this.map;
+      console.log(this.mapdata.infra.markers);
+      this.mapdata.infra.markers[type].forEach((marker) => {
+        marker.setMap(val);
       });
 
+      // console.log("ch marker");
+      // console.log(type, flg);
+      // let val = null;
+      // if (flg) val = this.map;
+      // console.log(this.mapdata.infra.markers[type])
+      // this.mapdata.infra.markers[type].forEach((marker) => {
+      //   marker.setMap(val);
+      // });
+    },
+    createMarker(position) {
+      // console.log(position);
+      let marker = new kakao.maps.Marker({
+        position: position
+      });
       return marker;
     },
     createMarkerImage(src, size, options) {
-      var markerImage = new kakao.maps.MarkerImage(
-        "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/category.png",
-        size,
-        options
-      );
+      var markerImage = new kakao.maps.MarkerImage(img, size, options);
       return markerImage;
+    },
+    clickInfraButton(item) {
+      console.log("infra btn");
+      let flgList=[];
+      for(let i=0;i<this.buttonMapping.length;++i){
+        flgList.push(0);
+      }
+      item.forEach((data)=>{
+        flgList[data]=1;
+      });
+
+      for(let i=0;i<this.buttonMapping.length;++i){
+      console.log(this.buttonMapping[i]);
+      console.log(flgList[i]);
+        this.changeMarker(this.buttonMapping[i],  flgList[i]);
+      }
+      // let type = item.Name;
+      // let icon = item.icon;
+      // if (
+      //   this.mapdata.infra.markers[type] == null ||
+      //   this.mapdata.infra.markers[type] == undefined
+      // )
+      //   return;
+
+      // let flg = false;
+      //   console.log( this.isToggle);
+      // //해당 idx의 버튼이 눌렸는지 확인
+      // // this.isToggle.forEach((data) => {
+      // //   if (type == this.buttonMapping[data]) flg = true;
+      // // });
+      // //flg==true setmap(map)
+      // //flg==false setmap(null);
+      // this.mapdata.infra.data[type].forEach(() => {
+      //   //마커 표시
+      //   // console.log(data);
+      //   // this.changeMarker(type, flg);
+      // });
     },
   },
 };

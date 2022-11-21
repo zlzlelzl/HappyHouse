@@ -32,6 +32,7 @@ const mapStore = {
         clusterer: {},
       },
       infra: {
+        data:[],
         markers: [],
         categoryGroupCodes: [
           { Name: "MT1", Description: "대형마트", icon: "mdi-store" },
@@ -50,14 +51,7 @@ const mapStore = {
         circle: [],
       },
     },
-    houses: [],
-    house: null,
-    isUse: false,
-    markers: [],
     infowindow: null,
-    clusterer: [],
-    infra: [],
-    infraMarkers: [],
   },
   getters: {
     getMapData(state) {
