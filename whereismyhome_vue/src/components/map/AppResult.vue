@@ -1,6 +1,6 @@
 <template>
     <!-- result -->
-      <v-card class="pa-1 ma-3" height="80%">
+      <v-card class="pa-1 ma-3" height="80%" style="position:absolute;">
         <v-list dense>
           <v-subheader>아파트 검색 결과</v-subheader>
           <v-list-item-group>
