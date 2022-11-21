@@ -33,6 +33,21 @@ const mapStore = {
       },
       infra: {
         markers: [],
+        categoryGroupCodes: [
+          { Name: "MT1", Description: "대형마트", icon: "mdi-store" },
+          { Name: "CS2", Description: "편의점", icon: "mdi-store-24-hour" },
+          { Name: "PS3", Description: "어린이집, 유치원", icon: "mdi-cradle" },
+          { Name: "SC4", Description: "학교", icon: "mdi-school" },
+          { Name: "PK6", Description: "주차장", icon: "mdi-parking" },
+          { Name: "OL7", Description: "주유소, 충전소", icon: "mdi-gas-station" },
+          { Name: "SW8", Description: "지하철역", icon: "mdi-subway-variant" },
+          { Name: "BK9", Description: "은행", icon: "mdi-bank" },
+          { Name: "FD6", Description: "음식점", icon: "mdi-silverware-fork-knife" },
+          { Name: "CE7", Description: "카페", icon: "mdi-coffee" },
+          { Name: "HP8", Description: "병원", icon: "mdi-hospital-box" },
+          { Name: "PM9", Description: "약국", icon: "mdi-pill" },
+        ],
+        circle: [],
       },
     },
     houses: [],
@@ -53,6 +68,9 @@ const mapStore = {
     },
     getClusterer(state) {
       return state.mapdata.app.clusterer;
+    },
+    getCircle(state) {
+      return state.mapdata.infra.circle;
     },
   },
   mutations: {
@@ -101,6 +119,9 @@ const mapStore = {
     },
     SET_MAP_DATA(state, mapdata) {
       state.mapdata = mapdata;
+    },
+    SET_CIRCLE(state, circle) {
+      state.mapdata.infra.circle = circle;
     },
   },
   actions: {

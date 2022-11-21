@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { Line as LineChartGen } from "vue-chartjs"
+import { Line as LineChartGen } from "vue-chartjs";
 import {
   Chart as ChartJS,
   Title,
@@ -26,9 +26,18 @@ import {
   CategoryScale,
   PointElement,
   RadialLinearScale,
-} from "chart.js"
+} from "chart.js";
 
-ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, RadialLinearScale)
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  RadialLinearScale
+);
 export default {
   namespaced: true,
   name: "LineChart",
@@ -67,8 +76,9 @@ export default {
     return {
       chartData: {
         labels: [
-          1432220400000, 1443625200000, 1474038000000, 1471618800000, 1463756400000, 1486911600000, 1511622000000,
-          1536591600000, 1556895600000, 1572015600000, 1594825200000, 1601218800000, 1633618800000, 1632754800000,
+          1432220400000, 1443625200000, 1474038000000, 1471618800000, 1463756400000,
+          1486911600000, 1511622000000, 1536591600000, 1556895600000, 1572015600000,
+          1594825200000, 1601218800000, 1633618800000, 1632754800000,
         ],
         datasets: [
           {
@@ -76,7 +86,10 @@ export default {
             label: "Data One",
             backgroundColor: "#f87979",
 
-            data: [33000, 37400, 39800, 38400, 38400, 38000, 44000, 54500, 53000, 53800, 62000, 68250, 83000, 83500],
+            data: [
+              33000, 37400, 39800, 38400, 38400, 38000, 44000, 54500, 53000, 53800, 62000,
+              68250, 83000, 83500,
+            ],
             fill: false,
           },
         ],
@@ -90,51 +103,31 @@ export default {
           },
         },
       },
-      categoryGroupCodes: [
-        { Name: "MT1", Description: "대형마트" },
-        { Name: "CS2", Description: "편의점" },
-        { Name: "PS3", Description: "어린이집, 유치원" },
-        { Name: "SC4", Description: "학교" },
-        { Name: "AC5", Description: "학원" },
-        { Name: "PK6", Description: "주차장" },
-        { Name: "OL7", Description: "주유소, 충전소" },
-        { Name: "SW8", Description: "지하철역" },
-        { Name: "BK9", Description: "은행" },
-        { Name: "CT1", Description: "문화시설" },
-        { Name: "AG2", Description: "중개업소" },
-        { Name: "PO3", Description: "공공기관" },
-        { Name: "AT4", Description: "관광명소" },
-        { Name: "AD5", Description: "숙박" },
-        { Name: "FD6", Description: "음식점" },
-        { Name: "CE7", Description: "카페" },
-        { Name: "HP8", Description: "병원" },
-        { Name: "PM9", Description: "약국" },
-      ],
-    }
+    };
   },
   actions: {
     async calcInfraScore(pos) {
       // 인프라 가져오기
-      await this.getAllInfra()
+      await this.getAllInfra();
 
-      let score = 0
+      let score = 0;
 
       for (let i = 0; i < this.categoryGroupCodes.length; i++) {
-        let code = this.categoryGroupCodes[i]["Name"]
+        let code = this.categoryGroupCodes[i]["Name"];
         // 0~1000m, 0m에 가까울수록 고득점
         // console.log(this.infra[code][0])
         if (this.infra[code].length != 0) {
-          score += 1000 - this.infra[code][0].distance
+          score += 1000 - this.infra[code][0].distance;
         }
         // console.log(this.infra)
       }
       // await 때문에 조금 느림
-      console.log(score)
+      console.log(score);
     },
     async getAllInfra() {
       for (let i = 0; i < this.categoryGroupCodes.length; i++) {
-        let code = this.categoryGroupCodes[i]["Name"]
-        await this.getInfra(code)
+        let code = this.categoryGroupCodes[i]["Name"];
+        await this.getInfra(code);
       }
 
       //  console.log(this.infra)
@@ -148,46 +141,46 @@ export default {
         )
         .then(({ data }) => {
           // this.map.app.result.housedeals = data
-          this.infra[code] = data.documents
+          this.infra[code] = data.documents;
           // console.log(this.infra[code])
-        })
+        });
     },
     getHouseInfos(dongcode) {
       http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
-        this.map.app.result.houseinfos = data
-        console.log(data)
-      })
+        this.map.app.result.houseinfos = data;
+        console.log(data);
+      });
     },
     async getHouseDeals(aptCode) {
       await http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
-        this.map.app.result.housedeals = data
+        this.map.app.result.housedeals = data;
         // console.log(data)
-      })
+      });
     },
     async setChart(aptCode) {
-      await this.setChartData(aptCode)
-      console.log(this.areaMap, this.areaOrder)
+      await this.setChartData(aptCode);
+      console.log(this.areaMap, this.areaOrder);
     },
     async setChartData(aptCode) {
-      await this.getHouseDeals(aptCode)
+      await this.getHouseDeals(aptCode);
 
-      this.areaMap = {}
-      this.areaOrder = []
-      let deals = this.map.app.result.housedeals
+      this.areaMap = {};
+      this.areaOrder = [];
+      let deals = this.map.app.result.housedeals;
       for (let i = 0; i < deals.length; i++) {
         if (!this.areaMap[deals[i]["area"]]) {
-          this.areaMap[deals[i]["area"]] = []
-          this.areaOrder.push(deals[i]["area"])
+          this.areaMap[deals[i]["area"]] = [];
+          this.areaOrder.push(deals[i]["area"]);
         }
         this.areaMap[deals[i]["area"]].push({
           x: new Date(deals[i].dealYear, deals[i].dealMonth, deals[i].dealDay).getTime(),
           y: deals[i].dealAmount,
-        })
+        });
       }
-      this.areaOrder.sort()
+      this.areaOrder.sort();
       // console.log(this.areaMap)
       for (let i = 0; i < this.areaOrder.length; i++) {
-        this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x)
+        this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x);
       }
       // console.log(this.areaMap)
 
@@ -197,5 +190,5 @@ export default {
       // }
     },
   },
-}
+};
 </script>
