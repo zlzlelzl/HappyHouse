@@ -20,7 +20,7 @@
           <div class="align-center flex-column d-flex" style="height: 50vmin">
             <v-list
               outlined
-              style="z-index: 12; width: 100%"
+              style="z-index: 21; width: 100%"
               class="pa-0 ma-0 search-list overflow-y-auto"
               v-show="autoSearchList"
               light

@@ -28,7 +28,7 @@
       <v-row>
         <v-col cols="4">
           <div class="pt-16">
-            <v-card width="100%" height="100%">
+            <v-card width="100%" height="500px" >
               <img />
             </v-card>
           </div>
@@ -38,12 +38,12 @@
             <div class="">
               <h2 class="text-h4 font-weight-bold pb-4 text-center">부동산 NEWS</h2>
 
-              <v-hover v-slot:default="{ hover }" close-delay="50" open-delay="50">
-                <div>
-                  <v-carousel class="mb-10">
-                    <template v-for="news in newsList">
-                      <a :href="news.link" target="_blank">
-                        <v-carousel-item src="@/assets/main.jpg"
+              <v-hover v-slot:default="{ hover }" close-delay="50" open-delay="50" >
+                <v-card rounded>
+                  <v-carousel class="mb-10" >
+                    <template v-for="news in newsList" >
+                      <a :href="news.link" target="_blank" >
+                        <v-carousel-item  src="@/assets/main.jpg"
                           ><h2 class="text-h5 pa-10 white--text" style="line-height: 1.2">
                             {{ news.title }}
                             <!-- </br>
@@ -53,7 +53,7 @@
                       </a>
                     </template>
                   </v-carousel>
-                </div>
+                </v-card>
               </v-hover>
             </div>
           </div>

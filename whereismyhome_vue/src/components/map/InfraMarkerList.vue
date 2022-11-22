@@ -116,7 +116,6 @@ export default {
 
     isToggle: {
       get() {
-        // console.log(this.isToggle);
         if(this.$store.state.isToggle==undefined ||this.$store.state.isToggle==null){
           this.$store.state.isToggle= [];
         }
@@ -136,7 +135,6 @@ export default {
         //   this.$set(storeData,storeData.length,isToggle[isToggle.length-1]);
         // }
         this.SET_ISTOGGLE(isToggle);
-        // this.$store.state.isToggle=isToggle;
         this.clickInfraButton(isToggle);
       },
     },

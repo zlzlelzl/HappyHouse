@@ -125,11 +125,8 @@ export default {
     },
   },
   watch: {
-    getIsToggle(val){deep: true,
-      console.log("rader toggle watch1");
-      console.log(val);
-    },
-    isToggle(val){deep: true,
+
+    isToggle(val){
       console.log("rader toggle watch2");
       console.log(val);
 

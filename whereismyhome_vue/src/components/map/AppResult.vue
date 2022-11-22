@@ -1,11 +1,11 @@
 <template>
   <!-- result -->
-  <v-card class="pa-0 ma-3" height="82%" width="93%" style="position: absolute; top: 15%">
-    <template v-if="isUseCheck">
-      <app-result-detail></app-result-detail>
+  <v-card class="pa-0 ma-3" height="87%" width="93%" style="position: absolute; top: 10%">
+    <template v-if="isUseCheck" >
+      <app-result-detail ></app-result-detail>
     </template>
 
-    <v-list dense class="overflow-y-auto ma-3" height="98%" :class="scrollbarTheme">
+    <v-list dense class="overflow-y-auto ma-3" height="88%" :class="scrollbarTheme">
       <v-subheader>아파트 검색 결과</v-subheader>
       <v-list-item-group v-if="mapdata.app.result.houseinfos.length == 0">
         <v-list-item>검색 결과가 없습닌다.</v-list-item>

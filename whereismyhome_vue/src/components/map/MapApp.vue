@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="map" class="pa-5" style="width: 100%; height: 800px">
+    <div id="map" class="pa-5" style="width: 100%; height: 85vh">
       <!-- marker -->
       <infra-marker-list :map="map"></infra-marker-list>
       <v-card
@@ -139,7 +139,7 @@ export default {
         minLevel: 5, // 클러스터 할 최소 지도 레벨
       });
 
-      // this.SET_CLUSTERER(clusterer);
+      this.SET_CLUSTERER(clusterer);
     },
     //차트 ------------------------------------------------------------------------------
     // displayChart() {
@@ -417,10 +417,10 @@ export default {
         radius: 1000, // 미터 단위의 원의 반지름입니다
         strokeWeight: 5, // 선의 두께입니다
         strokeColor: "#75B8FA", // 선의 색깔입니다
-        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeOpacity: 0.7, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
         strokeStyle: "dashed", // 선의 스타일 입니다
         fillColor: "#CFE7FF", // 채우기 색깔입니다
-        fillOpacity: 0.7, // 채우기 불투명도 입니다
+        fillOpacity: 0.3, // 채우기 불투명도 입니다
       });
       this.mapdata.infra.circle.push(cc);
 

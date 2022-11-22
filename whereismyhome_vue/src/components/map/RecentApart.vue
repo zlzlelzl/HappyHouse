@@ -1,11 +1,17 @@
 <template>
   <div>
     <div>
-      <h3 class="text-h5 font-weight-medium pb-4">최근 본 방</h3>
+      <h3 class="text-h5 font-weight-medium pb-0 text-center">관심목록</h3>
 
       <v-divider></v-divider>
-      <div>
-        <v-row v-for="(item, idx) in this.computedObj" :key="idx" class="py-2">
+      <v-card height="410px" 
+        v-if="list.length==0">
+        <h3 class="text-h6 grey--text text-center py-3">최근 본 방이 없습니다.</h3>
+        <v-img src="@/assets/cache_empty.png"></v-img>
+      </v-card>
+      <v-card height="410px" 
+        v-else>
+        <v-row v-for="(item, idx) in calData" :key="idx" class="py-2">
           <v-col cols="12" md="6" lg="5">
             <v-card height="100%" flat>
               <v-img
@@ -30,8 +36,14 @@
             </div>
           </v-col>
         </v-row>
-        <button @click="limit = limit + 5">Show more</button>
-      </div>
+        <v-pagination
+        position: fixed
+        v-model="curPageNum"
+        :length="numOfPages"
+        circle
+      ></v-pagination >
+        <!-- <button @click="limit += 5">Show more</button> -->
+      </v-card>
     </div>
   </div>
 </template>
@@ -47,6 +59,8 @@ export default {
     return {
       list: [],
       limit: 5,
+      dataPerPage:2,
+      curPageNum: 1,
     };
   },
   created() {
@@ -61,6 +75,18 @@ export default {
     // },
     computedObj() {
       return this.limit ? this.list.slice(0, this.limit) : this.list;
+    },
+    startOffset() {
+        return ((this.curPageNum - 1) * this.dataPerPage);
+    },
+    endOffset() {
+      return (this.startOffset + this.dataPerPage);
+    },
+    numOfPages() {
+      return Math.ceil(this.list.length / this.dataPerPage);
+    },
+    calData() {
+      return this.list.slice(this.startOffset, this.endOffset)
     },
   },
   methods: {
