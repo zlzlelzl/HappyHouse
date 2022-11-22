@@ -33,6 +33,8 @@ export default {
 </template>
 
 <script>
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+const mapStore = "mapStore";
 export default {
   name: "App",
 
@@ -41,5 +43,17 @@ export default {
     MainFooter: () => import("@/components/layout/MainfFooter.vue"),
   },
   data: () => ({}),
+  created() {},
+  beforeMount() {
+    this.INIT_CACHE();
+  },
+  watch: {},
+  computed: {
+    ...mapState(mapStore, ["mapdata", "cache"]),
+    ...mapGetters(mapStore, ["getMapData"]),
+  },
+  methods: {
+    ...mapMutations(mapStore, ["INIT_CACHE"]),
+  },
 };
 </script>

@@ -160,20 +160,12 @@ export default {
         to: "/",
       },
       {
-        title: "아파트",
-        to: "/apt",
-      },
-      {
         title: "공지사항",
         to: "/notice",
       },
       {
         title: "Q&A",
         to: "/qna",
-      },
-      {
-        title: "Authors",
-        to: "/authors",
       },
       {
         title: "지도",
