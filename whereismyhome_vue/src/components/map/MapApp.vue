@@ -3,12 +3,7 @@
     <div id="map" class="pa-5" style="width: 100%; height: 800px">
       <!-- marker -->
       <infra-marker-list :map="map"></infra-marker-list>
-      <v-card
-        elevation="15"
-        width="30%"
-        height="100%"
-        style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)"
-      >
+      <v-card elevation="15" width="30%" height="100%" style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)">
         <!-- seacrh -->
         <app-search></app-search>
         <!-- result -->
@@ -30,15 +25,15 @@
 
 <script>
 /* global kakao */
-import AppResult from "./AppResult.vue";
-import AppSearch from "./AppSearch.vue";
-import { apiInstance } from "@/api/http-common";
-import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
-import axios from "axios";
-import InfraMarkerList from "./InfraMarkerList.vue";
+import AppResult from "./AppResult.vue"
+import AppSearch from "./AppSearch.vue"
+import { apiInstance } from "@/api/http-common"
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex"
+import axios from "axios"
+import InfraMarkerList from "./InfraMarkerList.vue"
 
-const mapStore = "mapStore";
-const http = apiInstance();
+const mapStore = "mapStore"
+const http = apiInstance()
 
 export default {
   namespaced: true,
@@ -55,9 +50,8 @@ export default {
       infra: {},
       areaMap: {},
       areaOrder: {},
-      isChart: false, // 차트는 자식 컴포넌트에서 사용
       //   headers:{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}
-    };
+    }
   },
   mounted() {
     this.init();
@@ -102,7 +96,7 @@ export default {
       "getCheckCircle",
     ]),
     isUseCheck() {
-      return this.mapdata.app.result.detail.isUse;
+      return this.mapdata.app.result.detail.isUse
     },
   },
   methods: {
@@ -111,26 +105,26 @@ export default {
     //카카오맵 init---------------------------------------------------------------------
     init() {
       if (window.kakao && window.kakao.maps) {
-        this.initMap();
+        this.initMap()
       } else {
-        const script = document.createElement("script");
-        script.onload = () => kakao.maps.load(this.initMap);
-        script.async = true;
+        const script = document.createElement("script")
+        script.onload = () => kakao.maps.load(this.initMap)
+        script.async = true
         script.src =
-          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9549d558e1a1a37bc6398c7bedc83d2c&libraries=services,clusterer";
-        document.head.appendChild(script);
+          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9549d558e1a1a37bc6398c7bedc83d2c&libraries=services,clusterer"
+        document.head.appendChild(script)
       }
     },
     async initMap() {
-      const container = document.getElementById("map");
+      const container = document.getElementById("map")
       const options = {
         center: new kakao.maps.LatLng(37.5642135, 127.0016985),
         level: 5,
-      };
+      }
 
       //지도 객체를 등록합니다.
       //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
-      this.map = new kakao.maps.Map(container, options);
+      this.map = new kakao.maps.Map(container, options)
       var clusterer = new kakao.maps.MarkerClusterer({
         map: this.map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
         averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
@@ -334,28 +328,28 @@ export default {
 
     displayMarker(data) {
       //마커 초기화
-      let markers = this.getMarkers;
+      let markers = this.getMarkers
       if (markers.length > 0) {
-        markers.forEach((marker) => marker.setMap(null));
+        markers.forEach((marker) => marker.setMap(null))
       }
 
       if (data.length > 0) {
-        markers = [];
+        markers = []
         data.forEach((d) => {
           let marker = new kakao.maps.Marker({
             map: this.map,
             position: new kakao.maps.LatLng(d.lat, d.lng),
             title: JSON.stringify(d),
-          });
-          markers.push(marker);
+          })
+          markers.push(marker)
           // 마커에 클릭이벤트를 등록합니다
           // console.log(marker.getTitle());
           kakao.maps.event.addListener(marker, "click", () => {
             // 마커 위에 인포윈도우를 표시합니다
             // console.log(JSON.parse(marker.getTitle()));
-            this.setHouseDetailInfo(JSON.parse(marker.getTitle()));
-          });
-        });
+            this.setHouseDetailInfo(JSON.parse(marker.getTitle()))
+          })
+        })
         // markers = positions.map(
         //   (p) =>
         //     new kakao.maps.Marker({
@@ -370,9 +364,9 @@ export default {
         // this.map.setBounds(bounds);
         // console.log("getcl");
         // console.log(this.getClusterer);
-        let clusterer = this.getClusterer;
+        let clusterer = this.getClusterer
         // console.log(clusterer);
-        clusterer.addMarkers(markers);
+        clusterer.addMarkers(markers)
         // this.SET_CLUSTERER(clusterer);
         // this.SET_MARKERS(markers);
       }
@@ -385,19 +379,19 @@ export default {
           this.SET_MARKERS(this.displayMarker(response.data));
         })
         .catch((error) => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
     setHouseDetailInfo(house) {
       // console.log("setHouseDetail st");
       // console.log(house);
-      this.setHouseDetail(house);
-      this.moveMapLocation(house);
-      this.drawCircleFromHouse(house);
+      this.setHouseDetail(house)
+      this.moveMapLocation(house)
+      this.drawCircleFromHouse(house)
     },
     moveMapLocation(data) {
-      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005);
-      this.map.setCenter(moveLatLon);
+      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005)
+      this.map.setCenter(moveLatLon)
     },
     drawCircleFromHouse(data) {
       // 이전 원 지우기
@@ -428,7 +422,7 @@ export default {
       // this.SET_CIRCLE(circles);
     },
   },
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
