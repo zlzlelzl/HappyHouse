@@ -19,13 +19,6 @@
                   당신의 집을 찾아보세요
                 </h2>
               </v-col>
-              <v-col class="d-flex align-center">
-                <!-- <v-avatar class="elevation-4" color="accent">
-                  <v-icon large>mdi-feather</v-icon>
-                </v-avatar>
-
-                <div class="text-h6 pl-2">Yan Lee · 22 July 2019</div> -->
-              </v-col>
             </v-row>
           </v-card-text>
         </v-img>
@@ -50,8 +43,8 @@
                   <v-carousel class="mb-10">
                     <template v-for="news in newsList">
                       <a :href="news.link" target="_blank">
-                        <v-carousel-item src="@/assets/main2.jpg"
-                          ><h2 class="text-h5 pa-10" style="line-height: 1.2">
+                        <v-carousel-item src="@/assets/main.jpg"
+                          ><h2 class="text-h5 pa-10 white--text" style="line-height: 1.2">
                             {{ news.title }}
                             <!-- </br>
                             {{ news.description }} -->

@@ -1,11 +1,11 @@
 <template>
   <!-- result -->
-  <div style="background-color: black">
-    <VBtn color="rgb(255, 255, 255, 1)" icon @click="closeDetail">
+  <div style="background-color: white">
+    <VBtn color="rgb(0, 0, 0, 1)" icon @click="closeDetail">
       <VIcon>mdi-close</VIcon>
     </VBtn>
     <v-card
-      color="rgb(0, 0, 0, 1)"
+      color="rgb(255, 255, 255, 1)"
       class="pa-5 ma-0"
       height="100%"
       width="100%"
@@ -77,7 +77,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.setRoadView()
+    this.setRoadView();
   },
   watch: {},
   computed: {

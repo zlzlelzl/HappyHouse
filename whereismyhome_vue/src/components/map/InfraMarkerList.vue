@@ -1,5 +1,9 @@
 <template>
-  <v-card class="float-right ma-0" style="z-index: 100; background-color: rgba(255, 255, 255, 0)" v-if="isUseCheck">
+  <v-card
+    class="float-right ma-0"
+    style="z-index: 100; background-color: rgba(255, 255, 255, 0)"
+    v-if="isUseCheck"
+  >
     <v-btn-toggle multiple v-model="isToggle">
       <v-btn v-for="(item, i) in mapdata.infra.categoryGroupCodes" :key="i" class="ma-0">
         <!-- @click="clickInfraButton(item)" -->
@@ -36,13 +40,26 @@ export default {
 
   data() {
     return {
-      isToggle: [],
-      buttonMapping: ["MT1", "CS2", "PS3", "SC4", "PK6", "OL7", "SW8", "BK9", "FD6", "CE7", "HP8", "PM9"],
-    }
+      // isToggle: [],
+      buttonMapping: [
+        "MT1",
+        "CS2",
+        "PS3",
+        "SC4",
+        "PK6",
+        "OL7",
+        "SW8",
+        "BK9",
+        "FD6",
+        "CE7",
+        "HP8",
+        "PM9",
+      ],
+    };
   },
   mounted() {
     // this.mapdata.infra=[];
-    console.log(this.mapdata.infra)
+    // console.log(this.mapdata.infra);
   },
 
   updated() {},
@@ -58,54 +75,69 @@ export default {
   watch: {
     async isUseCheck(val) {
       if (val) {
-        await this.getAllInfra()
+        await this.getAllInfra();
         // await this.clearAllMarker();
         await this.createAllMarker();
       } else {
         //모든마커초기화
         this.clearAllMarker();
         //버튼 토글값 초기화
-        this.isToggle = [];
+        // this.isToggle = [];
       }
     },
     async isToggle(val) {
+      console.log("get11");
+      console.log(this.isToggle);
       await this.clickInfraButton(val);
     },
   },
   computed: {
-    ...mapState(mapStore, ["mapdata"]),
-    ...mapGetters(mapStore, ["getMapData", "getClusterer", "getMarkers"]),
+    ...mapState(mapStore, ["mapdata", "isToggle"]),
+    ...mapGetters(mapStore, ["getMapData", "getClusterer", "getMarkers", "getIsToggle"]),
     isUseCheck() {
-      return this.mapdata.app.result.detail.isUse
+      return this.mapdata.app.result.detail.isUse;
     },
     getHouseInfo() {
-      return this.mapdata.app.result.detail.houseinfo
+      return this.mapdata.app.result.detail.houseinfo;
+    },
+    isToggle: {
+      get() {
+        console.log("get");
+        // console.log(this.isToggle);
+        return this.$store.state.isToggle;
+      },
+      set(isToggle) {
+        console.log("set");
+        console.log(isToggle);
+        this.$store.state.isToggle = isToggle;
+        this.clickInfraButton(isToggle);
+      },
     },
   },
   methods: {
-    ...mapMutations(mapStore, ["SET_MARKERS", "SET_CLUSTERER"]),
+    ...mapMutations(mapStore, ["SET_MARKERS", "SET_CLUSTERER", "SET_ISTOGGLE"]),
     ...mapActions(mapStore, ["setHouseDetail"]),
     //차트 ------------------------------------------------------------------------------
     async calcInfraScore(pos) {
       // 인프라 가져오기
-      await this.getAllInfra()
-      let score = 0
+      await this.getAllInfra();
+      let score = 0;
       for (let i = 0; i < this.mapdata.infra.categoryGroupCodes.length; i++) {
-        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"]
+        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"];
         // 0~1000m, 0m에 가까울수록 고득점
         // console.log(this.infra[code][0])
         if (this.mapdata.infra.data[code].length != 0) {
-          score += 1000 - this.infra.data[code][0].distance
+          score += 1000 - this.infra.data[code][0].distance;
         }
         // console.log(this.infra)
       }
       // await 때문에 조금 느림
-      console.log(score)
+      console.log(score);
     },
     async getAllInfra() {
       for (let i = 0; i < this.mapdata.infra.categoryGroupCodes.length; i++) {
-        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"]
-        await this.getInfra(code)
+        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"];
+        await this.getInfra(code);
       }
 
       //  console.log(this.infra)
@@ -115,7 +147,7 @@ export default {
       // console.log(this.mapdata.app.result.detail.houseinfo.lat+ " "+this.mapdata.app.result.detail.houseinfo.lng)
       await axios
         .get(
-          `https://dapi.kakao.com/v2/local/search/category.json?x=${this.mapdata.app.result.detail.houseinfo.lng}&y=${this.mapdata.app.result.detail.houseinfo.lat}&radius=3000&category_group_code=${code}&sort=distance`,
+          `https://dapi.kakao.com/v2/local/search/category.json?x=${this.mapdata.app.result.detail.houseinfo.lng}&y=${this.mapdata.app.result.detail.houseinfo.lat}&radius=1000&category_group_code=${code}&sort=distance`,
           {
             headers: {
               Authorization: "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f",
@@ -125,29 +157,29 @@ export default {
         .then(({ data }) => {
           // this.map.app.result.housedeals = data
           // console.log(this.mapdata.infra.data[code]);
-          this.mapdata.infra.data[code] = data.documents
+          this.mapdata.infra.data[code] = data.documents;
           // console.log("get infra");
           // console.log(this.mapdata.infra.data[code]);
           // console.log(this.mapdata.infra.data[code])
-        })
+        });
     },
 
     displayMarker(data) {
       //마커 초기화
-      let markers = this.getMarkers
+      let markers = this.getMarkers;
       if (markers.length > 0) {
-        markers.forEach((marker) => marker.setMap(null))
+        markers.forEach((marker) => marker.setMap(null));
       }
 
       if (data.length > 0) {
-        markers = []
+        markers = [];
         data.forEach((d) => {
           let marker = new kakao.maps.Marker({
             map: this.map,
             position: new kakao.maps.LatLng(d.lat, d.lng),
             title: JSON.stringify(d),
-          })
-          markers.push(marker)
+          });
+          markers.push(marker);
           // 마커에 클릭이벤트를 등록합니다
           kakao.maps.event.addListener(marker, "click", () => {
             // 마커 위에 인포윈도우를 표시합니다
@@ -168,11 +200,11 @@ export default {
       http
         .get(`/map/apt/type?name=서울특별시&type=시`)
         .then((response) => {
-          this.SET_MARKERS(this.displayMarker(response.data))
+          this.SET_MARKERS(this.displayMarker(response.data));
         })
         .catch((error) => {
-          console.log(error)
-        })
+          console.log(error);
+        });
     },
     setHouseDetailInfo(house) {
       this.setHouseDetail(house);
@@ -237,7 +269,7 @@ export default {
         });
         this.mapdata.infra.markers[this.buttonMapping[i]] = markers;
       }
-      console.log("insert all marker done")
+      console.log("insert all marker done");
     },
     changeMarker(type, flg) {
       var val = null;
@@ -334,7 +366,7 @@ export default {
       }
     },
   },
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
