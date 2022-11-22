@@ -79,7 +79,6 @@
 		on left(h.dongcode,5) = left(gu.guguncode,5)
 		where left(h.dongcode,5) = left(#{gugun},5)
 		order by aptName
-		limit 10
 	</select>
 	
 	<select id="getAptInSido" parameterType="string" resultType="houseInfoDto">
@@ -92,7 +91,6 @@
 		on left(h.dongcode,5) = left(gu.guguncode,5)
 		where left(h.dongcode,2) = left(#{sido},2)
 		order by aptName
-		limit 500
 	</select>
 	
 	<select id="getAptByName" parameterType="string" resultType="houseInfoDto">
@@ -101,7 +99,6 @@
 		from houseinfo h
 		where aptName like #{name} 
 		order by aptName
-		limit 10
 	</select>
 	
 	<select id="getSidoByName" parameterType="string" resultType="string">
