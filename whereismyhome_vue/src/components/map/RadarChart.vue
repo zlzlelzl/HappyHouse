@@ -66,15 +66,7 @@ export default {
       default: () => [],
     },
   },
-  methods: {
-    ...mapMutations(mapStore, ["SET_ISTOGGLE"]),
-    changeInfra() {
-    console.log("rader toggle")
-      console.log(this.isToggle)
-      //   console.log(this.mapdata.infra)
-      //   this.mapdata.infra.data[this.buttonMapping[i]]
-    },
-  },
+  
   computed: {
     ...mapState(mapStore, ["mapdata", "isToggle"]),
     ...mapGetters(mapStore, ["getIsToggle"]),
@@ -90,6 +82,48 @@ export default {
   mounted() {
     this.changeInfra()
   },
+  methods: {
+    ...mapMutations(mapStore, ["SET_ISTOGGLE"]),
+    changeInfra() {
+    console.log("rader toggle")
+      console.log(this.isToggle)
+      //   console.log(this.mapdata.infra)
+      //   this.mapdata.infra.data[this.buttonMapping[i]]
+    },
+    calcInfraScore(val) {
+      // 인프라 가져오기
+      let totalScore = 0;
+      let categoryMap = this.infra.categoryGroupCodes
+
+    this.chartData.labels = []
+      this.chartData.datasets[0].data = []
+
+      for (let i = 0; i < val.length; i++) {
+        let order = val[i]
+        let code = this.buttonMapping[order]
+        let datas = this.mapdata.infra.data[code]
+        // console.log("this.mapdata.infra.data[code]",
+        // this.mapdata.infra.data[code])
+        // console.log("code", code)
+
+        // 0~1000m, 0m에 가까울수록 고득점
+        // console.log(this.infra[code][0])
+        if (datas.length != 0) {
+          let score = 1000 - datas[0].distance;
+          totalScore += score
+
+            // 삼각형부터 구분 가능
+            if(val.length >= 3){
+            this.chartData.labels.push(categoryMap[order].Description)
+            this.chartData.datasets[0].data.push(score)
+            }
+        }
+        // console.log(this.infra)
+      }
+      // await 때문에 조금 느림
+      console.log(totalScore);
+    },
+  },
   watch: {
     getIsToggle(val){deep: true,
       console.log("rader toggle watch1");
@@ -98,6 +132,19 @@ export default {
     isToggle(val){deep: true,
       console.log("rader toggle watch2");
       console.log(val);
+
+      console.log(this.chartData.labels)
+      console.log(this.chartData.datasets[0].data)
+        this.calcInfraScore(val)
+    //   console.log(this.mapdata.infra.data)
+    //   console.log(this.buttonMapping)
+
+    //   for(let v in val){
+    //     if (this.mapdata.infra.data[this.buttonMapping[val[v]]].length != 0) {
+    //       score += 1000 - this.mapdata.infra.data[this.buttonMapping[val[v]]].distance
+    //     }
+    //   }
+      
     },
     // getIsToggle: {
     //   // This will let Vue know to look inside the array
@@ -122,19 +169,30 @@ export default {
 },
   data() {
     return {
+        buttonMapping: [
+        "MT1",
+        "CS2",
+        "PS3",
+        "SC4",
+        "PK6",
+        "OL7",
+        "SW8",
+        "BK9",
+        "FD6",
+        "CE7",
+        "HP8",
+        "PM9",
+      ],
       infra: {},
       chartData: {
-        labels: [
-          1432220400000, 1443625200000, 1474038000000, 1471618800000, 1463756400000, 1486911600000, 1511622000000,
-          1536591600000, 1556895600000, 1572015600000, 1594825200000, 1601218800000, 1633618800000, 1632754800000,
-        ],
+        labels: [],
         datasets: [
           {
             xAxisID: "x",
             label: "Data One",
             backgroundColor: "#f87979",
 
-            data: [33000, 37400, 39800, 38400, 38400, 38000, 44000, 54500, 53000, 53800, 62000, 68250, 83000, 83500],
+            data: [],
             fill: false,
           },
         ],
@@ -142,26 +200,23 @@ export default {
       chartOptions: {
         responsive: true,
         position: "relative",
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return context.formattedValue
+              },
+            },
+          },
+        },
       },
     }
   },
   actions: {
-    // async calcInfraScore(pos) {
-    //   // 인프라 가져오기
-    //   await this.getAllInfra();
-    //   let score = 0;
-    //   for (let i = 0; i < this.categoryGroupCodes.length; i++) {
-    //     let code = this.categoryGroupCodes[i]["Name"];
-    //     // 0~1000m, 0m에 가까울수록 고득점
-    //     // console.log(this.infra[code][0])
-    //     if (this.infra[code].length != 0) {
-    //       score += 1000 - this.infra[code][0].distance;
-    //     }
-    //     // console.log(this.infra)
-    //   }
-    //   // await 때문에 조금 느림
-    //   console.log(score);
-    // },
+    
     // async getAllInfra() {
     //   for (let i = 0; i < this.categoryGroupCodes.length; i++) {
     //     let code = this.categoryGroupCodes[i]["Name"];
