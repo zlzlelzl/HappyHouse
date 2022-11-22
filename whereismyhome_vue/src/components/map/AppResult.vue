@@ -54,10 +54,21 @@ export default {
   created() {
     this.CLEAR_APT_LIST();
   },
-  watch: {},
+  watch: {
+    // isUseCheck(val) {
+    //   console.log("ckechk1");
+    //   if (!val) return;
+    //   let houseinfo = this.mapdata.app.detail.houseinfo;
+    //   let key = houseinfo.aptName;
+    //   let value =
+    //     houseinfo.sidoName + " " + houseinfo.gugunName + " " + houseinfo.dongName;
+    //   this.cache.set(key, value);
+    //   // this.getCacheList();
+    // },
+  },
   computed: {
     ...mapState(mapStore, ["mapdata"]),
-    ...mapGetters(mapStore, ["getMapData"]),
+    ...mapGetters(mapStore, ["getMapData", "getCircle", "getCheckCircle"]),
     isUseCheck() {
       return this.mapdata.app.result.detail.isUse;
     },
@@ -66,13 +77,40 @@ export default {
     ...mapMutations(mapStore, ["CLEAR_APT_LIST", "SET_HOUSE_DEAL", "SET_DEATAIL_HOUSE"]),
     ...mapActions(mapStore, ["setHouseDetail"]),
     setHouseDetailInfo(house) {
+      console.log(house);
       this.setHouseDetail(house);
       this.moveMapLocation(house);
+      this.drawCircleFromHouse(house);
     },
     moveMapLocation(data) {
       var moveLatLon = new kakao.maps.LatLng(data.lat, data.lng);
       console.log(this.map);
       this.map.setCenter(moveLatLon);
+    },
+    drawCircleFromHouse(data) {
+      // 이전 원 지우기
+      if (this.mapdata.infra.circle.length > 0) {
+        this.mapdata.infra.circle.forEach((circle) => {
+          circle.setMap(null);
+        });
+        this.mapdata.infra.circle = [];
+      }
+      let circle = new kakao.maps.Circle({
+        center: new kakao.maps.LatLng(data.lat, data.lng), // 원의 중심좌표 입니다
+        radius: 1000, // 미터 단위의 원의 반지름입니다
+        strokeWeight: 5, // 선의 두께입니다
+        strokeColor: "#75B8FA", // 선의 색깔입니다
+        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeStyle: "dashed", // 선의 스타일 입니다
+        fillColor: "#CFE7FF", // 채우기 색깔입니다
+        fillOpacity: 0.7, // 채우기 불투명도 입니다
+      });
+      this.mapdata.infra.circle.push(circle);
+
+      // 지도에 원을 표시합니다
+      circle.setMap(this.map);
+      this.mapdata.infra.checkCircle = true;
+      // this.SET_CIRCLE(circles);
     },
   },
 };

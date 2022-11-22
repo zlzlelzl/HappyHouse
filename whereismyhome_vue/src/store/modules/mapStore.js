@@ -1,6 +1,6 @@
 import { apiInstance } from "@/api/http-common";
 const http = apiInstance();
-
+const LRU = require("lru-cache");
 /* global kakao */
 const mapStore = {
   namespaced: true,
@@ -32,25 +32,68 @@ const mapStore = {
         clusterer: {},
       },
       infra: {
-        data:[],
+        data: [],
         markers: [],
         categoryGroupCodes: [
-          { Name: "MT1", Description: "대형마트", icon: "mdi-store" },
-          { Name: "CS2", Description: "편의점", icon: "mdi-store-24-hour" },
-          { Name: "PS3", Description: "어린이집, 유치원", icon: "mdi-cradle" },
-          { Name: "SC4", Description: "학교", icon: "mdi-school" },
-          { Name: "PK6", Description: "주차장", icon: "mdi-parking" },
-          { Name: "OL7", Description: "주유소, 충전소", icon: "mdi-gas-station" },
-          { Name: "SW8", Description: "지하철역", icon: "mdi-subway-variant" },
-          { Name: "BK9", Description: "은행", icon: "mdi-bank" },
-          { Name: "FD6", Description: "음식점", icon: "mdi-silverware-fork-knife" },
-          { Name: "CE7", Description: "카페", icon: "mdi-coffee" },
-          { Name: "HP8", Description: "병원", icon: "mdi-hospital-box" },
-          { Name: "PM9", Description: "약국", icon: "mdi-pill" },
+          {
+            Name: "MT1",
+            Description: "대형마트",
+            icon: "mdi-store",
+            iconSrc: "store24",
+            iconSrc: "mdistore",
+          },
+          {
+            Name: "CS2",
+            Description: "편의점",
+            icon: "mdi-store-24-hour",
+            iconSrc: "mdistore24",
+          },
+          {
+            Name: "PS3",
+            Description: "어린이집, 유치원",
+            icon: "mdi-cradle",
+            iconSrc: "mdicradle",
+          },
+          { Name: "SC4", Description: "학교", icon: "mdi-school", iconSrc: "mdischool" },
+          {
+            Name: "PK6",
+            Description: "주차장",
+            icon: "mdi-parking",
+            iconSrc: "mdiparking",
+          },
+          {
+            Name: "OL7",
+            Description: "주유소, 충전소",
+            icon: "mdi-gas-station",
+            iconSrc: "mdigasStation",
+          },
+          {
+            Name: "SW8",
+            Description: "지하철역",
+            icon: "mdi-subway-variant",
+            iconSrc: "mdisubway",
+          },
+          { Name: "BK9", Description: "은행", icon: "mdi-bank", iconSrc: "mdibank" },
+          {
+            Name: "FD6",
+            Description: "음식점",
+            icon: "mdi-silverware-fork-knife",
+            iconSrc: "mdiSFK",
+          },
+          { Name: "CE7", Description: "카페", icon: "mdi-coffee", iconSrc: "mdicoffee" },
+          {
+            Name: "HP8",
+            Description: "병원",
+            icon: "mdi-hospital-box",
+            iconSrc: "mdihospital",
+          },
+          { Name: "PM9", Description: "약국", icon: "mdi-pill", iconSrc: "mdipill" },
         ],
         circle: [],
+        checkCircle: false,
       },
     },
+    cache: null,
     infowindow: null,
   },
   getters: {
@@ -65,6 +108,9 @@ const mapStore = {
     },
     getCircle(state) {
       return state.mapdata.infra.circle;
+    },
+    getCheckCircle(state) {
+      return state.mapdata.infra.checkCircle;
     },
   },
   mutations: {
@@ -117,6 +163,28 @@ const mapStore = {
     SET_CIRCLE(state, circle) {
       state.mapdata.infra.circle = circle;
     },
+    SET_CACHE(state, key, value) {
+      state.cache.set(key, value);
+    },
+    INIT_CACHE(state) {
+      const options = {
+        max: 25,
+        maxSize: 30,
+        sizeCalculation: (value, key) => {
+          return 1;
+        },
+        dispose: (value, key) => {
+          //freeFromMemoryOrWhatever(value);
+        },
+        ttl: 1000 * 60 * 5,
+        allowStale: false,
+        updateAgeOnGet: false,
+        updateAgeOnHas: false,
+        fetchMethod: async (key, staleValue, { options, signal }) => {},
+      };
+      console.log("cache init");
+      state.cache = new LRU(options);
+    },
   },
   actions: {
     searchByType({ commit, state }, data) {
@@ -129,7 +197,7 @@ const mapStore = {
           state.mapdata.app.result.detail.isUse = false;
           // commit("SET_HOUSE_LIST", response.data);
           // commit("SET_IS_USE", false);
-          console.log(state.houses);
+          // console.log(response.data);
         })
         .catch((error) => {
           console.log("e");
@@ -168,9 +236,14 @@ const mapStore = {
           // this.SET_HOUSE_DEAL(response.data);
           // this.SET_DEATAIL_HOUSE(house);
           // let map = this.getMap;
+          // console.log(state.mapdata.app.result.houseinfos);
           state.mapdata.app.result.detail.houseinfo = house;
           state.mapdata.app.result.detail.housedeals = response.data;
           state.mapdata.app.result.detail.isUse = true;
+          //캐시에추가
+          console.log("cache set");
+          let value = house.sidoName + " " + house.gugunName + " " + house.dongName;
+          state.cache.set(house.aptName, value);
           // this.moveMapLocation(house);
           // var moveLatLon = new kakao.maps.LatLng(house.lat, house.lng);
           // console.log(this.map);//
