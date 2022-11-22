@@ -26,14 +26,14 @@
     </div>
     <v-container>
       <v-row>
-        <v-col cols="3">
+        <v-col cols="4">
           <div class="pt-16">
             <v-card width="100%" height="100%">
               <img />
             </v-card>
           </div>
         </v-col>
-        <v-col cols="6">
+        <v-col cols="4">
           <div>
             <div class="">
               <h2 class="text-h4 font-weight-bold pb-4 text-center">부동산 NEWS</h2>
@@ -58,7 +58,7 @@
             </div>
           </div>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="4">
           <div class="pt-16">
             <v-card class="pa-3">
               <recent-apart></recent-apart>

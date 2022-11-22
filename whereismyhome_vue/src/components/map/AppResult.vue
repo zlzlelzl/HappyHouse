@@ -5,19 +5,26 @@
       <app-result-detail></app-result-detail>
     </template>
 
-    <v-list dense class="overflow-y-auto ma-3" height="98%">
+    <v-list dense class="overflow-y-auto ma-3" height="98%" :class="scrollbarTheme">
       <v-subheader>아파트 검색 결과</v-subheader>
       <v-list-item-group v-if="mapdata.app.result.houseinfos.length == 0">
         <v-list-item>검색 결과가 없습닌다.</v-list-item>
       </v-list-item-group>
       <v-list-item-group v-else>
-        <v-list-item v-for="(house, i) in mapdata.app.result.houseinfos" :key="i" @click="setHouseDetailInfo(house)">
+        <v-list-item
+          v-for="(house, i) in mapdata.app.result.houseinfos"
+          :key="i"
+          @click="setHouseDetailInfo(house)"
+        >
           <!-- <v-list-item-icon>
             <v-icon v-text="house.icon"></v-icon>
           </v-list-item-icon> -->
           <v-list-item-content>
             <v-list-item-title v-text="house.aptName"></v-list-item-title>
-            <v-list-item-subtitle>{{ house.sidoName }} {{ house.gugunName }} {{ house.dongName }}</v-list-item-subtitle>
+            <v-list-item-subtitle
+              >{{ house.sidoName }} {{ house.gugunName }}
+              {{ house.dongName }}</v-list-item-subtitle
+            >
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -26,12 +33,12 @@
 </template>
 
 <script>
-import AppResultDetail from "./AppResultDetail.vue"
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex"
-import { apiInstance } from "@/api/http-common"
+import AppResultDetail from "./AppResultDetail.vue";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+import { apiInstance } from "@/api/http-common";
 
-const mapStore = "mapStore"
-const http = apiInstance()
+const mapStore = "mapStore";
+const http = apiInstance();
 
 export default {
   name: "AppResult",
@@ -39,13 +46,13 @@ export default {
     AppResultDetail,
   },
   data() {
-    return {}
+    return {};
   },
   props: {
     map: {},
   },
   created() {
-    this.CLEAR_APT_LIST()
+    this.CLEAR_APT_LIST();
   },
   watch: {
     // isUseCheck(val) {
@@ -63,7 +70,10 @@ export default {
     ...mapState(mapStore, ["mapdata"]),
     ...mapGetters(mapStore, ["getMapData", "getCircle", "getCheckCircle"]),
     isUseCheck() {
-      return this.mapdata.app.result.detail.isUse
+      return this.mapdata.app.result.detail.isUse;
+    },
+    scrollbarTheme() {
+      return this.$vuetify.theme.dark ? "dark" : "light";
     },
   },
   methods: {
@@ -76,9 +86,9 @@ export default {
       this.drawCircleFromHouse(house);
     },
     moveMapLocation(data) {
-      var moveLatLon = new kakao.maps.LatLng(data.lat, data.lng)
-      console.log(this.map)
-      this.map.setCenter(moveLatLon)
+      var moveLatLon = new kakao.maps.LatLng(data.lat, data.lng);
+      console.log(this.map);
+      this.map.setCenter(moveLatLon);
     },
     drawCircleFromHouse(data) {
       // 이전 원 지우기
@@ -106,6 +116,44 @@ export default {
       // this.SET_CIRCLE(circles);
     },
   },
-}
+};
 </script>
-<style scoped></style>
+<style scoped>
+.light::-webkit-scrollbar {
+  width: 15px;
+}
+
+.light::-webkit-scrollbar-track {
+  background: #e6e6e6;
+  border-left: 1px solid #dadada;
+}
+
+.light::-webkit-scrollbar-thumb {
+  background: #b0b0b0;
+  border: solid 3px #e6e6e6;
+  border-radius: 7px;
+}
+
+.light::-webkit-scrollbar-thumb:hover {
+  background: black;
+}
+
+.dark::-webkit-scrollbar {
+  width: 15px;
+}
+
+.dark::-webkit-scrollbar-track {
+  background: #202020;
+  border-left: 1px solid #2c2c2c;
+}
+
+.dark::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border: solid 3px #202020;
+  border-radius: 7px;
+}
+
+.dark::-webkit-scrollbar-thumb:hover {
+  background: white;
+}
+</style>

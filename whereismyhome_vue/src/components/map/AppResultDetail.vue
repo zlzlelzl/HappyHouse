@@ -10,17 +10,19 @@
       height="100%"
       width="100%"
       style="position: absolute; z-index: 20; overflow: auto; border-radius: 0px"
+      :class="scrollbarTheme"
     >
       <!-- 로드뷰 -->
       <v-card
         id="roadview"
         class="mb-10"
-        style="width: 100%; height: 150px; border-radius: 25px"
+        style="width: 100%; height: 300px; border-radius: 25px"
       >
       </v-card>
 
       <!-- 라인차트 거래가추이 -->
-      <v-card class="mb-10" height="25%">
+      <h5 class="text-h10 text-center">거래가 추이</h5>
+      <v-card class="mb-10" height="30%">
         <line-chart></line-chart>
       </v-card>
 
@@ -30,8 +32,14 @@
       </v-card>
 
       <!-- 거래내역 -->
-      <v-list dense class="overflow-y-auto rounded" height="55%">
-        <v-subheader>아파트 거래내역</v-subheader>
+      <v-list
+        dense
+        class="overflow-y-auto rounded"
+        style="overflow-x: hidden"
+        height="55%"
+        :class="scrollbarTheme"
+      >
+        <v-subheader class="text-center">아파트 거래내역</v-subheader>
         <v-list-item-group v-if="mapdata.app.result.detail.housedeals.length == 0">
           <v-list-item>거래 내역이 없습니다.</v-list-item>
         </v-list-item-group>
@@ -89,6 +97,9 @@ export default {
     gethouseinfo() {
       return this.mapdata.app.result.detail.houseinfo;
     },
+    scrollbarTheme() {
+      return this.$vuetify.theme.dark ? "dark" : "light";
+    },
   },
   methods: {
     ...mapActions(mapStore, ["detailHouse", "getHouseList"]),
@@ -125,4 +136,42 @@ export default {
   },
 };
 </script>
-<style scoped></style>
+<style scoped>
+.light::-webkit-scrollbar {
+  width: 15px;
+}
+
+.light::-webkit-scrollbar-track {
+  background: #e6e6e6;
+  border-left: 1px solid #dadada;
+}
+
+.light::-webkit-scrollbar-thumb {
+  background: #b0b0b0;
+  border: solid 3px #e6e6e6;
+  border-radius: 7px;
+}
+
+.light::-webkit-scrollbar-thumb:hover {
+  background: black;
+}
+
+.dark::-webkit-scrollbar {
+  width: 15px;
+}
+
+.dark::-webkit-scrollbar-track {
+  background: #202020;
+  border-left: 1px solid #2c2c2c;
+}
+
+.dark::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border: solid 3px #202020;
+  border-radius: 7px;
+}
+
+.dark::-webkit-scrollbar-thumb:hover {
+  background: white;
+}
+</style>
