@@ -44,19 +44,7 @@ export default {
   data() {
     return {
       map: {},
-      circles: [],
-      checkCircle: false,
-      // coffeeMarkers: [],
-      // storeMarkers: [],
-      // carparkMarkers: [],
-      // coffeePositions: [],
-      // storePositions: [],
-      // carparkPositions: [],
-      // items: [
-      //   { icon: "mdi-clock", type: "coffee", name: "커피숍" },
-      //   { icon: "mdi-account", type: "store", name: "편의점" },
-      //   { icon: "mdi-flag", type: "carpark", name: "주차장" },
-      // ],
+
       pos: null,
 
       infra: {},
@@ -66,45 +54,47 @@ export default {
     }
   },
   mounted() {
-    this.init()
-    console.log(this.mapdata.infra)
+    this.init();
+    console.log(this.mapdata.infra);
     // this.SET_CIRCLE([]);
-    this.setSeoulMarker()
-    // console.log(this.getMapData);
+    this.setSeoulMarker();
+    this.mapdata.infra.circle = [];
   },
-  updated() {
-    // this.createCoffeeMarkers(); // 커피숍 마커를 생성하고 커피숍 마커 배열에 추가합니다
-    // this.createStoreMarkers(); // 편의점 마커를 생성하고 편의점 마커 배열에 추가합니다
-    // this.createCarparkMarkers(); // 주차장 마커를 생성하고 주차장 마커 배열에 추가합니다
-    // this.changeMarker("store");
-  },
+  updated() {},
   created() {
     // this.getHouseInfos("1111010100"),
     // this.getHouseDeals("45")
     // this.setChartData("45")
-    this.circles = []
-    // this.setChart("45")
+    // this.getCircle = [];
+    // this.setChart("45");
     // this.getInfra(this.categoryGroupCodes[0]["Name"])
     // this.getAllInfra()
     // this.calcInfraScore(this.pos)
   },
   watch: {
     isUseCheck(val) {
-      if (!val && !this.checkCircle) {
-        if (this.circles?.length != 0) {
-          this.circles.forEach((data) => {
-            data.setMap(null)
-          })
+      console.log(val);
+      if (!val && !this.mapdata.infra.checkCircle) {
+        if (this.mapdata.infra.circle?.length != 0) {
+          this.mapdata.infra.circle.forEach((data) => {
+            data.setMap(null);
+          });
 
-          this.circles = []
+          this.mapdata.infra.circle = [];
         }
       }
-      this.checkCircle = false
+      this.mapdata.infra.checkCircle = false;
     },
   },
   computed: {
     ...mapState(mapStore, ["mapdata"]),
-    ...mapGetters(mapStore, ["getMapData", "getClusterer", "getMarkers", "getCircle"]),
+    ...mapGetters(mapStore, [
+      "getMapData",
+      "getClusterer",
+      "getMarkers",
+      "getCircle",
+      "getCheckCircle",
+    ]),
     isUseCheck() {
       return this.mapdata.app.result.detail.isUse
     },
@@ -139,7 +129,8 @@ export default {
         map: this.map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
         averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
         minLevel: 5, // 클러스터 할 최소 지도 레벨
-      })
+      });
+
       // this.SET_CLUSTERER(clusterer);
     },
     //차트 ------------------------------------------------------------------------------
@@ -352,6 +343,7 @@ export default {
           })
           markers.push(marker)
           // 마커에 클릭이벤트를 등록합니다
+          // console.log(marker.getTitle());
           kakao.maps.event.addListener(marker, "click", () => {
             // 마커 위에 인포윈도우를 표시합니다
             // console.log(JSON.parse(marker.getTitle()));
@@ -383,7 +375,8 @@ export default {
       http
         .get(`/map/apt/type?name=서울특별시&type=시`)
         .then((response) => {
-          this.SET_MARKERS(this.displayMarker(response.data))
+          console.log(response.data);
+          this.SET_MARKERS(this.displayMarker(response.data));
         })
         .catch((error) => {
           console.log(error)
@@ -402,13 +395,16 @@ export default {
     },
     drawCircleFromHouse(data) {
       // 이전 원 지우기
-      if (this.circles.length > 0) {
-        this.circles.forEach((circle) => {
-          circle.setMap(null)
-        })
-        this.circles = []
+      if (this.mapdata.infra.circle.length > 0) {
+        console.log("draw circls");
+        console.log(this.mapdata.infra.circle);
+        this.mapdata.infra.circle.forEach((item) => {
+          item.setMap(null);
+        });
+        this.mapdata.infra.circle = [];
+        console.log(this.mapdata.infra.circle);
       }
-      let circle = new kakao.maps.Circle({
+      let cc = new kakao.maps.Circle({
         center: new kakao.maps.LatLng(data.lat, data.lng), // 원의 중심좌표 입니다
         radius: 1000, // 미터 단위의 원의 반지름입니다
         strokeWeight: 5, // 선의 두께입니다
@@ -417,12 +413,12 @@ export default {
         strokeStyle: "dashed", // 선의 스타일 입니다
         fillColor: "#CFE7FF", // 채우기 색깔입니다
         fillOpacity: 0.7, // 채우기 불투명도 입니다
-      })
-      this.circles.push(circle)
+      });
+      this.mapdata.infra.circle.push(cc);
 
       // 지도에 원을 표시합니다
-      circle.setMap(this.map)
-      this.checkCircle = true
+      cc.setMap(this.map);
+      this.mapdata.infra.checkCircle = true;
       // this.SET_CIRCLE(circles);
     },
   },
