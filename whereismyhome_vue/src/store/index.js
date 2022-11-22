@@ -19,6 +19,7 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState
     ({
+      paths: ["memberStore","newsStore","boardStore",],
       storage: sessionStorage,
     }),
   ],

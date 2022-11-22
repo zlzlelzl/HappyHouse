@@ -29,6 +29,7 @@ import mdiSFK from "@/assets/map/silverware-fork-knife.png";
 import mdicoffee from "@/assets/map/coffee.png";
 import mdihospital from "@/assets/map/hospital-box.png";
 import mdipill from "@/assets/map/pill.png";
+import store from "@/store";
 
 const mapStore = "mapStore";
 const http = apiInstance();
@@ -85,11 +86,23 @@ export default {
         // this.isToggle = [];
       }
     },
-    async isToggle(val) {
-      console.log("get11");
-      console.log(this.isToggle);
-      await this.clickInfraButton(val);
-    },
+    // isToggle(val) {
+    //   console.log("get11");
+    //   console.log(this.isToggle);
+    //   this.clickInfraButton(val);
+    // },
+    // isToggle: {
+    //   // This will let Vue know to look inside the array
+    //   deep: true,
+
+    //   // We have to move our method to a handler field
+    //   handler(val){
+    //   console.log("get11");
+    //   console.log(this.isToggle);
+    //   this.clickInfraButton(val);
+    //   }
+    
+    // }
   },
   computed: {
     ...mapState(mapStore, ["mapdata", "isToggle"]),
@@ -100,16 +113,30 @@ export default {
     getHouseInfo() {
       return this.mapdata.app.result.detail.houseinfo;
     },
+
     isToggle: {
       get() {
-        console.log("get");
         // console.log(this.isToggle);
+        if(this.$store.state.isToggle==undefined ||this.$store.state.isToggle==null){
+          this.$store.state.isToggle= [];
+        }
         return this.$store.state.isToggle;
       },
       set(isToggle) {
-        console.log("set");
         console.log(isToggle);
-        this.$store.state.isToggle = isToggle;
+        // let storeData=this.$store.state.isToggle;
+        
+        // console.log(storeData);
+        // console.log(isToggle.length);
+        // if(storeData.length>isToggle.length){
+        // console.log("del");
+        //   this.$delete(storeData,storeData.length-1);
+        // }else{
+        // console.log("set");
+        //   this.$set(storeData,storeData.length,isToggle[isToggle.length-1]);
+        // }
+        this.SET_ISTOGGLE(isToggle);
+        // this.$store.state.isToggle=isToggle;
         this.clickInfraButton(isToggle);
       },
     },
@@ -324,7 +351,8 @@ export default {
       return markerImage;
     },
     clickInfraButton(item) {
-      console.log("infra btn");
+      // console.log("item");
+      // console.log(item);
       let flgList = [];
       for (let i = 0; i < this.buttonMapping.length; ++i) {
         flgList.push(0);

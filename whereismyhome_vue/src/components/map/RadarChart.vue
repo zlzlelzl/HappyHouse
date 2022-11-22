@@ -69,6 +69,7 @@ export default {
   methods: {
     ...mapMutations(mapStore, ["SET_ISTOGGLE"]),
     changeInfra() {
+    console.log("rader toggle")
       console.log(this.isToggle)
       //   console.log(this.mapdata.infra)
       //   this.mapdata.infra.data[this.buttonMapping[i]]
@@ -76,16 +77,49 @@ export default {
   },
   computed: {
     ...mapState(mapStore, ["mapdata", "isToggle"]),
-    ...mapGetters(mapStore, ["GetIsToggle"]),
+    ...mapGetters(mapStore, ["getIsToggle"]),
+    getIsToggle(val){  
+      console.log("rader toggle");
+      console.log(val);
+      return this.$store.getters["getIsToggle"];
+    },
   },
   created() {
-    console.log(this.isToggle)
     this.infra = this.mapdata.infra
   },
   mounted() {
     this.changeInfra()
   },
-  watch: {},
+  watch: {
+    getIsToggle(val){deep: true,
+      console.log("rader toggle watch1");
+      console.log(val);
+    },
+    isToggle(val){deep: true,
+      console.log("rader toggle watch2");
+      console.log(val);
+    },
+    // getIsToggle: {
+    //   // This will let Vue know to look inside the array
+    //   deep: true,
+
+    //   // We have to move our method to a handler field
+    //   handler(){
+    //     console.log('The list of colours has changed!');
+    //   }
+    
+    // },
+    // isToggle: {
+    //   // This will let Vue know to look inside the array
+    //   deep: true,
+
+    //   // We have to move our method to a handler field
+    //   handler(){
+    //     console.log('The list of colours has changed!');
+    //   }
+    
+    
+},
   data() {
     return {
       infra: {},
