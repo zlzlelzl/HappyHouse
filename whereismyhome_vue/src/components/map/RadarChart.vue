@@ -15,9 +15,10 @@
 </template>
 
 <script>
-import { Radar as RadarChartGen } from "vue-chartjs";
+import { Radar as RadarChartGen } from "vue-chartjs"
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex"
 import {
-  Chart as ChartJS,
+  Chart as ChartJS2,
   Title,
   Tooltip,
   Legend,
@@ -26,17 +27,11 @@ import {
   CategoryScale,
   PointElement,
   RadialLinearScale,
-} from "chart.js";
-ChartJS.register(
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  LinearScale,
-  CategoryScale,
-  PointElement,
-  RadialLinearScale
-);
+} from "chart.js"
+
+const mapStore = "mapStore"
+
+ChartJS2.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, RadialLinearScale)
 export default {
   namespaced: true,
   name: "RadarChart",
@@ -71,13 +66,33 @@ export default {
       default: () => [],
     },
   },
+  methods: {
+    ...mapMutations(mapStore, ["SET_ISTOGGLE"]),
+    changeInfra() {
+      console.log(this.isToggle)
+      //   console.log(this.mapdata.infra)
+      //   this.mapdata.infra.data[this.buttonMapping[i]]
+    },
+  },
+  computed: {
+    ...mapState(mapStore, ["mapdata", "isToggle"]),
+    ...mapGetters(mapStore, ["GetIsToggle"]),
+  },
+  created() {
+    console.log(this.isToggle)
+    this.infra = this.mapdata.infra
+  },
+  mounted() {
+    this.changeInfra()
+  },
+  watch: {},
   data() {
     return {
+      infra: {},
       chartData: {
         labels: [
-          1432220400000, 1443625200000, 1474038000000, 1471618800000, 1463756400000,
-          1486911600000, 1511622000000, 1536591600000, 1556895600000, 1572015600000,
-          1594825200000, 1601218800000, 1633618800000, 1632754800000,
+          1432220400000, 1443625200000, 1474038000000, 1471618800000, 1463756400000, 1486911600000, 1511622000000,
+          1536591600000, 1556895600000, 1572015600000, 1594825200000, 1601218800000, 1633618800000, 1632754800000,
         ],
         datasets: [
           {
@@ -85,10 +100,7 @@ export default {
             label: "Data One",
             backgroundColor: "#f87979",
 
-            data: [
-              33000, 37400, 39800, 38400, 38400, 38000, 44000, 54500, 53000, 53800, 62000,
-              68250, 83000, 83500,
-            ],
+            data: [33000, 37400, 39800, 38400, 38400, 38000, 44000, 54500, 53000, 53800, 62000, 68250, 83000, 83500],
             fill: false,
           },
         ],
@@ -96,21 +108,14 @@ export default {
       chartOptions: {
         responsive: true,
         position: "relative",
-        scales: {
-          x: {
-            type: "linear",
-          },
-        },
       },
-    };
+    }
   },
   actions: {
     // async calcInfraScore(pos) {
     //   // 인프라 가져오기
     //   await this.getAllInfra();
-
     //   let score = 0;
-
     //   for (let i = 0; i < this.categoryGroupCodes.length; i++) {
     //     let code = this.categoryGroupCodes[i]["Name"];
     //     // 0~1000m, 0m에 가까울수록 고득점
@@ -128,7 +133,6 @@ export default {
     //     let code = this.categoryGroupCodes[i]["Name"];
     //     await this.getInfra(code);
     //   }
-
     //   //  console.log(this.infra)
     // },
     // // async getInfra(code) {
@@ -162,7 +166,6 @@ export default {
     // },
     // async setChartData(aptCode) {
     //   await this.getHouseDeals(aptCode);
-
     //   this.areaMap = {};
     //   this.areaOrder = [];
     //   let deals = this.map.app.result.housedeals;
@@ -181,13 +184,12 @@ export default {
     //   for (let i = 0; i < this.areaOrder.length; i++) {
     //     this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x);
     //   }
-      // console.log(this.areaMap)
-
-      // for(let i=0;i<deals.length;i++){
-      //     if(deals[i].area=="59.98")
-      //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
-      // }
+    // console.log(this.areaMap)
+    // for(let i=0;i<deals.length;i++){
+    //     if(deals[i].area=="59.98")
+    //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
+    // }
     // },
   },
-};
+}
 </script>
