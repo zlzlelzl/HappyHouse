@@ -3,12 +3,7 @@
     <div id="map" class="pa-5" style="width: 100%; height: 800px">
       <!-- marker -->
       <infra-marker-list :map="map"></infra-marker-list>
-      <v-card
-        elevation="15"
-        width="30%"
-        height="100%"
-        style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)"
-      >
+      <v-card elevation="15" width="30%" height="100%" style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)">
         <!-- seacrh -->
         <app-search></app-search>
         <!-- result -->
@@ -30,15 +25,15 @@
 
 <script>
 /* global kakao */
-import AppResult from "./AppResult.vue";
-import AppSearch from "./AppSearch.vue";
-import { apiInstance } from "@/api/http-common";
-import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
-import axios from "axios";
-import InfraMarkerList from "./InfraMarkerList.vue";
+import AppResult from "./AppResult.vue"
+import AppSearch from "./AppSearch.vue"
+import { apiInstance } from "@/api/http-common"
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex"
+import axios from "axios"
+import InfraMarkerList from "./InfraMarkerList.vue"
 
-const mapStore = "mapStore";
-const http = apiInstance();
+const mapStore = "mapStore"
+const http = apiInstance()
 
 export default {
   namespaced: true,
@@ -49,8 +44,8 @@ export default {
   data() {
     return {
       map: {},
-      circles:[],
-      checkCircle:false,
+      circles: [],
+      checkCircle: false,
       // coffeeMarkers: [],
       // storeMarkers: [],
       // carparkMarkers: [],
@@ -67,15 +62,14 @@ export default {
       infra: {},
       areaMap: {},
       areaOrder: {},
-      isChart: false, // 차트는 자식 컴포넌트에서 사용
       //   headers:{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}
-    };
+    }
   },
   mounted() {
-    this.init();
+    this.init()
     console.log(this.mapdata.infra)
     // this.SET_CIRCLE([]);
-    this.setSeoulMarker();
+    this.setSeoulMarker()
     // console.log(this.getMapData);
   },
   updated() {
@@ -88,31 +82,31 @@ export default {
     // this.getHouseInfos("1111010100"),
     // this.getHouseDeals("45")
     // this.setChartData("45")
-    this.circles=[];
-    this.setChart("45");
+    this.circles = []
+    // this.setChart("45")
     // this.getInfra(this.categoryGroupCodes[0]["Name"])
     // this.getAllInfra()
     // this.calcInfraScore(this.pos)
   },
   watch: {
-    isUseCheck (val) {
-      if (!val &&!this.checkCircle) {
-        if ( this.circles?.length != 0) {
+    isUseCheck(val) {
+      if (!val && !this.checkCircle) {
+        if (this.circles?.length != 0) {
           this.circles.forEach((data) => {
-            data.setMap(null);
-          });
-          
-          this.circles=[];
+            data.setMap(null)
+          })
+
+          this.circles = []
         }
       }
-      this.checkCircle=false;
+      this.checkCircle = false
     },
   },
   computed: {
     ...mapState(mapStore, ["mapdata"]),
     ...mapGetters(mapStore, ["getMapData", "getClusterer", "getMarkers", "getCircle"]),
     isUseCheck() {
-      return this.mapdata.app.result.detail.isUse;
+      return this.mapdata.app.result.detail.isUse
     },
   },
   methods: {
@@ -121,31 +115,31 @@ export default {
     //카카오맵 init---------------------------------------------------------------------
     init() {
       if (window.kakao && window.kakao.maps) {
-        this.initMap();
+        this.initMap()
       } else {
-        const script = document.createElement("script");
-        script.onload = () => kakao.maps.load(this.initMap);
-        script.async = true;
+        const script = document.createElement("script")
+        script.onload = () => kakao.maps.load(this.initMap)
+        script.async = true
         script.src =
-          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9549d558e1a1a37bc6398c7bedc83d2c&libraries=services,clusterer";
-        document.head.appendChild(script);
+          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9549d558e1a1a37bc6398c7bedc83d2c&libraries=services,clusterer"
+        document.head.appendChild(script)
       }
     },
     async initMap() {
-      const container = document.getElementById("map");
+      const container = document.getElementById("map")
       const options = {
         center: new kakao.maps.LatLng(37.5642135, 127.0016985),
         level: 5,
-      };
+      }
 
       //지도 객체를 등록합니다.
       //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
-      this.map = new kakao.maps.Map(container, options);
+      this.map = new kakao.maps.Map(container, options)
       var clusterer = new kakao.maps.MarkerClusterer({
         map: this.map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
         averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
         minLevel: 5, // 클러스터 할 최소 지도 레벨
-      });
+      })
       // this.SET_CLUSTERER(clusterer);
     },
     //차트 ------------------------------------------------------------------------------
@@ -228,12 +222,12 @@ export default {
     //   for (let i = 0; i < this.areaOrder.length; i++) {
     //     this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x);
     //   }
-      // console.log(this.areaMap)
+    // console.log(this.areaMap)
 
-      // for(let i=0;i<deals.length;i++){
-      //     if(deals[i].area=="59.98")
-      //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
-      // }
+    // for(let i=0;i<deals.length;i++){
+    //     if(deals[i].area=="59.98")
+    //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
+    // }
     // },
     //---------------------------------------------------------------------------
     //카카오 기본 코드---------------------------------------------------------------
@@ -343,27 +337,27 @@ export default {
 
     displayMarker(data) {
       //마커 초기화
-      let markers = this.getMarkers;
+      let markers = this.getMarkers
       if (markers.length > 0) {
-        markers.forEach((marker) => marker.setMap(null));
+        markers.forEach((marker) => marker.setMap(null))
       }
 
       if (data.length > 0) {
-        markers = [];
+        markers = []
         data.forEach((d) => {
           let marker = new kakao.maps.Marker({
             map: this.map,
             position: new kakao.maps.LatLng(d.lat, d.lng),
             title: JSON.stringify(d),
-          });
-          markers.push(marker);
+          })
+          markers.push(marker)
           // 마커에 클릭이벤트를 등록합니다
           kakao.maps.event.addListener(marker, "click", () => {
             // 마커 위에 인포윈도우를 표시합니다
             // console.log(JSON.parse(marker.getTitle()));
-            this.setHouseDetailInfo(JSON.parse(marker.getTitle()));
-          });
-        });
+            this.setHouseDetailInfo(JSON.parse(marker.getTitle()))
+          })
+        })
         // markers = positions.map(
         //   (p) =>
         //     new kakao.maps.Marker({
@@ -378,9 +372,9 @@ export default {
         // this.map.setBounds(bounds);
         // console.log("getcl");
         // console.log(this.getClusterer);
-        let clusterer = this.getClusterer;
+        let clusterer = this.getClusterer
         // console.log(clusterer);
-        clusterer.addMarkers(markers);
+        clusterer.addMarkers(markers)
         // this.SET_CLUSTERER(clusterer);
         // this.SET_MARKERS(markers);
       }
@@ -389,51 +383,50 @@ export default {
       http
         .get(`/map/apt/type?name=서울특별시&type=시`)
         .then((response) => {
-          this.SET_MARKERS(this.displayMarker(response.data));
+          this.SET_MARKERS(this.displayMarker(response.data))
         })
         .catch((error) => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
     setHouseDetailInfo(house) {
       // console.log("setHouseDetail st");
       // console.log(house);
-      this.setHouseDetail(house);
-      this.moveMapLocation(house);
-      this.drawCircleFromHouse(house);
+      this.setHouseDetail(house)
+      this.moveMapLocation(house)
+      this.drawCircleFromHouse(house)
     },
     moveMapLocation(data) {
-      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005);
-      this.map.setCenter(moveLatLon);
+      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005)
+      this.map.setCenter(moveLatLon)
     },
     drawCircleFromHouse(data) {
       // 이전 원 지우기
       if (this.circles.length > 0) {
         this.circles.forEach((circle) => {
-          circle.setMap(null);
-        });
-        this.circles=[];
+          circle.setMap(null)
+        })
+        this.circles = []
       }
       let circle = new kakao.maps.Circle({
         center: new kakao.maps.LatLng(data.lat, data.lng), // 원의 중심좌표 입니다
-        radius: 500, // 미터 단위의 원의 반지름입니다
+        radius: 1000, // 미터 단위의 원의 반지름입니다
         strokeWeight: 5, // 선의 두께입니다
         strokeColor: "#75B8FA", // 선의 색깔입니다
         strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
         strokeStyle: "dashed", // 선의 스타일 입니다
         fillColor: "#CFE7FF", // 채우기 색깔입니다
         fillOpacity: 0.7, // 채우기 불투명도 입니다
-      });
-      this.circles.push(circle);
+      })
+      this.circles.push(circle)
 
       // 지도에 원을 표시합니다
-      circle.setMap(this.map);
-        this.checkCircle=true;
+      circle.setMap(this.map)
+      this.checkCircle = true
       // this.SET_CIRCLE(circles);
-
     },
   },
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

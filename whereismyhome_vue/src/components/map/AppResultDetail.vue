@@ -71,7 +71,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.setRoadView();
+    this.setRoadView()
   },
   watch: {},
   computed: {

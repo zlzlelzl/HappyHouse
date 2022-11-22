@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 80%">
+  <div style="width: 100%">
     <LineChartGen
       :chart-options="chartOptions"
       :chart-data="chartData"
@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import { Line as LineChartGen } from "vue-chartjs";
+import { Line as LineChartGen } from "vue-chartjs"
 import {
-  Chart as ChartJS,
+  Chart as ChartJS1,
   Title,
   Tooltip,
   Legend,
@@ -25,19 +25,13 @@ import {
   LinearScale,
   CategoryScale,
   PointElement,
-  RadialLinearScale,
-} from "chart.js";
+} from "chart.js"
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex"
 
-ChartJS.register(
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  LinearScale,
-  CategoryScale,
-  PointElement,
-  RadialLinearScale
-);
+const mapStore = "mapStore"
+
+ChartJS1.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement)
+
 export default {
   namespaced: true,
   name: "LineChart",
@@ -72,24 +66,93 @@ export default {
       default: () => [],
     },
   },
+  mounted() {
+    // this.setChartData()
+  },
+  created() {
+    this.areaChange()
+    // this.setChartData()
+    // this.getChartData()
+    // this.getDetails()
+  },
+  methods: {
+    areaChange() {
+      this.isAreaChanged = true
+      console.log(this.isAreaChanged)
+    },
+    getDetails() {
+      console.log("housedeals", this.mapdata.app.result.detail.housedeals)
+    },
+    getChartData() {
+      console.log(this.chartData.labels)
+      console.log(this.chartData.datasets[0].data)
+    },
+    async setChartData() {
+      this.areaMap = {}
+      this.areaOrder = []
+
+      //   console.log("prev")
+      //   this.getChartData()
+
+      let deals = await this.mapdata.app.result.detail.housedeals
+      for (let i = 0; i < deals.length; i++) {
+        if (!this.areaMap[deals[i]["area"]]) {
+          this.areaMap[deals[i]["area"]] = []
+          this.areaOrder.push(deals[i]["area"])
+        }
+        this.areaMap[deals[i]["area"]].push({
+          x: new Date(deals[i].dealYear, deals[i].dealMonth, deals[i].dealDay).getTime(),
+          y: deals[i].dealAmount,
+        })
+      }
+      this.areaOrder.sort()
+      // console.log(this.areaMap)
+      for (let i = 0; i < this.areaOrder.length; i++) {
+        this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x)
+      }
+      //   console.log("this.areaMap", this.areaMap)
+      //   console.log("this.areaOrder", this.areaOrder)
+
+      //   console.log(this.areaOrder[0])
+      this.chartData.labels = []
+      this.chartData.datasets[0].data = []
+      //   console.log(deals.length)
+      let cnt = 0
+      for (let i = 0; i < deals.length; i++) {
+        // 가장 작은 것을 매핑
+        // 나중에 집 크기 버튼 만들면 모두 매핑해야됨
+        if (deals[i].area == this.areaOrder[0]) {
+          this.chartData.labels.push(this.areaMap[this.areaOrder[0]][cnt].x)
+          this.chartData.datasets[0].data.push(Number(this.areaMap[this.areaOrder[0]][cnt].y.split(",").join("")))
+          cnt++
+        }
+      }
+      //   console.log(11, this.chartData.labels)
+      //   console.log(22, this.chartData.datasets[0].data)
+
+      // console.log(this.areaMap)
+
+      // for(let i=0;i<deals.length;i++){
+      //     if(deals[i].area=="59.98")
+      //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
+      // }
+    },
+  },
+  computed: {
+    ...mapState(mapStore, ["mapdata"]),
+  },
   data() {
     return {
+      isAreaChanged: false,
       chartData: {
-        labels: [
-          1432220400000, 1443625200000, 1474038000000, 1471618800000, 1463756400000,
-          1486911600000, 1511622000000, 1536591600000, 1556895600000, 1572015600000,
-          1594825200000, 1601218800000, 1633618800000, 1632754800000,
-        ],
+        labels: [],
         datasets: [
           {
             xAxisID: "x",
             label: "Data One",
             backgroundColor: "#f87979",
 
-            data: [
-              33000, 37400, 39800, 38400, 38400, 38000, 44000, 54500, 53000, 53800, 62000,
-              68250, 83000, 83500,
-            ],
+            data: [],
             fill: false,
           },
         ],
@@ -100,18 +163,42 @@ export default {
         scales: {
           x: {
             type: "linear",
+            ticks: {
+              callback: function (value) {
+                let date = new Date(value)
+                return `${date.getFullYear()}. ${date.getMonth() + 1}`
+              },
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            callbacks: {
+              title: function (tooltipItem) {
+                return new Date(tooltipItem[0].parsed.x).toLocaleDateString()
+              },
+              label: function (context) {
+                return context.parsed.y / 10000 + "억"
+              },
+            },
           },
         },
       },
-    };
+    }
+  },
+  watch: {
+    isAreaChanged() {
+      this.setChartData()
+    },
   },
   actions: {
     // async calcInfraScore(pos) {
     //   // 인프라 가져오기
     //   await this.getAllInfra();
-
     //   let score = 0;
-
     //   for (let i = 0; i < this.categoryGroupCodes.length; i++) {
     //     let code = this.categoryGroupCodes[i]["Name"];
     //     // 0~1000m, 0m에 가까울수록 고득점
@@ -129,7 +216,6 @@ export default {
     //     let code = this.categoryGroupCodes[i]["Name"];
     //     await this.getInfra(code);
     //   }
-
     //   //  console.log(this.infra)
     // },
     // // async getInfra(code) {
@@ -163,7 +249,6 @@ export default {
     // },
     // async setChartData(aptCode) {
     //   await this.getHouseDeals(aptCode);
-
     //   this.areaMap = {};
     //   this.areaOrder = [];
     //   let deals = this.map.app.result.housedeals;
@@ -183,12 +268,11 @@ export default {
     //     this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x);
     //   }
     //   // console.log(this.areaMap)
-
     //   // for(let i=0;i<deals.length;i++){
     //   //     if(deals[i].area=="59.98")
     //   //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
     //   // }
     // },
   },
-};
+}
 </script>
