@@ -28,7 +28,7 @@
       <v-row>
         <v-col cols="4">
           <div class="pt-16">
-            <v-card width="100%" height="500px" >
+            <v-card width="100%" height="500px">
               <img />
             </v-card>
           </div>
@@ -38,12 +38,12 @@
             <div class="">
               <h2 class="text-h4 font-weight-bold pb-4 text-center">부동산 NEWS</h2>
 
-              <v-hover v-slot:default="{ hover }" close-delay="50" open-delay="50" >
+              <v-hover v-slot:default="{ hover }" close-delay="50" open-delay="50">
                 <v-card rounded>
-                  <v-carousel class="mb-10" >
-                    <template v-for="news in newsList" >
-                      <a :href="news.link" target="_blank" >
-                        <v-carousel-item  src="@/assets/main.jpg"
+                  <v-carousel class="mb-10">
+                    <template v-for="news in newsList">
+                      <a :href="news.link" target="_blank">
+                        <v-carousel-item src="@/assets/main.jpg"
                           ><h2 class="text-h5 pa-10 white--text" style="line-height: 1.2">
                             {{ news.title }}
                             <!-- </br>
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import RecentApart from "../components/map/RecentApart.vue";
 
 const newsStore = "newsStore";
@@ -86,10 +86,26 @@ export default {
     return {};
   },
   created() {
-    this.getNews("부동산");
+    this.init();
   },
   methods: {
     ...mapActions(newsStore, ["getNews"]),
+    async init() {
+      await this.getNews("부동산");
+      this.regex();
+    },
+    regex() {
+      console.log("regex");
+      console.log(this.newsList);
+      this.newsList.forEach((data) => {
+        console.log("regex2");
+        console.log(data.title);
+        data.title = String(data.title).replace(/<+[|w]>/g, "sesss");
+        data.title = String(data.title).replace(/&+[|w];/g, "sesss");
+        console.log(data.title);
+      });
+      return this.getNewsList;
+    },
   },
   computed: {
     ...mapState(newsStore, ["newsList"]),

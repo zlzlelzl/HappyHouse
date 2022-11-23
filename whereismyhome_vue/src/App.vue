@@ -43,9 +43,12 @@ export default {
     MainFooter: () => import("@/components/layout/MainfFooter.vue"),
   },
   data: () => ({}),
-  created() {},
+  created() {
+    console.log(this.mapdata);
+  },
   beforeMount() {
     this.INIT_CACHE();
+    // this.INIT();
   },
   watch: {},
   computed: {
@@ -53,7 +56,7 @@ export default {
     ...mapGetters(mapStore, ["getMapData"]),
   },
   methods: {
-    ...mapMutations(mapStore, ["INIT_CACHE"]),
+    ...mapMutations(mapStore, ["INIT_CACHE", "INIT"]),
   },
 };
 </script>

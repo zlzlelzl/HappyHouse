@@ -15,16 +15,6 @@
         <app-result :map="map"></app-result>
       </v-card>
     </div>
-
-    <div class="button-group">
-      <!-- <button @click="changeSize(0)">Hide</button>
-      <button @click="changeSize(1200)">show</button>
-      <button @click="displayMarker(markerPositions1)">marker set 1</button>
-      <button @click="displayMarker(markerPositions2)">marker set 2</button>
-      <button @click="displayMarker([])">marker set 3 (empty)</button>
-      <button @click="displayInfoWindow">infowindow</button> -->
-      <!-- <button @click="displayChart">chart</button> -->
-    </div>
   </div>
 </template>
 
@@ -90,6 +80,12 @@ export default {
       }
       this.mapdata.infra.checkCircle = false;
     },
+    ChangeHouseInfos(val) {
+      console.log("ChangeHouseInfos");
+      console.log(val);
+      if (val.length > 0) this.SET_MARKERS(this.displayMarker(val));
+      // this.map.setCenter();
+    },
   },
   computed: {
     ...mapState(mapStore, ["mapdata"]),
@@ -99,6 +95,7 @@ export default {
       "getMarkers",
       "getCircle",
       "getCheckCircle",
+      "getHouseInfos",
     ]),
     isUseCheck() {
       return this.mapdata.app.result.detail.isUse;
@@ -106,10 +103,13 @@ export default {
     scrollbarTheme() {
       return this.$vuetify.theme.dark ? "dark" : "light";
     },
+    ChangeHouseInfos() {
+      return this.getHouseInfos;
+    },
   },
   methods: {
     ...mapMutations(mapStore, ["SET_MARKERS", "SET_CLUSTERER", "SET_CIRCLE"]),
-    ...mapActions(mapStore, ["setHouseDetail"]),
+    ...mapActions(mapStore, ["setHouseDetail", "searchByType"]),
     //카카오맵 init---------------------------------------------------------------------
     init() {
       if (window.kakao && window.kakao.maps) {
@@ -129,16 +129,17 @@ export default {
         center: new kakao.maps.LatLng(37.5642135, 127.0016985),
         level: 5,
       };
-
       //지도 객체를 등록합니다.
       //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
       this.map = new kakao.maps.Map(container, options);
+      this.map.setMaxLevel(8);
+
       var clusterer = new kakao.maps.MarkerClusterer({
         map: this.map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
         averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
         minLevel: 5, // 클러스터 할 최소 지도 레벨
+        clickable: false,
       });
-
       this.SET_CLUSTERER(clusterer);
     },
     //차트 ------------------------------------------------------------------------------
@@ -337,8 +338,10 @@ export default {
     displayMarker(data) {
       //마커 초기화
       let markers = this.getMarkers;
+      console.log(this.getMarkers);
       if (markers.length > 0) {
         markers.forEach((marker) => marker.setMap(null));
+        console.log(markers);
       }
 
       if (data.length > 0) {
@@ -358,33 +361,31 @@ export default {
             this.setHouseDetailInfo(JSON.parse(marker.getTitle()));
           });
         });
-        // markers = positions.map(
-        //   (p) =>
-        //     new kakao.maps.Marker({
-        //       map: this.map,
-        //       p,
-        //     })
-        // );
-        // const bounds = positions.reduce(
+        // const bounds = positions.reduce(displayMarker
         //   (bounds, latlng) => bounds.extend(latlng),
         //   new kakao.maps.LatLngBounds()
         // );
         // this.map.setBounds(bounds);
-        // console.log("getcl");
-        // console.log(this.getClusterer);
         let clusterer = this.getClusterer;
-        // console.log(clusterer);
+        clusterer.clear();
         clusterer.addMarkers(markers);
         // this.SET_CLUSTERER(clusterer);
         // this.SET_MARKERS(markers);
+      } else {
+        console.log("data length 0");
       }
+      console.log(markers);
+      return markers;
     },
     setSeoulMarker() {
+      // this.searchByType({ name: "서울특별시", type: "시" });
       http
         .get(`/map/apt/type?name=서울특별시&type=시`)
         .then((response) => {
           console.log(response.data);
           this.SET_MARKERS(this.displayMarker(response.data));
+          console.log("this.getMarkers");
+          console.log(this.getMarkers);
         })
         .catch((error) => {
           console.log(error);

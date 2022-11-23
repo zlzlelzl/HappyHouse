@@ -101,7 +101,7 @@ export default {
     //   console.log(this.isToggle);
     //   this.clickInfraButton(val);
     //   }
-    
+
     // }
   },
   computed: {
@@ -116,15 +116,18 @@ export default {
 
     isToggle: {
       get() {
-        if(this.$store.state.isToggle==undefined ||this.$store.state.isToggle==null){
-          this.$store.state.isToggle= [];
+        if (
+          this.$store.state.isToggle == undefined ||
+          this.$store.state.isToggle == null
+        ) {
+          this.$store.state.isToggle = [];
         }
         return this.$store.state.isToggle;
       },
       set(isToggle) {
         console.log(isToggle);
         // let storeData=this.$store.state.isToggle;
-        
+
         // console.log(storeData);
         // console.log(isToggle.length);
         // if(storeData.length>isToggle.length){
@@ -220,16 +223,6 @@ export default {
         // this.SET_CLUSTERER(clusterer);
         // this.SET_MARKERS(markers);
       }
-    },
-    setSeoulMarker() {
-      http
-        .get(`/map/apt/type?name=서울특별시&type=시`)
-        .then((response) => {
-          this.SET_MARKERS(this.displayMarker(response.data));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     },
     setHouseDetailInfo(house) {
       this.setHouseDetail(house);
