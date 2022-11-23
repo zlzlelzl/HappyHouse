@@ -58,6 +58,7 @@ export default {
   },
   updated() {},
   created() {
+    window.scrollTo(0, 0)
     // setHouseDetailInfo(house)
     // this.getHouseInfos("1111010100"),
     // this.getHouseDeals("45")
