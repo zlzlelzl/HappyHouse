@@ -3,12 +3,7 @@
     <div id="map" class="pa-5" style="width: 100%; height: 85vh">
       <!-- marker -->
       <infra-marker-list :map="map"></infra-marker-list>
-      <v-card
-        elevation="15"
-        width="30%"
-        height="100%"
-        style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)"
-      >
+      <v-card elevation="15" width="30%" height="100%" style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)">
         <!-- seacrh -->
         <app-search></app-search>
         <!-- result -->
@@ -20,15 +15,15 @@
 
 <script>
 /* global kakao */
-import AppResult from "./AppResult.vue";
-import AppSearch from "./AppSearch.vue";
-import { apiInstance } from "@/api/http-common";
-import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
-import axios from "axios";
-import InfraMarkerList from "./InfraMarkerList.vue";
+import AppResult from "./AppResult.vue"
+import AppSearch from "./AppSearch.vue"
+import { apiInstance } from "@/api/http-common"
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex"
+import axios from "axios"
+import InfraMarkerList from "./InfraMarkerList.vue"
 
-const mapStore = "mapStore";
-const http = apiInstance();
+const mapStore = "mapStore"
+const http = apiInstance()
 
 export default {
   namespaced: true,
@@ -39,24 +34,26 @@ export default {
   data() {
     return {
       map: {},
-
+      house: {},
       pos: null,
 
       infra: {},
       areaMap: {},
       areaOrder: {},
       //   headers:{"Authorization": "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f"}
-    };
+    }
   },
   mounted() {
-    this.init();
-    console.log(this.mapdata.infra);
+    this.init()
+    console.log(this.mapdata.infra)
     // this.SET_CIRCLE([]);
-    this.setSeoulMarker();
-    this.mapdata.infra.circle = [];
+    this.setSeoulMarker()
+    this.mapdata.infra.circle = []
+    this.setByAptCode(this.$route.query.aptCode)
   },
   updated() {},
   created() {
+    // setHouseDetailInfo(house)
     // this.getHouseInfos("1111010100"),
     // this.getHouseDeals("45")
     // this.setChartData("45")
@@ -68,17 +65,17 @@ export default {
   },
   watch: {
     isUseCheck(val) {
-      console.log(val);
+      console.log(val)
       if (!val && !this.mapdata.infra.checkCircle) {
         if (this.mapdata.infra.circle?.length != 0) {
           this.mapdata.infra.circle.forEach((data) => {
-            data.setMap(null);
-          });
+            data.setMap(null)
+          })
 
-          this.mapdata.infra.circle = [];
+          this.mapdata.infra.circle = []
         }
       }
-      this.mapdata.infra.checkCircle = false;
+      this.mapdata.infra.checkCircle = false
     },
     ChangeHouseInfos(val) {
       console.log("ChangeHouseInfos");
@@ -98,10 +95,10 @@ export default {
       "getHouseInfos",
     ]),
     isUseCheck() {
-      return this.mapdata.app.result.detail.isUse;
+      return this.mapdata.app.result.detail.isUse
     },
     scrollbarTheme() {
-      return this.$vuetify.theme.dark ? "dark" : "light";
+      return this.$vuetify.theme.dark ? "dark" : "light"
     },
     ChangeHouseInfos() {
       return this.getHouseInfos;
@@ -109,22 +106,26 @@ export default {
   },
   methods: {
     ...mapMutations(mapStore, ["SET_MARKERS", "SET_CLUSTERER", "SET_CIRCLE"]),
-    ...mapActions(mapStore, ["setHouseDetail", "searchByType"]),
+    ...mapActions(mapStore, ["setHouseDetail"]),
+    setByAptCode(v) {
+      console.log("mapdata", this.mapdata)
+    },
     //카카오맵 init---------------------------------------------------------------------
+
     init() {
       if (window.kakao && window.kakao.maps) {
-        this.initMap();
+        this.initMap()
       } else {
-        const script = document.createElement("script");
-        script.onload = () => kakao.maps.load(this.initMap);
-        script.async = true;
+        const script = document.createElement("script")
+        script.onload = () => kakao.maps.load(this.initMap)
+        script.async = true
         script.src =
-          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9549d558e1a1a37bc6398c7bedc83d2c&libraries=services,clusterer";
-        document.head.appendChild(script);
+          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9549d558e1a1a37bc6398c7bedc83d2c&libraries=services,clusterer"
+        document.head.appendChild(script)
       }
     },
     async initMap() {
-      const container = document.getElementById("map");
+      const container = document.getElementById("map")
       const options = {
         center: new kakao.maps.LatLng(37.5642135, 127.0016985),
         level: 5,
@@ -345,14 +346,14 @@ export default {
       }
 
       if (data.length > 0) {
-        markers = [];
+        markers = []
         data.forEach((d) => {
           let marker = new kakao.maps.Marker({
             map: this.map,
             position: new kakao.maps.LatLng(d.lat, d.lng),
             title: JSON.stringify(d),
-          });
-          markers.push(marker);
+          })
+          markers.push(marker)
           // 마커에 클릭이벤트를 등록합니다
           // console.log(marker.getTitle());
           kakao.maps.event.addListener(marker, "click", () => {
@@ -388,30 +389,30 @@ export default {
           console.log(this.getMarkers);
         })
         .catch((error) => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
     setHouseDetailInfo(house) {
       // console.log("setHouseDetail st");
-      // console.log(house);
-      this.setHouseDetail(house);
-      this.moveMapLocation(house);
-      this.drawCircleFromHouse(house);
+      console.log("house", house)
+      this.setHouseDetail(house)
+      this.moveMapLocation(house)
+      this.drawCircleFromHouse(house)
     },
     moveMapLocation(data) {
-      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005);
-      this.map.setCenter(moveLatLon);
+      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005)
+      this.map.setCenter(moveLatLon)
     },
     drawCircleFromHouse(data) {
       // 이전 원 지우기
       if (this.mapdata.infra.circle.length > 0) {
-        console.log("draw circls");
-        console.log(this.mapdata.infra.circle);
+        console.log("draw circls")
+        console.log(this.mapdata.infra.circle)
         this.mapdata.infra.circle.forEach((item) => {
-          item.setMap(null);
-        });
-        this.mapdata.infra.circle = [];
-        console.log(this.mapdata.infra.circle);
+          item.setMap(null)
+        })
+        this.mapdata.infra.circle = []
+        console.log(this.mapdata.infra.circle)
       }
       let cc = new kakao.maps.Circle({
         center: new kakao.maps.LatLng(data.lat, data.lng), // 원의 중심좌표 입니다
@@ -422,16 +423,16 @@ export default {
         strokeStyle: "dashed", // 선의 스타일 입니다
         fillColor: "#CFE7FF", // 채우기 색깔입니다
         fillOpacity: 0.3, // 채우기 불투명도 입니다
-      });
-      this.mapdata.infra.circle.push(cc);
+      })
+      this.mapdata.infra.circle.push(cc)
 
       // 지도에 원을 표시합니다
-      cc.setMap(this.map);
-      this.mapdata.infra.checkCircle = true;
+      cc.setMap(this.map)
+      this.mapdata.infra.checkCircle = true
       // this.SET_CIRCLE(circles);
     },
   },
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

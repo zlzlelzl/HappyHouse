@@ -23,15 +23,18 @@
           </v-col>
           <v-col>
             <div>
-              <v-btn depressed color="accent" small>아파트 보러가기</v-btn>
-              <h3 class="text-h6 font-weight-bold primary--text py-3">{{ item.k }}</h3>
+              <v-btn depressed color="accent" small to='/map?aptCode=123'>아파트 보러가기</v-btn>
+              <h3 class="text-h6 font-weight-bold primary--text py-3">{{ item.v.aptName }}</h3>
 
               <div class="d-flex align-center">
                 <v-avatar color="accent" size="24">
                   <v-icon dark small>mdi-feather</v-icon>
                 </v-avatar>
 
-                <div class="pl-2">{{ item.v }}</div>
+                <div class="pl-2">{{ 
+                    item.v.sidoName + " " + 
+                    item.v.gugunName + " " +
+                     item.v.dongName }}</div>
               </div>
             </div>
           </v-col>
@@ -90,6 +93,12 @@ export default {
     },
   },
   methods: {
+    test1(){
+        this.cache.forEach((value, key, cache)=>{
+            console.log(value, key)
+        })
+        
+    },
     getCacheList() {
       let list = [];
       console.log(this.cache.size);
