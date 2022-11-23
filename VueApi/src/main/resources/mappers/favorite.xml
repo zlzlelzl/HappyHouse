@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.ssafy.vue.model.mapper.FavoriteMapper">
+
+	<insert id="writeFavorite" parameterType="favoriteDto">
+		insert into favorite (user_id, dongCode, aptName, reg_time)
+		values (#{user_id}, #{dongCode}, #{aptName}, now())
+	</insert>
+	
+	<select id="listFavorite" resultType="favoriteDto">
+		select user_id, dongCode, aptName, reg_time
+		from favorite
+		order by reg_time
+	</select>
+	
+	<delete id="deleteFavorite" parameterType="favoriteDto">
+		delete from favorite
+		where user_id = #{user_id}
+          and dongCode = #{dongCode}
+          and aptName = #{aptName}
+	</delete>
+
+</mapper>
+

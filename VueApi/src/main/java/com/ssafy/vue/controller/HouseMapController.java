@@ -15,16 +15,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.vue.model.FavoriteDto;
 import com.ssafy.vue.model.HouseDealDto;
 import com.ssafy.vue.model.HouseInfoDto;
 import com.ssafy.vue.model.SearchResponseDto;
 import com.ssafy.vue.model.SidoGugunCodeDto;
+import com.ssafy.vue.model.service.FavoriteService;
 import com.ssafy.vue.model.service.HouseMapService;
 
 import io.swagger.annotations.Api;
@@ -39,11 +44,15 @@ public class HouseMapController {
     private final String GUGUN_TYPE = "구군";
     private final String DONG_TYPE = "동";
     private final String NAME_TYPE = "아파트명";
+    private static final String SUCCESS = "success";
+    private static final String FAIL = "fail";
 
     private final Logger logger = LoggerFactory.getLogger(HouseMapController.class);
 
     @Autowired
     private HouseMapService haHouseMapService;
+    @Autowired
+    private FavoriteService favoriteService;
 
     @ApiOperation(value = "시도 정보", notes = "전국의 시도를 반환한다.", response = List.class)
     @GetMapping("/sido")
@@ -144,10 +153,43 @@ public class HouseMapController {
             // error
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    } 
+    }
+
     @ApiOperation(value = "아파트", notes = "aptcode 를 바탕으로 아파트를 반환한다.", response = List.class)
     @GetMapping("/apt/code")
     public ResponseEntity<HouseInfoDto> aptByAptCode(@RequestParam("aptCode") String aptCode) throws Exception {
         return new ResponseEntity<HouseInfoDto>(haHouseMapService.getAptByAptCode(aptCode), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "즐겨찾기 추가", notes = "즐겨찾기 추가.", response = String.class)
+    @PostMapping("/favor")
+    public ResponseEntity<String> writeFavorite(
+            @RequestBody @ApiParam(value = "즐겨찾기 정보.", required = true) FavoriteDto favoriteDto) throws Exception {
+        logger.info("writeFavorite - 호출");
+        if (favoriteService.writeFavorite(favoriteDto)) {
+            return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+        }
+        return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+    }
+
+    @ApiOperation(value = "즐겨찾기 목록", notes = "즐겨찾기 반환.", response = List.class)
+    @GetMapping("/favor")
+    public ResponseEntity<List<FavoriteDto>> listFavorite()
+            throws Exception {
+        logger.info("listFavorite - 호출");
+        return new ResponseEntity<List<FavoriteDto>>(favoriteService.listFavorite(),
+                HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "즐겨찾기 삭제", notes = "즐겨찾기 삭제", response = String.class)
+    @DeleteMapping("/favor")
+    public ResponseEntity<String> deleteFavorite(
+            @ApiParam(value = "살제할 글의 글번호.", required = true) FavoriteDto favoriteDto)
+            throws Exception {
+        logger.info("deleteFavorite - 호출");
+        if (favoriteService.deleteFavorite(favoriteDto)) {
+            return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+        }
+        return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
     }
 }
