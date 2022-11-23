@@ -14,7 +14,7 @@
         style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)"
       >
         <!-- seacrh -->
-        <app-search></app-search>
+        <app-search :map="map"></app-search>
         <!-- result -->
         <app-result :map="map"></app-result>
       </v-card>
@@ -120,7 +120,7 @@ export default {
       return this.$vuetify.theme.dark ? "dark" : "light";
     },
     ChangeHouseInfos() {
-      return this.getHouseInfos;
+      return this.getHouseInfos
     },
   },
   methods: {
@@ -155,19 +155,19 @@ export default {
       const options = {
         center: new kakao.maps.LatLng(37.5642135, 127.0016985),
         level: 5,
-      };
+      }
       //지도 객체를 등록합니다.
       //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
-      this.map = new kakao.maps.Map(container, options);
-      this.map.setMaxLevel(8);
+      this.map = new kakao.maps.Map(container, options)
+      this.map.setMaxLevel(8)
 
       var clusterer = new kakao.maps.MarkerClusterer({
         map: this.map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
         averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
         minLevel: 5, // 클러스터 할 최소 지도 레벨
         clickable: false,
-      });
-      this.SET_CLUSTERER(clusterer);
+      })
+      this.SET_CLUSTERER(clusterer)
     },
     //차트 ------------------------------------------------------------------------------
     // displayChart() {
@@ -364,11 +364,11 @@ export default {
 
     displayMarker(data) {
       //마커 초기화
-      let markers = this.getMarkers;
-      console.log(this.getMarkers);
+      let markers = this.getMarkers
+      console.log(this.getMarkers)
       if (markers.length > 0) {
-        markers.forEach((marker) => marker.setMap(null));
-        console.log(markers);
+        markers.forEach((marker) => marker.setMap(null))
+        console.log(markers)
       }
       const LIMIT_LENGTH = 300;
       if (data.length > 0) {
@@ -388,34 +388,34 @@ export default {
           kakao.maps.event.addListener(marker, "click", () => {
             // 마커 위에 인포윈도우를 표시합니다
             // console.log(JSON.parse(marker.getTitle()));
-            this.setHouseDetailInfo(JSON.parse(marker.getTitle()));
-          });
-        });
+            this.setHouseDetailInfo(JSON.parse(marker.getTitle()))
+          })
+        })
         // const bounds = positions.reduce(displayMarker
         //   (bounds, latlng) => bounds.extend(latlng),
         //   new kakao.maps.LatLngBounds()
         // );
         // this.map.setBounds(bounds);
-        let clusterer = this.getClusterer;
-        clusterer.clear();
-        clusterer.addMarkers(markers);
+        let clusterer = this.getClusterer
+        clusterer.clear()
+        clusterer.addMarkers(markers)
         // this.SET_CLUSTERER(clusterer);
         // this.SET_MARKERS(markers);
       } else {
-        console.log("data length 0");
+        console.log("data length 0")
       }
-      console.log(markers);
-      return markers;
+      console.log(markers)
+      return markers
     },
     setSeoulMarker() {
       // this.searchByType({ name: "서울특별시", type: "시" });
       http
         .get(`/map/apt/type?name=서울특별시&type=시`)
         .then((response) => {
-          console.log(response.data);
-          this.SET_MARKERS(this.displayMarker(response.data));
-          console.log("this.getMarkers");
-          console.log(this.getMarkers);
+          console.log(response.data)
+          this.SET_MARKERS(this.displayMarker(response.data))
+          console.log("this.getMarkers")
+          console.log(this.getMarkers)
         })
         .catch((error) => {
           console.log(error);
