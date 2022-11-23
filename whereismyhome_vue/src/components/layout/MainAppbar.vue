@@ -9,26 +9,12 @@
       dark
     >
       <v-list color="primary" nav>
-        <v-list-item
-          v-for="(item, i) in btnItems"
-          :key="i"
-          :href="item.href"
-          :target="item.target"
-          :to="item.to"
-          link
-        >
+        <v-list-item v-for="(item, i) in btnItems" :key="i" :href="item.href" :target="item.target" :to="item.to" link>
           <v-list-item-content>
             <v-list-item-title>{{ item.text }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item
-          v-for="(item, i) in barItems"
-          :key="i"
-          :href="item.href"
-          :target="item.target"
-          :to="item.to"
-          link
-        >
+        <v-list-item v-for="(item, i) in barItems" :key="i" :href="item.href" :target="item.target" :to="item.to" link>
           <v-list-item-content>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
@@ -36,13 +22,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar
-      :clipped-left="$vuetify.breakpoint.lgAndUp"
-      app
-      color="white"
-      elevate-on-scroll
-      flat
-    >
+    <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="white" elevate-on-scroll flat>
       <v-container :class="{ 'px-0': !$vuetify.breakpoint.smAndUp }">
         <v-row
           :no-gutters="!$vuetify.breakpoint.smAndUp"
@@ -192,11 +172,11 @@ export default {
   computed: {
     ...mapState(memberStore, ["isLogin", "isLoginError", "userInfo"]),
     loginCheck() {
-      return this.isLogin;
+      return this.isLogin
     },
   },
   methods: {
     ...mapActions(memberStore, ["userConfirm", "userLogout", "getUserInfo"]),
   },
-};
+}
 </script>

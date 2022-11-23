@@ -11,5 +11,5 @@ export default {
   components: {
     MapApp: () => import("@/components/map/MapApp.vue"),
   },
-};
+}
 </script>
