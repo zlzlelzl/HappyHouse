@@ -116,7 +116,7 @@ const routes = [
       {
         path: "favorite",
         name: "favorite",
-        beforeEnter: onlyAuthUser,
+        // beforeEnter: onlyAuthUser,
         component: () => import("@/components/watchlist/Favorite.vue"),
       },
     ],

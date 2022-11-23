@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.vue.model.FavoriteDto;
 import com.ssafy.vue.model.HouseDealDto;
 import com.ssafy.vue.model.HouseInfoDto;
 import com.ssafy.vue.model.SearchResponseDto;
@@ -81,6 +82,11 @@ public class HouseMapServiceImpl implements HouseMapService {
 	@Override
 	public HouseInfoDto getAptByAptCode(String aptCode) throws Exception {
 		return sqlSession.getMapper(HouseMapMapper.class).getAptByAptCode(aptCode);
+	}
+
+	@Override
+	public List<HouseInfoDto> getFavoriteApt(FavoriteDto favoriteDto) throws Exception {
+		return sqlSession.getMapper(HouseMapMapper.class).getFavoriteApt(favoriteDto);
 	}
 
 }

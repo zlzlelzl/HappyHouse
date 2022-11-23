@@ -12,7 +12,11 @@ public class FavoriteDto {
         this.aptName = aptName;
         this.reg_time = reg_time;
     }
-
+    public FavoriteDto(String user_id, String dongCode, String aptName) {
+        this.user_id = user_id;
+        this.dongCode = dongCode;
+        this.aptName = aptName;
+    }
     public FavoriteDto() {
     }
 
