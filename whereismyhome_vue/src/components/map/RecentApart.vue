@@ -56,7 +56,7 @@
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 const mapStore = "mapStore";
 
-export default {
+export default {  
   namespaced: true,
   name: "RecentApart",
   data() {
