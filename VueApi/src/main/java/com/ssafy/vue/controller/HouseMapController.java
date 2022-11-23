@@ -144,5 +144,10 @@ public class HouseMapController {
             // error
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    } 
+    @ApiOperation(value = "아파트", notes = "aptcode 를 바탕으로 아파트를 반환한다.", response = List.class)
+    @GetMapping("/apt/code")
+    public ResponseEntity<HouseInfoDto> aptByAptCode(@RequestParam("aptCode") String aptCode) throws Exception {
+        return new ResponseEntity<HouseInfoDto>(haHouseMapService.getAptByAptCode(aptCode), HttpStatus.OK);
     }
 }

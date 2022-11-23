@@ -78,4 +78,9 @@ public class HouseMapServiceImpl implements HouseMapService {
 		return sqlSession.getMapper(HouseMapMapper.class).getSidoByName(name);
 	}
 
+	@Override
+	public HouseInfoDto getAptByAptCode(String aptCode) throws Exception {
+		return sqlSession.getMapper(HouseMapMapper.class).getAptByAptCode(aptCode);
+	}
+
 }

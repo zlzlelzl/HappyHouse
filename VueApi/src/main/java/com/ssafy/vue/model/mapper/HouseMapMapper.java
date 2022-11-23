@@ -36,5 +36,7 @@ public interface HouseMapMapper {
 	String getGugunByName(String name) throws SQLException;
 
 	String getSidoByName(String name) throws SQLException;
+	
+	HouseInfoDto getAptByAptCode(String aptCode) throws Exception ;
 
 }

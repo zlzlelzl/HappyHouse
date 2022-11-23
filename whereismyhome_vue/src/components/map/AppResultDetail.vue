@@ -1,8 +1,8 @@
 <template>
   <!-- result -->
   <div style="background-color: white">
-      <!-- color="rgb(207, 231, 255, 1)" -->
-    <VBtn  class="" color="rgb(0, 0, 0, 1)" icon @click="closeDetail">
+    <!-- color="rgb(207, 231, 255, 1)" -->
+    <VBtn class="" color="rgb(0, 0, 0, 1)" icon @click="closeDetail">
       <VIcon>mdi-close</VIcon>
     </VBtn>
     <v-card
@@ -14,9 +14,10 @@
       style="position: absolute; z-index: 20; overflow: auto; border-radius: 0px"
       :class="scrollbarTheme"
     >
-
       <!-- 로드뷰 -->
-      <h6 class="text-h5 text-center ">{{mapdata.app.result.detail.houseinfo.aptName}}</h6>
+      <h6 class="text-h5 text-center">
+        {{ mapdata.app.result.detail.houseinfo.aptName }}
+      </h6>
       <v-card
         id="roadview"
         class="mb-5"
@@ -25,11 +26,10 @@
       </v-card>
 
       <!-- 아파트 상세정보 -->
-      <v-card
-        class="mb-10"
-        style="width: 100%; height: 300px; border-radius: 25px"
-      >
-      <h6  class="text-h8 text-center pa-5">{{mapdata.app.result.detail.houseinfo}}</h6>
+      <v-card class="mb-10" style="width: 100%; height: 300px; border-radius: 25px">
+        <h6 class="text-h8 text-center pa-5">
+          {{ mapdata.app.result.detail.houseinfo }}
+        </h6>
       </v-card>
 
       <!-- 라인차트 거래가추이 -->
@@ -51,14 +51,13 @@
         style="overflow-x: hidden"
         height="55%"
         :class="scrollbarTheme"
-        
       >
         <v-subheader class="text-center">아파트 거래내역</v-subheader>
         <v-list-item-group v-if="mapdata.app.result.detail.housedeals.length == 0">
           <v-list-item>거래 내역이 없습니다.</v-list-item>
         </v-list-item-group>
-        <v-list-item-group v-else >
-          <v-list-item  v-for="(deal, i) in calData" :key="i">
+        <v-list-item-group v-else>
+          <v-list-item v-for="(deal, i) in calData" :key="i">
             <!-- <v-list-item-icon>
             <v-icon v-text="house.icon"></v-icon>
           </v-list-item-icon> -->
@@ -73,13 +72,8 @@
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
-        
       </v-list>
-      <v-pagination
-        v-model="curPageNum"
-        :length="numOfPages"
-        circle
-      ></v-pagination>
+      <v-pagination v-model="curPageNum" :length="numOfPages" circle></v-pagination>
     </v-card>
   </div>
 </template>
@@ -99,8 +93,8 @@ export default {
   name: "AppResultDetail",
   props: {},
   data() {
-    return { 
-      dataPerPage:6,
+    return {
+      dataPerPage: 4,
       curPageNum: 1,
 
       benched: 0,
@@ -113,16 +107,21 @@ export default {
   watch: {},
   computed: {
     startOffset() {
-        return ((this.curPageNum - 1) * this.dataPerPage);
+      return (this.curPageNum - 1) * this.dataPerPage;
     },
     endOffset() {
-      return (this.startOffset + this.dataPerPage);
+      return this.startOffset + this.dataPerPage;
     },
     numOfPages() {
-      return Math.ceil(this.mapdata.app.result.detail.housedeals.length / this.dataPerPage);
+      return Math.ceil(
+        this.mapdata.app.result.detail.housedeals.length / this.dataPerPage
+      );
     },
     calData() {
-      return this.mapdata.app.result.detail.housedeals.slice(this.startOffset, this.endOffset)
+      return this.mapdata.app.result.detail.housedeals.slice(
+        this.startOffset,
+        this.endOffset
+      );
     },
     items() {
       return Array.from({ length: this.length }, (k, v) => v + 1);

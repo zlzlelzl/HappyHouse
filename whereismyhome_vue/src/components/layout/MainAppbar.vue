@@ -171,6 +171,10 @@ export default {
         title: "지도",
         to: "/map",
       },
+      {
+        title: "관심목록",
+        to: "/watchlist",
+      },
     ],
   }),
   computed: {
