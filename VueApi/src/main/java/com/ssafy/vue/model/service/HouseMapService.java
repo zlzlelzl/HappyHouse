@@ -2,6 +2,7 @@ package com.ssafy.vue.model.service;
 
 import java.util.List;
 
+import com.ssafy.vue.model.FavoriteDto;
 import com.ssafy.vue.model.HouseDealDto;
 import com.ssafy.vue.model.HouseInfoDto;
 import com.ssafy.vue.model.SearchResponseDto;
@@ -34,4 +35,6 @@ public interface HouseMapService {
 	String getSidoByName(String name) throws Exception;
 
   HouseInfoDto getAptByAptCode(String aptCode) throws Exception;
+
+  List<HouseInfoDto> getFavoriteApt(FavoriteDto favoriteDto) throws Exception;
 }

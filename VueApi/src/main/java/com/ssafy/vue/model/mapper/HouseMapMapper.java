@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.ssafy.vue.model.FavoriteDto;
 import com.ssafy.vue.model.HouseDealDto;
 import com.ssafy.vue.model.HouseInfoDto;
 import com.ssafy.vue.model.SearchResponseDto;
@@ -38,5 +39,7 @@ public interface HouseMapMapper {
 	String getSidoByName(String name) throws SQLException;
 	
 	HouseInfoDto getAptByAptCode(String aptCode) throws Exception ;
+
+	List<HouseInfoDto> getFavoriteApt(FavoriteDto favoriteDto);
 
 }

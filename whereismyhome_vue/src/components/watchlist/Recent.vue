@@ -12,7 +12,9 @@
 
             <v-row height="400vmin">
               <v-col v-if="list.length == 0">
-                <h3 class="text-h6 grey--text text-center py-3">최근 본 방이 없습니다.</h3>
+                <h3 class="text-h6 grey--text text-center py-3">
+                  최근 본 아파트가 없습니다.
+                </h3>
               </v-col>
               <v-col cols="12" md="4" lg="4" v-for="(item, idx) in list" :key="idx">
                 <v-hover v-slot:default="{ hover }" open-delay="50" close-delay="50">
@@ -22,7 +24,7 @@
                       :color="hover ? 'white' : 'transparent'"
                       :elevation="hover ? 12 : 0"
                       hover
-                      to="/detail"
+                      :to="{ name: 'Map', query: { aptCode: item.v.aptCode } }"
                     >
                       <v-img
                         src="https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_1280.jpg"
@@ -43,11 +45,18 @@
                         </div>
 
                         <div class="text-body-1 py-4">
-                          {{ item.v.sidoName + " " + item.v.gugunName + " " + item.v.dongName }}
+                          {{
+                            item.v.sidoName +
+                            " " +
+                            item.v.gugunName +
+                            " " +
+                            item.v.dongName
+                          }}
                         </div>
 
                         <div class="text-body-1 py-4">
-                          {{ Number(item.v.recentPrice.split(",").join("")) / 10000 }}억 원
+                          {{ Number(item.v.recentPrice.split(",").join("")) / 10000 }}억
+                          원
                         </div>
 
                         <div class="d-flex align-center">
@@ -71,36 +80,34 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex"
-const mapStore = "mapStore"
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+const mapStore = "mapStore";
 
 export default {
-  name: "CategoryView",
-  components: {
-    MainSidebar: () => import("@/components/details/MainSidebar"),
-  },
+  name: "Recent",
+  components: {},
   data() {
     return {
       list: [],
-    }
+    };
   },
   created() {
-    this.getCacheList()
+    this.getCacheList();
   },
   computed: {
     ...mapState(mapStore, ["cache"]),
   },
   methods: {
     getCacheList() {
-      let list = []
-      console.log(this.cache.size)
+      let list = [];
+      console.log(this.cache.size);
       this.cache.forEach((value, key, cache) => {
-        list.push({ k: key, v: value })
-      })
-      console.log(list)
-      this.list = list
-      return list
+        list.push({ k: key, v: value });
+      });
+      console.log(list);
+      this.list = list;
+      return list;
     },
   },
-}
+};
 </script>

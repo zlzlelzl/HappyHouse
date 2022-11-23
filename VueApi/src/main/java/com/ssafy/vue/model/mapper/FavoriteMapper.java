@@ -13,4 +13,5 @@ public interface FavoriteMapper {
     public List<FavoriteDto> listFavorite() throws Exception;
 
     public int deleteFavorite(FavoriteDto favoriteDto) throws Exception;
+    
 }
