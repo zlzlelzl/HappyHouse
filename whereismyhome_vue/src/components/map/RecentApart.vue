@@ -23,7 +23,8 @@
           </v-col>
           <v-col>
             <div>
-              <v-btn depressed color="accent" small to='/map?aptCode=125#'>아파트 보러가기</v-btn>
+              <v-btn depressed color="accent" small :to='{name:"Map",query:{aptCode:item.v.aptCode} }'
+              >아파트 보러가기</v-btn>
               <h3 class="text-h6 font-weight-bold primary--text py-3">{{ item.v.aptName }}</h3>
 
               <div class="d-flex align-center">
@@ -93,12 +94,6 @@ export default {
     },
   },
   methods: {
-    test1(){
-        this.cache.forEach((value, key, cache)=>{
-            console.log(value, key)
-        })
-        
-    },
     getCacheList() {
       let list = [];
       console.log(this.cache.size);

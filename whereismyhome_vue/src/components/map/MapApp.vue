@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div id="map" name="map" class="pa-5" style="width: 100%; height: 85vh">
+    <div id="map" class="pa-5" style="width: 100%; height: 85vh; position: absolute; left: 0px">
       <!-- marker -->
       <infra-marker-list :map="map"></infra-marker-list>
-      <v-card elevation="15" width="30%" height="100%" style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)">
+      <v-card elevation="15" width="350px" height="100%" style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)">
         <!-- seacrh -->
         <app-search :map="map"></app-search>
         <!-- result -->
@@ -51,6 +51,11 @@ export default {
     this.mapdata.infra.circle = []
     this.setByAptCode(this.$route.query.aptCode)
   },
+  beforeDestroy() {
+    console.log("dddd")
+
+    this.$router.push(this.$route.path)
+  },
   updated() {},
   created() {
     // setHouseDetailInfo(house)
@@ -62,11 +67,13 @@ export default {
     // this.getInfra(this.categoryGroupCodes[0]["Name"])
     // this.getAllInfra()
     // this.calcInfraScore(this.pos)
+    // this.$route.query.aptCode = null;
   },
   watch: {
     isUseCheck(val) {
       console.log(val)
       if (!val && !this.mapdata.infra.checkCircle) {
+        console.log("isUseCheck in")
         if (this.mapdata.infra.circle?.length != 0) {
           this.mapdata.infra.circle.forEach((data) => {
             data.setMap(null)
@@ -80,7 +87,10 @@ export default {
     ChangeHouseInfos(val) {
       console.log("ChangeHouseInfos")
       console.log(val)
-      if (val.length > 0) this.SET_MARKERS(this.displayMarker(val))
+      if (val.length > 0) {
+        this.SET_MARKERS(this.displayMarker(val))
+        console.log("ChangeHouseInfos if")
+      }
       // this.map.setCenter();
     },
   },
@@ -106,9 +116,16 @@ export default {
   },
   methods: {
     ...mapMutations(mapStore, ["SET_MARKERS", "SET_CLUSTERER", "SET_CIRCLE"]),
-    ...mapActions(mapStore, ["setHouseDetail"]),
-    setByAptCode(v) {
-      console.log("mapdata", this.mapdata)
+    ...mapActions(mapStore, ["setHouseDetail", "searchByType", "getHouseInfoByAptCode"]),
+    async setByAptCode(v) {
+      if (v == undefined || v == null || v == "") return
+      console.log("setbyaptcode")
+      // console.log("mapdata", this.mapdata.app.markers);
+      console.log(v)
+      await this.getHouseInfoByAptCode(v)
+      console.log("setbyaptcode2")
+      console.log(this.mapdata.app.result.detail.houseinfo)
+      this.setHouseDetailInfo(this.mapdata.app.result.detail.houseinfo)
     },
     //카카오맵 init---------------------------------------------------------------------
 
@@ -344,10 +361,13 @@ export default {
         markers.forEach((marker) => marker.setMap(null))
         console.log(markers)
       }
-
+      const LIMIT_LENGTH = 300
       if (data.length > 0) {
         markers = []
+        let idx = 0
         data.forEach((d) => {
+          if (idx >= LIMIT_LENGTH) return
+          idx++
           let marker = new kakao.maps.Marker({
             map: this.map,
             position: new kakao.maps.LatLng(d.lat, d.lng),

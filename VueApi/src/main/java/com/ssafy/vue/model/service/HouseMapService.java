@@ -32,4 +32,6 @@ public interface HouseMapService {
 	String getGugunByName(String name) throws Exception;
 
 	String getSidoByName(String name) throws Exception;
+
+  HouseInfoDto getAptByAptCode(String aptCode) throws Exception;
 }

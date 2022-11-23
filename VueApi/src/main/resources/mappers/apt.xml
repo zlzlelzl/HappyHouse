@@ -91,7 +91,7 @@
 		on left(h.dongcode,5) = left(gu.guguncode,5)
 		where left(h.dongcode,2) = left(#{sido},2)
 		order by aptName
-		limit 1000;
+		limit 500;
 	</select>
 	
 	<select id="getAptByName" parameterType="string" resultType="houseInfoDto">
@@ -119,5 +119,16 @@
 		select dongCode, dongName
 		from dongcode
 		where dongName = #{name}
+	</select>
+
+	<select id="getAptByAptCode" parameterType="string" resultType="houseInfoDto">
+		select h.aptCode, h.aptName, h.buildyear, h.dongCode, h.dongName, h.jibun, h.lat, h.lng, si.sidoname, gu.gugunname,
+				(select dealAmount from housedeal where aptCode = h.aptCode and no = (select max(no) from housedeal where aptCode = h.aptCode)) recentPrice
+		from houseinfo h
+		left join sidocode si
+		on left(h.dongcode,2) = left(si.sidocode,2)
+		left join guguncode gu
+		on left(h.dongcode,5) = left(gu.guguncode,5)
+		where aptCode = #{aptCode} 
 	</select>
 </mapper>

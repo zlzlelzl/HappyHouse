@@ -1,6 +1,6 @@
-import { apiInstance } from "@/api/http-common"
-const http = apiInstance()
-const LRU = require("lru-cache")
+import { apiInstance } from "@/api/http-common";
+const http = apiInstance();
+const LRU = require("lru-cache");
 /* global kakao */
 const mapStore = {
   namespaced: true,
@@ -114,7 +114,7 @@ const mapStore = {
       return state.mapdata.infra.circle;
     },
     getCheckCircle(state) {
-      return state.mapdata.infra.checkCircle
+      return state.mapdata.infra.checkCircle;
     },
     getHouseInfos(state) {
       return state.mapdata.app.result.houseinfos;
@@ -174,14 +174,14 @@ const mapStore = {
       state.isToggle = isToggle;
     },
     SET_CACHE(state, key, value) {
-      state.cache.set(key, value)
+      state.cache.set(key, value);
     },
     INIT_CACHE(state) {
       const options = {
         max: 25,
         maxSize: 30,
         sizeCalculation: (value, key) => {
-          return 1
+          return 1;
         },
         dispose: (value, key) => {
           //freeFromMemoryOrWhatever(value);
@@ -191,9 +191,9 @@ const mapStore = {
         updateAgeOnGet: false,
         updateAgeOnHas: false,
         fetchMethod: async (key, staleValue, { options, signal }) => {},
-      }
-      console.log("cache init")
-      state.cache = new LRU(options)
+      };
+      console.log("cache init");
+      state.cache = new LRU(options);
     },
     INIT(state) {
       // this.mappdata.app.markers = [];
@@ -250,14 +250,15 @@ const mapStore = {
           // this.SET_DETAIL_HOUSE(house);
           // let map = this.getMap;
           // console.log(state.mapdata.app.result.houseinfos);
-          state.mapdata.app.result.detail.houseinfo = house
-          state.mapdata.app.result.detail.housedeals = response.data
-          state.mapdata.app.result.detail.isUse = true
+          console.log("cache set");
+          state.mapdata.app.result.detail.houseinfo = house;
+          state.mapdata.app.result.detail.housedeals = response.data;
+          state.mapdata.app.result.detail.isUse = true;
           //캐시에추가
-          console.log("cache set")
-          let value = house.sidoName + " " + house.gugunName + " " + house.dongName
+          console.log("cache set");
+          let value = house.sidoName + " " + house.gugunName + " " + house.dongName;
 
-          state.cache.set(house.aptCode, house)
+          state.cache.set(house.aptCode, house);
           // this.moveMapLocation(house);
           // var moveLatLon = new kakao.maps.LatLng(house.lat, house.lng);
           // console.log(this.map);//
@@ -265,6 +266,24 @@ const mapStore = {
         })
         .catch((error) => {
           console.log("setHouseDetailInfo - e " + error);
+        });
+    },
+    async getHouseInfoByAptCode({ state, commit }, code) {
+      await http
+        .get(`/map/apt/code?aptCode=${code}`)
+        .then((response) => {
+          // console.log("setHouseDetailInfo - s " + response);
+          console.log("getHouseInfoDyAptCode");
+          console.log(response.data);
+          commit("SET_DETAIL_HOUSE", response.data);
+          // this.SET_DETAIL_HOUSE(house);
+          // let map = this.getMap;
+          // console.log(state.mapdata.app.result.houseinfos);
+          // dispatch("setHouseDetail", response.data);
+          // state.setHouseDetail(response.data);
+        })
+        .catch((error) => {
+          console.log("getHouseInfoDyAptCode - e " + error);
         });
     },
   },
