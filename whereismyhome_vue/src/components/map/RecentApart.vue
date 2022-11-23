@@ -1,28 +1,28 @@
 <template>
-  <div>
+  <v-container>
     <div>
       <h3 class="text-h5 font-weight-medium pb-0 text-center">관심목록</h3>
 
       <v-divider></v-divider>
       <v-card height="410px" 
         v-if="list.length==0">
-        <h3 class="text-h6 grey--text text-center py-3">최근 본 방이 없습니다.</h3>
-        <v-img src="@/assets/cache_empty.png"></v-img>
+        <h3 class="text-h6 grey--text text-center py-3" >최근 본 방이 없습니다.</h3>
+        <v-img src="@/assets/cache_empty.png" ></v-img>
       </v-card>
       <v-card height="410px" 
         v-else>
-        <v-row v-for="(item, idx) in calData" :key="idx" class="py-2">
+        <v-row v-for="(item, idx) in calData" :key="idx" class="pa-2">
           <v-col cols="12" md="6" lg="5">
             <v-card height="100%" flat>
               <v-img
-                src="https://cdn.pixabay.com/photo/2021/01/22/16/55/camera-5940588_1280.jpg"
+                src="@/assets/house1.jpg"
                 :aspect-ratio="16 / 9"
                 height="100%"
               ></v-img>
             </v-card>
           </v-col>
           <v-col>
-            <div>
+            <div >
               <v-btn depressed color="accent" small :to='{name:"Map",query:{aptCode:item.v.aptCode} }'
               >아파트 보러가기</v-btn>
               <h3 class="text-h6 font-weight-bold primary--text py-3">{{ item.v.aptName }}</h3>
@@ -40,16 +40,17 @@
             </div>
           </v-col>
         </v-row>
-        <v-pagination
-        position: fixed
+        <v-row> <v-spacer></v-spacer></v-row>
+       
+        <v-pagination 
         v-model="curPageNum"
         :length="numOfPages"
-        circle
+        circle  bottom
       ></v-pagination >
         <!-- <button @click="limit += 5">Show more</button> -->
       </v-card>
     </div>
-  </div>
+      </v-container>
 </template>
 
 <script>

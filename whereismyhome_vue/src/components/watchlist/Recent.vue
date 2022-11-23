@@ -9,8 +9,10 @@
               <h4 class="text-h6">Some category description goes here</h4> -->
             </div>
             <v-divider class="my-4"></v-divider>
-
-            <v-row height="400vmin">
+            <!-- <v-card >
+              <template v-if="list.length<1"></template>
+              <v-card height="40vh"></v-card> -->
+            <v-row >
               <v-col v-if="list.length == 0">
                 <h3 class="text-h6 grey--text text-center py-3">
                   최근 본 아파트가 없습니다.
@@ -27,7 +29,7 @@
                       :to="{ name: 'Map', query: { aptCode: item.v.aptCode } }"
                     >
                       <v-img
-                        src="https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_1280.jpg"
+                        src="@/assets/house1.jpg"
                         :aspect-ratio="16 / 9"
                         gradient="to top, rgba(25,32,72,.4), rgba(25,32,72,.0)"
                         height="200px"
@@ -71,7 +73,7 @@
                   </div>
                 </v-hover>
               </v-col>
-            </v-row>
+            </v-row></v-card>
           </div>
         </div>
       </v-col>

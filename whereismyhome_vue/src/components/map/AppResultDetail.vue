@@ -5,6 +5,10 @@
     <VBtn class="" color="rgb(0, 0, 0, 1)" icon @click="closeDetail">
       <VIcon>mdi-close</VIcon>
     </VBtn>
+
+    <VBtn class="float-right" color="rgb(0, 0, 0, 1)" icon @click="changeFavorite">
+      <VIcon>{{iconName[iconFlg]}}</VIcon>
+    </VBtn>
     <v-card
       outlined
       color="rgb(255, 255, 255, 1)"
@@ -85,6 +89,7 @@ import { apiInstance } from "@/api/http-common";
 import LineChart from "./LineChart.vue";
 import RadarChart from "./RadarChart.vue";
 
+const memberStore = "memberStore";
 const mapStore = "mapStore";
 const http = apiInstance();
 
@@ -97,14 +102,22 @@ export default {
       dataPerPage: 4,
       curPageNum: 1,
 
+      iconFlg:0,
+      iconName:["mdi-star-outline","mdi-star"],
       benched: 0,
     };
   },
   created() {},
   mounted() {
     this.setRoadView();
+    // this.checkIsFavorite();
   },
-  watch: {},
+  watch: {
+    // getIsFavorite(val){
+    //   if(val)this.iconFlg=1;
+    //   else this.iconFlg=0;
+    // },
+  },
   computed: {
     startOffset() {
       return (this.curPageNum - 1) * this.dataPerPage;
@@ -127,6 +140,7 @@ export default {
       return Array.from({ length: this.length }, (k, v) => v + 1);
     },
     ...mapState(mapStore, ["mapdata"]),
+    ...mapState(memberStore, ["isLogin", "favorite", "userInfo"]),
     ...mapGetters(mapStore, ["getMapData"]),
     gethouseinfo() {
       return this.mapdata.app.result.detail.houseinfo;
@@ -134,14 +148,23 @@ export default {
     scrollbarTheme() {
       return this.$vuetify.theme.dark ? "dark" : "light";
     },
+    getIsFavorite(){
+      if(this.mapdata.app.result.detail.isFavorite)this.iconFlg=1;
+      else this.iconFlg=0;
+      return this.mapdata.app.result.detail.isFavorite;
+    },
+    getUserInfo(){
+      return this.userInfo;
+    },
   },
   methods: {
     ...mapActions(mapStore, ["detailHouse", "getHouseList"]),
+    ...mapActions(memberStore, ["insertFavorite", "deleteFavorite", "getFavorite","getFavoriteAll"]),
     ...mapMutations(mapStore, [
       "SET_HOUSE_LIST",
       "CLEAR_APT_LIST",
       "SET_DETAIL_HOUSE",
-      "CLEAR_DETAIL_APT",
+      "CLEAR_DETAIL_APT","FLIP_IS_FAVORITE","SET_IS_FAVORITE",
     ]),
     //디테일창 닫기 버튼
     closeDetail() {
@@ -167,6 +190,42 @@ export default {
         roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
       });
     },
+    changeFavorite(){
+      this.checkIsFavorite();
+      let data={user_id:this.getUserInfo.userid,aptName:this.gethouseinfo.aptName,dongCode:this.gethouseinfo.dongCode};
+      console.log("changeFavorite");
+      // console.log(data);
+      
+      if(this.getIsFavorite){
+        // user_id,aptName,dongCode
+        this.deleteFavorite(data);
+        // 아이콘바꾸기
+      }else{
+        this.insertFavorite(data);
+      }
+      
+      this.iconFlg=(this.iconFlg+1)%2;
+      this.FLIP_IS_FAVORITE();
+    },
+    async checkIsFavorite(){
+      const userInfo= this.getUserInfo;
+      const houseinfo= this.gethouseinfo;
+      console.log("checkIsFavorite")
+      console.log(userInfo)
+      if(userInfo==undefined||userInfo==null ||userInfo==""){
+        alert("로그인이 필요한 기능입니다..");
+        this.$router.push({ name: "login" });
+      }
+      // let returnValue=0;
+      const list = await this.getFavoriteAll();
+      list.forEach(data => {
+          console.log(data)
+        if(data.user_id!=userInfo.userid ||houseinfo.dongCode!=data.dongCode || houseinfo.aptName!=data.aptName)return;
+          this.SET_IS_FAVORITE(true);
+          this.iconFlg=1,
+          console.log("11111111111111111")
+      });
+    }
   },
 };
 </script>

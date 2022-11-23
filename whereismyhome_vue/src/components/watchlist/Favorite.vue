@@ -30,10 +30,10 @@
                       :color="hover ? 'white' : 'transparent'"
                       :elevation="hover ? 12 : 0"
                       hover
-                      to="/detail"
+                      :to="{ name: 'Map', query: { aptCode: item.aptCode } }"
                     >
                       <v-img
-                        src="https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_1280.jpg"
+                        src="@/assets/house1.jpg"
                         :aspect-ratio="16 / 9"
                         gradient="to top, rgba(25,32,72,.4), rgba(25,32,72,.0)"
                         height="200px"
@@ -47,21 +47,22 @@
 
                       <v-card-text>
                         <div class="text-h5 font-weight-bold primary--text">
-                          {{ item.v.aptName }}
+                          {{ item.aptName }}
                         </div>
 
                         <div class="text-body-1 py-4">
                           {{
-                            item.v.sidoName +
+                            item.sidoName +
                             " " +
-                            item.v.gugunName +
+                            item.gugunName +
                             " " +
-                            item.v.dongName
+                            item.dongName
                           }}
                         </div>
 
                         <div class="text-body-1 py-4">
-                          {{ Number(item.v.recentPrice.split(",").join("")) / 10000 }}억
+                          <!-- {{ item.recentPrice}}억 -->
+                          {{ Number(item.recentPrice.split(",").join("")) / 10000 }}억
                           원
                         </div>
 
@@ -70,7 +71,7 @@
                             <v-icon dark>mdi-feather</v-icon>
                           </v-avatar>
 
-                          <div class="pl-2">built {{ item.v.buildYear }}</div>
+                          <div class="pl-2">built {{ item.buildYear }}</div>
                         </div>
                       </v-card-text>
                     </v-card>
@@ -87,6 +88,7 @@
 
 <script>
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
+import houseImg from "@/assets/house1.jpg"
 const memberStore = "memberStore";
 const mapStore = "mapStore";
 export default {
@@ -99,9 +101,11 @@ export default {
   },
   created() {
     this.getCacheList();
-    this.insertFavorite({ user_id: "ssafy", dongCode: "1111016700", aptName: "CS타워" });
-    this.getFavorite();
-    this.deleteFavorite({ user_id: "ssafy", dongCode: "1111016700", aptName: "CS타워" });
+    // this.insertFavorite({ user_id: "ssafy", dongCode: "1123010200", aptName: "가우디캐슬" });
+    // this.insertFavorite({ user_id: "ssafy", dongCode: "1111016700", aptName: "CS타워" });
+    // this.getFavorite();
+    // this.deleteFavorite({ user_id: "ssafy", dongCode: "1111016700", aptName: "CS타워" });
+    this.showFavoriteList();
   },
   computed: {
     ...mapState(mapStore, ["cache"]),
@@ -110,6 +114,8 @@ export default {
       return this.isLogin;
     },
     getFavoriteList() {
+      console.log("gfl")
+      console.log(this.favorite)
       return this.favorite;
     },
     getUserInfo() {
@@ -129,9 +135,8 @@ export default {
       return list;
     },
     showFavoriteList() {
-      console.log(getUserInfo);
-      if (!isLoginCheck) return;
-      this.getFavorite(getUserInfo);
+      if (!this.isLoginCheck) return;
+      this.getFavorite(this.getUserInfo);
     },
   },
 };

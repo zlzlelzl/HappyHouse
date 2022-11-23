@@ -1,6 +1,6 @@
 import jwtDecode from "jwt-decode";
 import router from "@/router";
-import { login, findById, tokenRegeneration, logout } from "@/api/member.js";
+import { login, findById, tokenRegeneration, logout ,regist ,checkId} from "@/api/member.js";
 import { apiInstance } from "@/api/http-common";
 const http = apiInstance();
 
@@ -12,6 +12,7 @@ const memberStore = {
     userInfo: null,
     isValidToken: false,
     favorite: [],
+    idCheck:false,
   },
   getters: {
     checkUserInfo: function (state) {
@@ -23,6 +24,9 @@ const memberStore = {
     getFavorite(state) {
       return state.favorite;
     },
+    getCheckId(state){
+      return state.idCheck
+    }
   },
   mutations: {
     SET_IS_LOGIN: (state, isLogin) => {
@@ -37,6 +41,9 @@ const memberStore = {
     SET_USER_INFO: (state, userInfo) => {
       state.isLogin = true;
       state.userInfo = userInfo;
+    },    
+    SET_ID_CHECK: (state, idCheck) => {
+      state.idCheck = idCheck;
     },
     SET_FAVORITE(state, favorite) {
       state.favorite = favorite;
@@ -156,7 +163,40 @@ const memberStore = {
         }
       );
     },
-    insertFavorite({ state }, data) {
+    async userRegist({ commit }, user) {
+      await regist(
+        user,
+        ({ data }) => {
+          if (data.message === "success") {
+            alert("회원가입 성공했습니다.");
+          } else {
+            alert("회원가입 실패했습니다.");
+          }
+        },
+        (error) => {
+          console.log(error);
+          alert("회원가입 실패했습니다.");
+        }
+      );
+    },
+    async userCheckId({ state,commit }, user) {
+      await checkId(
+        user,
+        ({ data }) => {
+          if (data.message === "success") {
+              commit("SET_ID_CHECK",true);
+          } else {
+            alert("중복된 아이디입니다.");
+          }
+        },
+        (error) => {
+          console.log(error);
+          console.log(state.idCheck);
+          alert("회원가입 실패했습니다.");
+        }
+      );
+    },
+    insertFavorite({ state, dispatch  }, data) {
       http
         .post(`/map/favor`, {
           user_id: data.user_id,
@@ -185,21 +225,32 @@ const memberStore = {
         });
     },
     getFavorite({ state, commit }, userinfo) {
+      console.log(userinfo);
+      let list = [];
       http
-        .get(`/map/favor`)
+        .get(`/map/favor/apt?user_id=${userinfo.userid}`)
         .then((response) => {
           console.log(response);
-          console.log(userinfo);
-          let list = [];
-          response.data.forEach((data) => {
-            if (data.user_id != userinfo.userid) return;
-            list.push(data);
-          });
-          commit("SET_FAVORITE", list);
+          commit("SET_FAVORITE", response.data);
         })
         .catch((error) => {
           console.log(error);
         });
+        
+        console.log(list);
+    },
+    async getFavoriteAll({ state, commit }) {
+      let list = [];
+      await http
+        .get(`/map/favor`)
+        .then((response) => {
+           list= response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+        
+        return list;
     },
   },
 };

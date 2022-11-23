@@ -26,6 +26,7 @@ const mapStore = {
             housedeals: [],
 
             isUse: false,
+            isFavorite: false,
           },
         },
         markers: [],
@@ -119,6 +120,9 @@ const mapStore = {
     getHouseInfos(state) {
       return state.mapdata.app.result.houseinfos;
     },
+    getIsFavorite(state) {
+      return state.mapdata.app.result.detail.isFavorite;
+    },
   },
   mutations: {
     CLEAR_APT_LIST(state) {
@@ -197,6 +201,12 @@ const mapStore = {
     },
     INIT(state) {
       // this.mappdata.app.markers = [];
+    },
+    SET_IS_FAVORITE(state, val) {
+      state.mapdata.app.result.detail.isFavorite = val;
+    },
+    FLIP_IS_FAVORITE(state) {
+      state.mapdata.app.result.detail.isFavorite = !state.mapdata.app.result.detail.isFavorite;
     },
   },
   actions: {

@@ -116,7 +116,7 @@ const routes = [
       {
         path: "favorite",
         name: "favorite",
-        // beforeEnter: onlyAuthUser,
+        beforeEnter: onlyAuthUser,
         component: () => import("@/components/watchlist/Favorite.vue"),
       },
     ],
@@ -139,7 +139,7 @@ const routes = [
       {
         path: "login",
         name: "login",
-        component: () => import("@/components/user/UserLogin.vue"),
+        component: () => import("@/components/user/UserLogin2.vue"),
       },
       {
         path: "mypage",

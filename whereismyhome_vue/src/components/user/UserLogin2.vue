@@ -180,7 +180,7 @@ export default {
   data() {
     return {
       // isLoginError: false,
-    step: 2,
+    step: 1,
       user: {
         userid: null,
         userpwd: null,
@@ -210,6 +210,8 @@ export default {
     ...mapState(memberStore, ["isLogin", "isLoginError", "userInfo","idCheck"]),
     ...mapGetters(memberStore, ["getCheckId"]),
     getIdCheck(){
+      console.log(" ")
+      console.log(this.idCheck)
       return this.idCheck;
     }
   },

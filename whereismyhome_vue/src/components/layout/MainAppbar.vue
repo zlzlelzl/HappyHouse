@@ -160,7 +160,7 @@ export default {
       },
       {
         text: "회원가입",
-        to: "/user/regist",
+        to: "/user/join",
         target: "_black",
         color: "primary",
         icon: "mdi-account-plus",
