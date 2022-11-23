@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="map" class="pa-5" style="width: 100%; height: 85vh">
+    <div id="map" name="map" class="pa-5" style="width: 100%; height: 85vh">
       <!-- marker -->
       <infra-marker-list :map="map"></infra-marker-list>
       <v-card elevation="15" width="30%" height="100%" style="z-index: 2; background-color: rgba(255, 255, 255, 0.8)">

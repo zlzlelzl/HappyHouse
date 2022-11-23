@@ -23,7 +23,7 @@
           </v-col>
           <v-col>
             <div>
-              <v-btn depressed color="accent" small to='/map?aptCode=123'>아파트 보러가기</v-btn>
+              <v-btn depressed color="accent" small to='/map?aptCode=125#'>아파트 보러가기</v-btn>
               <h3 class="text-h6 font-weight-bold primary--text py-3">{{ item.v.aptName }}</h3>
 
               <div class="d-flex align-center">
