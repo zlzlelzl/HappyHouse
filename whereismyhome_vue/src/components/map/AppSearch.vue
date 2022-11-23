@@ -27,12 +27,7 @@
             >
               <v-list-item-group>
                 <!-- // 마우스 오버 시 효과를 주기위한 v-hover -->
-                <v-hover
-                  v-slot="{ hover }"
-                  v-for="(item, index) in completeData"
-                  :key="index"
-                  ref="test"
-                >
+                <v-hover v-slot="{ hover }" v-for="(item, index) in completeData" :key="index" ref="test">
                   <!-- // 자동완성 결과값들의 리스트 -->
                   <v-list-item
                     class="pa-3 pl-5"
@@ -66,12 +61,13 @@
 </template>
 
 <script>
-import vClickOutside from "v-click-outside";
-import { apiInstance } from "@/api/http-common";
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+import vClickOutside from "v-click-outside"
+import { apiInstance } from "@/api/http-common"
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex"
+import axios from "axios"
 
-const mapStore = "mapStore";
-const http = apiInstance();
+const mapStore = "mapStore"
+const http = apiInstance()
 export default {
   name: "AppSearch",
   data() {
@@ -81,16 +77,19 @@ export default {
       inputType: "",
       autoSearchList: false,
       completeData: null,
-    };
+    }
+  },
+  props: {
+    map: {},
   },
   mounted() {},
   watch: {
     inputMsg(val) {
       if (!val) {
-        this.completeData = [];
+        this.completeData = []
       }
-      this.autoSearchList = true;
-      this.fetchEntriesDebounced();
+      this.autoSearchList = true
+      this.fetchEntriesDebounced()
     },
   },
   directives: {
@@ -104,37 +103,37 @@ export default {
     ...mapActions(mapStore, ["searchByType"]),
     //DB에 불필요한 데이터 입력 방지위해 입력 기다리기
     fetchEntriesDebounced() {
-      this.completeData = null;
-      clearTimeout(this._timerId);
+      this.completeData = null
+      clearTimeout(this._timerId)
       // 0.5초 동안 동작이 없으면 completeSearch 함수 호출
       this._timerId = setTimeout(() => {
         // maybe : this.fetch_data()
-        this.completeSearch();
-      }, 500);
+        this.completeSearch()
+      }, 500)
     },
 
     //자동완성 기능
     completeSearch() {
-      let str = this.inputMsg;
-      str = str.trim(); //양끝 공백 제거
-      str = str.replace(/\s/g, "+"); //스페이스바 +로 치환
-      const reg = /[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9|+]/.test(str); //특문검사 정규식
+      let str = this.inputMsg
+      str = str.trim() //양끝 공백 제거
+      str = str.replace(/\s/g, "+") //스페이스바 +로 치환
+      const reg = /[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9|+]/.test(str) //특문검사 정규식
       if (!reg && str !== "") {
         http
           .get(`/map/searchlist?inputmsg=${str}`)
           .then((response) => {
-            console.log("search s");
-            this.completeData = response.data;
-            console.log(this.completeData);
+            console.log("search s")
+            this.completeData = response.data
+            console.log(this.completeData)
           })
           .catch((error) => {
-            console.log(error.response);
-          });
+            console.log(error.response)
+          })
       }
     },
     //자동검색 리스트에서 바깥부분 클릭시 리스트 닫음
     onClickOutside() {
-      this.autoSearchList = false;
+      this.autoSearchList = false
     },
     // moveNextSearchList(idx){
     //   if(!this.completeData)return;
@@ -175,18 +174,35 @@ export default {
     // },
     insertSearchBar() {
       if (this.completeData != null) {
-        this.inputMsg = this.completeData[0].name;
-        this.inputType = this.completeData[0].type;
-        this.searchByType({ name: this.inputMsg, type: this.inputType });
+        this.inputMsg = this.completeData[0].name
+        this.inputType = this.completeData[0].type
+        this.searchByType({ name: this.inputMsg, type: this.inputType })
       }
     },
     searchByTypeClick(item) {
-      this.inputMsg = item.name;
-      this.inputType = item.type;
-      this.searchByType({ name: this.inputMsg, type: this.inputType });
+      this.inputMsg = item.name
+      this.inputType = item.type
+
+      console.log("itemitem", item)
+      axios
+        .get(`https://dapi.kakao.com/v2/local/search/address.json?query=${item.query}`, {
+          headers: {
+            Authorization: "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f",
+          },
+        })
+        .then(({ data }) => {
+          this.map.setLevel(item.maxlevel, { animate: true })
+
+          console.log("ddd", data)
+          if (data.documents.length >= 1) {
+            this.map.panTo(new kakao.maps.LatLng(data.documents[0].y, data.documents[0].x))
+          }
+        })
+
+      this.searchByType({ name: this.inputMsg, type: this.inputType })
     },
   },
-};
+}
 </script>
 
 <style scoped></style>
