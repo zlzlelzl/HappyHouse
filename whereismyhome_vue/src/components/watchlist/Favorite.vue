@@ -1,19 +1,28 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="12" lg="12" xl="8">
+      <v-col cols="12" lg="12" xl="12">
         <div>
           <div>
             <div>
-              <h2 class="text-h4 font-weight-bold">ANIMAL</h2>
-
-              <h4 class="text-h6">Some category description goes here</h4>
+              <!-- <h2 class="text-h4 font-weight-bold">ANIMAL</h2>
+              <h4 class="text-h6">Some category description goes here</h4> -->
             </div>
-
             <v-divider class="my-4"></v-divider>
 
-            <v-row>
-              <v-col cols="12" md="6" lg="4" v-for="i in 18" :key="i">
+            <v-row height="400vmin">
+              <v-col v-if="getFavoriteList.length == 0">
+                <h3 class="text-h6 grey--text text-center py-3">
+                  찜한 아파트가 없습니다.
+                </h3>
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+                lg="4"
+                v-for="(item, idx) in getFavoriteList"
+                :key="idx"
+              >
                 <v-hover v-slot:default="{ hover }" open-delay="50" close-delay="50">
                   <div>
                     <v-card
@@ -32,18 +41,28 @@
                         style="border-radius: 16px"
                       >
                         <v-card-text>
-                          <v-btn color="accent">ANIMAL</v-btn>
+                          <v-btn color="accent"> 이쁜이미지</v-btn>
                         </v-card-text>
                       </v-img>
 
                       <v-card-text>
                         <div class="text-h5 font-weight-bold primary--text">
-                          How to write an awesome blog post in 5 steps
+                          {{ item.v.aptName }}
                         </div>
 
                         <div class="text-body-1 py-4">
-                          Ultrices sagittis orci a scelerisque. Massa placerat duis
-                          ultricies lacus sed turpis
+                          {{
+                            item.v.sidoName +
+                            " " +
+                            item.v.gugunName +
+                            " " +
+                            item.v.dongName
+                          }}
+                        </div>
+
+                        <div class="text-body-1 py-4">
+                          {{ Number(item.v.recentPrice.split(",").join("")) / 10000 }}억
+                          원
                         </div>
 
                         <div class="d-flex align-center">
@@ -51,7 +70,7 @@
                             <v-icon dark>mdi-feather</v-icon>
                           </v-avatar>
 
-                          <div class="pl-2">Yan Lee · 22 July 2019</div>
+                          <div class="pl-2">built {{ item.v.buildYear }}</div>
                         </div>
                       </v-card-text>
                     </v-card>
@@ -62,19 +81,58 @@
           </div>
         </div>
       </v-col>
-
-      <v-col>
-        <div></div>
-      </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
+const memberStore = "memberStore";
+const mapStore = "mapStore";
 export default {
-  name: "CategoryView",
-  components: {
-    MainSidebar: () => import("@/components/details/MainSidebar"),
+  name: "Favorite",
+  components: {},
+  data() {
+    return {
+      list: [],
+    };
+  },
+  created() {
+    this.getCacheList();
+    this.insertFavorite({ user_id: "ssafy", dongCode: "1111016700", aptName: "CS타워" });
+    this.getFavorite();
+    this.deleteFavorite({ user_id: "ssafy", dongCode: "1111016700", aptName: "CS타워" });
+  },
+  computed: {
+    ...mapState(mapStore, ["cache"]),
+    ...mapState(memberStore, ["isLogin", "favorite", "userInfo"]),
+    isLoginCheck() {
+      return this.isLogin;
+    },
+    getFavoriteList() {
+      return this.favorite;
+    },
+    getUserInfo() {
+      return this.userInfo;
+    },
+  },
+  methods: {
+    ...mapActions(memberStore, ["insertFavorite", "deleteFavorite", "getFavorite"]),
+    getCacheList() {
+      let list = [];
+      console.log(this.cache.size);
+      this.cache.forEach((value, key, cache) => {
+        list.push({ k: key, v: value });
+      });
+      console.log(list);
+      this.list = list;
+      return list;
+    },
+    showFavoriteList() {
+      console.log(getUserInfo);
+      if (!isLoginCheck) return;
+      this.getFavorite(getUserInfo);
+    },
   },
 };
 </script>

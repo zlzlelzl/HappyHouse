@@ -165,7 +165,7 @@ public class HouseMapController {
     @PostMapping("/favor")
     public ResponseEntity<String> writeFavorite(
             @RequestBody @ApiParam(value = "즐겨찾기 정보.", required = true) FavoriteDto favoriteDto) throws Exception {
-        logger.info("writeFavorite - 호출");
+                logger.info("writeFavorite - 호출 {}",favoriteDto);
         if (favoriteService.writeFavorite(favoriteDto)) {
             return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
         }
@@ -191,5 +191,9 @@ public class HouseMapController {
             return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
         }
         return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+    },
+    @GetMapping("/favor/apt")
+    public ResponseEntity<List<HouseInfoDto>> getFavoriteApt(FavoriteDto favoriteDto) throws Exception {
+        return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getFavoriteApt(favoriteDto), HttpStatus.OK);
     }
 }

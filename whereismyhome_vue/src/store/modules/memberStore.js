@@ -1,6 +1,8 @@
 import jwtDecode from "jwt-decode";
 import router from "@/router";
 import { login, findById, tokenRegeneration, logout } from "@/api/member.js";
+import { apiInstance } from "@/api/http-common";
+const http = apiInstance();
 
 const memberStore = {
   namespaced: true,
@@ -9,6 +11,7 @@ const memberStore = {
     isLoginError: false,
     userInfo: null,
     isValidToken: false,
+    favorite: [],
   },
   getters: {
     checkUserInfo: function (state) {
@@ -16,6 +19,9 @@ const memberStore = {
     },
     checkToken: function (state) {
       return state.isValidToken;
+    },
+    getFavorite(state) {
+      return state.favorite;
     },
   },
   mutations: {
@@ -31,6 +37,9 @@ const memberStore = {
     SET_USER_INFO: (state, userInfo) => {
       state.isLogin = true;
       state.userInfo = userInfo;
+    },
+    SET_FAVORITE(state, favorite) {
+      state.favorite = favorite;
     },
   },
   actions: {
@@ -146,6 +155,51 @@ const memberStore = {
           console.log(error);
         }
       );
+    },
+    insertFavorite({ state }, data) {
+      http
+        .post(`/map/favor`, {
+          user_id: data.user_id,
+          dongCode: data.dongCode,
+          aptName: data.aptName,
+        })
+        .then((response) => {
+          console.log(response);
+          dispatch("getFavorite");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    deleteFavorite({ state, dispatch }, data) {
+      http
+        .delete(
+          `/map/favor?user_id=${data.user_id}&dongCode=${data.dongCode}&aptName=${data.aptName}`
+        )
+        .then((response) => {
+          console.log(response);
+          dispatch("getFavorite");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getFavorite({ state, commit }, userinfo) {
+      http
+        .get(`/map/favor`)
+        .then((response) => {
+          console.log(response);
+          console.log(userinfo);
+          let list = [];
+          response.data.forEach((data) => {
+            if (data.user_id != userinfo.userid) return;
+            list.push(data);
+          });
+          commit("SET_FAVORITE", list);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };
