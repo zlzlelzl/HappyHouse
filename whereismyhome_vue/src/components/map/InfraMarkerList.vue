@@ -240,7 +240,7 @@ export default {
         console.log("cls all marker ret");
         return;
       }
-      console.log(this.mapdata.infra.markers);
+      // console.log(this.mapdata.infra.markers);
 
       for (let i = 0; i < this.buttonMapping.length; ++i) {
         this.mapdata.infra.markers[this.buttonMapping[i]].forEach((data) => {

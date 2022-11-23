@@ -1,6 +1,7 @@
 <template>
   <div>
     <map-app></map-app>
+    <div style="display: hidden; width: 100%; height: 85vh"></div>
   </div>
 </template>
 

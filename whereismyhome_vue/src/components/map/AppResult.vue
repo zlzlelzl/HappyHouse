@@ -11,13 +11,20 @@
         <v-list-item>검색 결과가 없습닌다.</v-list-item>
       </v-list-item-group>
       <v-list-item-group v-else>
-        <v-list-item v-for="(house, i) in mapdata.app.result.houseinfos" :key="i" @click="setHouseDetailInfo(house)">
+        <v-list-item
+          v-for="(house, i) in mapdata.app.result.houseinfos"
+          :key="i"
+          @click="setHouseDetailInfo(house)"
+        >
           <!-- <v-list-item-icon>
             <v-icon v-text="house.icon"></v-icon>
           </v-list-item-icon> -->
           <v-list-item-content>
             <v-list-item-title v-text="house.aptName"></v-list-item-title>
-            <v-list-item-subtitle>{{ house.sidoName }} {{ house.gugunName }} {{ house.dongName }}</v-list-item-subtitle>
+            <v-list-item-subtitle
+              >{{ house.sidoName }} {{ house.gugunName }}
+              {{ house.dongName }}</v-list-item-subtitle
+            >
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -26,12 +33,12 @@
 </template>
 
 <script>
-import AppResultDetail from "./AppResultDetail.vue"
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex"
-import { apiInstance } from "@/api/http-common"
+import AppResultDetail from "./AppResultDetail.vue";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+import { apiInstance } from "@/api/http-common";
 
-const mapStore = "mapStore"
-const http = apiInstance()
+const mapStore = "mapStore";
+const http = apiInstance();
 
 export default {
   name: "AppResult",
@@ -39,13 +46,13 @@ export default {
     AppResultDetail,
   },
   data() {
-    return {}
+    return {};
   },
   props: {
     map: {},
   },
   created() {
-    this.CLEAR_APT_LIST()
+    this.CLEAR_APT_LIST();
   },
   watch: {
     // isUseCheck(val) {
@@ -63,33 +70,33 @@ export default {
     ...mapState(mapStore, ["mapdata"]),
     ...mapGetters(mapStore, ["getMapData", "getCircle", "getCheckCircle"]),
     isUseCheck() {
-      return this.mapdata.app.result.detail.isUse
+      return this.mapdata.app.result.detail.isUse;
     },
     scrollbarTheme() {
-      return this.$vuetify.theme.dark ? "dark" : "light"
+      return this.$vuetify.theme.dark ? "dark" : "light";
     },
   },
   methods: {
     ...mapMutations(mapStore, ["CLEAR_APT_LIST", "SET_HOUSE_DEAL", "SET_DETAIL_HOUSE"]),
     ...mapActions(mapStore, ["setHouseDetail"]),
     setHouseDetailInfo(house) {
-      console.log("house", house)
-      this.setHouseDetail(house)
-      this.moveMapLocation(house)
-      this.drawCircleFromHouse(house)
+      console.log("house", house);
+      this.setHouseDetail(house);
+      this.moveMapLocation(house);
+      this.drawCircleFromHouse(house);
     },
     moveMapLocation(data) {
-      var moveLatLon = new kakao.maps.LatLng(data.lat, data.lng)
-      console.log(this.map)
-      this.map.setCenter(moveLatLon)
+      var moveLatLon = new kakao.maps.LatLng(data.lat, data.lng);
+      console.log(this.map);
+      this.map.setCenter(moveLatLon);
     },
     drawCircleFromHouse(data) {
       // 이전 원 지우기
       if (this.mapdata.infra.circle.length > 0) {
         this.mapdata.infra.circle.forEach((circle) => {
-          circle.setMap(null)
-        })
-        this.mapdata.infra.circle = []
+          circle.setMap(null);
+        });
+        this.mapdata.infra.circle = [];
       }
       let circle = new kakao.maps.Circle({
         center: new kakao.maps.LatLng(data.lat, data.lng), // 원의 중심좌표 입니다
@@ -100,16 +107,16 @@ export default {
         strokeStyle: "dashed", // 선의 스타일 입니다
         fillColor: "#CFE7FF", // 채우기 색깔입니다
         fillOpacity: 0.7, // 채우기 불투명도 입니다
-      })
-      this.mapdata.infra.circle.push(circle)
+      });
+      this.mapdata.infra.circle.push(circle);
 
       // 지도에 원을 표시합니다
-      circle.setMap(this.map)
-      this.mapdata.infra.checkCircle = true
+      circle.setMap(this.map);
+      this.mapdata.infra.checkCircle = true;
       // this.SET_CIRCLE(circles);
     },
   },
-}
+};
 </script>
 <style scoped>
 .light::-webkit-scrollbar {
