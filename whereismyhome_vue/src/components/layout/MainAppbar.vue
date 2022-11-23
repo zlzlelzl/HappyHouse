@@ -49,23 +49,18 @@
           align="center"
           justify="space-between"
         >
-          <v-col class="d-flex align-center">
+          <v-col cols="3" class="d-flex align-left">
             <v-app-bar-nav-icon
               v-if="!$vuetify.breakpoint.mdAndUp"
               @click.stop="drawer = !drawer"
             />
 
-            <v-toolbar-title
-              class="font-weight-bold text-h5 primary--text"
-              style="cursor: pointer"
-              @click="$router.push('/')"
+            <v-toolbar-title class="" style="cursor: pointer" @click="$router.push('/')"
               ><img src="@/assets/ssafy_logo.png" height="70px" />
-              <!-- Where is my
-              <span class="accent--text">HOME</span> -->
             </v-toolbar-title>
           </v-col>
 
-          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6">
+          <v-col class="align-center d-flex" v-if="$vuetify.breakpoint.mdAndUp" cols="5">
             <v-btn
               v-for="(item, i) in barItems"
               :key="i"
@@ -78,37 +73,53 @@
             </v-btn>
           </v-col>
 
-          <v-col v-if="$vuetify.breakpoint.mdAndUp" class="text-right">
-            <template v-if="loginCheck">
-              <v-btn
-                v-for="(item, i) in btnItemsLogout"
-                :key="i"
-                :color="item.color"
-                :href="item.href"
-                :outlined="item.outlined"
-                :target="item.target"
-                :to="item.to"
-                class="ml-3 text-capitalize"
-              >
-                <v-icon left>{{ item.icon }}</v-icon>
-                {{ item.text }}
-              </v-btn>
-            </template>
-            <template v-else>
-              <v-btn
-                v-for="(item, i) in btnItemsLogin"
-                :key="i"
-                :color="item.color"
-                :href="item.href"
-                :outlined="item.outlined"
-                :target="item.target"
-                :to="item.to"
-                class="ml-3 text-capitalize"
-              >
-                <v-icon left>{{ item.icon }}</v-icon>
-                {{ item.text }}
-              </v-btn>
-            </template>
+          <v-col cols="3" class="text-right d-inline">
+            <h2 v-if="loginCheck" class="text-subtitle-1 text-left d-inline">
+              {{ userInfo.username }}님 환영합니다.
+            </h2>
+            <v-menu offset-y class="d-inline">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn v-bind="attrs" v-on="on" color="primary" icon>
+                  <v-icon>fas fa-bars</v-icon>
+                </v-btn>
+              </template>
+
+              <template v-if="loginCheck">
+                <v-list>
+                  <v-list-item
+                    v-for="(item, i) in btnItemsLogout"
+                    :key="i"
+                    :color="item.color"
+                    :href="item.href"
+                    :outlined="item.outlined"
+                    :target="item.target"
+                    :to="item.to"
+                    offset-y
+                    class="ma-3 text-capitalize"
+                  >
+                    <v-icon class="mr-3">{{ item.icon }} </v-icon>
+                    {{ item.text }}
+                  </v-list-item>
+                </v-list>
+              </template>
+              <template v-else>
+                <v-list>
+                  <v-list-item
+                    v-for="(item, i) in btnItemsLogin"
+                    :key="i"
+                    :color="item.color"
+                    :href="item.href"
+                    :outlined="item.outlined"
+                    :target="item.target"
+                    :to="item.to"
+                    class="ma-3 text-capitalize"
+                  >
+                    <v-icon left>{{ item.icon }}</v-icon>
+                    {{ item.text }}
+                  </v-list-item>
+                </v-list>
+              </template>
+            </v-menu>
           </v-col>
         </v-row>
       </v-container>
@@ -117,6 +128,7 @@
 </template>
 
 <script>
+import "@fortawesome/fontawesome-free/js/all.js";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
 const memberStore = "memberStore";
 export default {
@@ -128,14 +140,14 @@ export default {
         to: "/user/logout",
         target: "_black",
         color: "primary",
-        icon: "mdi-login ",
+        icon: "mdi-logout ",
       },
       {
         text: "마이페이지",
         to: "/user/mypage",
         target: "_black",
         color: "primary",
-        icon: "mdi-login ",
+        icon: "mdi-account ",
       },
     ],
     btnItemsLogin: [
@@ -151,7 +163,7 @@ export default {
         to: "/user/regist",
         target: "_black",
         color: "primary",
-        icon: "mdi-login ",
+        icon: "mdi-account-plus",
       },
     ],
     barItems: [
