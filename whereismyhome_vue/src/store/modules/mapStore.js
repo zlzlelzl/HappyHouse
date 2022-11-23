@@ -99,76 +99,79 @@ const mapStore = {
   },
   getters: {
     getIsToggle(state) {
-      return state.isToggle
+      return state.isToggle;
     },
     getMapData(state) {
-      return state.mapdata
+      return state.mapdata;
     },
     getMarkers(state) {
-      return state.mapdata.app.markers
+      return state.mapdata.app.markers;
     },
     getClusterer(state) {
-      return state.mapdata.app.clusterer
+      return state.mapdata.app.clusterer;
     },
     getCircle(state) {
-      return state.mapdata.infra.circle
+      return state.mapdata.infra.circle;
     },
     getCheckCircle(state) {
       return state.mapdata.infra.checkCircle
     },
+    getHouseInfos(state) {
+      return state.mapdata.app.result.houseinfos;
+    },
   },
   mutations: {
     CLEAR_APT_LIST(state) {
-      state.mapdata.app.result.houseinfos = []
-      state.mapdata.app.result.detail.housedeals = null
-      state.mapdata.app.result.detail.isUse = false
+      state.mapdata.app.result.houseinfos = [];
+      state.mapdata.app.result.detail.housedeals = null;
+      state.mapdata.app.result.detail.isUse = false;
     },
     CLEAR_DETAIL_APT(state) {
-      state.mapdata.app.result.detail.houseinfo = null
-      state.mapdata.app.result.detail.housedeals = null
-      state.mapdata.app.result.detail.isUse = false
+      state.mapdata.app.result.detail.houseinfo = null;
+      state.mapdata.app.result.detail.housedeals = null;
+      state.mapdata.app.result.detail.isUse = false;
       // state.house = null;
       // state.isUse = false;
     },
     SET_HOUSE_LIST(state, houses) {
-      state.houses = houses
+      state.houses = houses;
     },
     SET_HOUSE_DEAL(state, house) {
-      state.mapdata.app.result.detail.housedeals = house
-      state.mapdata.app.result.detail.isUse = true
+      state.mapdata.app.result.detail.housedeals = house;
+      state.mapdata.app.result.detail.isUse = true;
     },
     SET_DETAIL_HOUSE(state, house) {
-      state.mapdata.app.result.detail.houseinfo = house
+      state.mapdata.app.result.detail.houseinfo = house;
     },
     CLEAR_IS_USE(state) {
-      state.isUse = false
+      state.isUse = false;
     },
     SET_IS_USE(state, bool) {
-      state.isUse = bool
+      state.isUse = bool;
     },
     SET_MARKERS(state, markers) {
-      state.mapdata.app.markers = markers
+      state.mapdata.app.markers = markers;
     },
     SET_INFO_WINDOW(state, infowindow) {
-      state.infowindow = infowindow
+      state.infowindow = infowindow;
     },
     CLEAR_MARKERS(state) {
-      state.markers = null
+      state.markers = [];
     },
     CLEAR_INFO_WINDOW(state) {
-      state.infowindow = null
+      state.infowindow = [];
     },
     SET_CLUSTERER(state, clusterer) {
-      state.mapdata.app.clusterer = clusterer
+      state.mapdata.app.clusterer = clusterer;
     },
     SET_MAP_DATA(state, mapdata) {
-      state.mapdata = mapdata
+      state.mapdata = mapdata;
     },
     SET_CIRCLE(state, circle) {
-      state.mapdata.infra.circle = circle
+      state.mapdata.infra.circle = circle;
     },
     SET_ISTOGGLE(state, isToggle) {
-      state.isToggle = isToggle
+      state.isToggle = isToggle;
     },
     SET_CACHE(state, key, value) {
       state.cache.set(key, value)
@@ -192,49 +195,52 @@ const mapStore = {
       console.log("cache init")
       state.cache = new LRU(options)
     },
+    INIT(state) {
+      // this.mappdata.app.markers = [];
+    },
   },
   actions: {
     searchByType({ commit, state }, data) {
-      console.log(data.name, data.type)
+      // console.log(data.name, data.type);
       http
         .get(`/map/apt/type?name=${data.name}&type=${data.type}`)
         .then((response) => {
-          console.log("s")
-          state.mapdata.app.result.houseinfos = response.data
-          state.mapdata.app.result.detail.isUse = false
+          // console.log("s");
+          state.mapdata.app.result.houseinfos = response.data;
+          state.mapdata.app.result.detail.isUse = false;
           // commit("SET_HOUSE_LIST", response.data);
           // commit("SET_IS_USE", false);
           // console.log(response.data);
         })
         .catch((error) => {
-          console.log("e")
-          console.log(error)
-        })
+          console.log("e");
+          console.log(error);
+        });
     },
     getHouseList: ({ commit, state }, gugunCode) => {
       const params = {
         LAWD_CD: gugunCode,
         DEAL_YMD: "202207",
         serviceKey: decodeURIComponent(SERVICE_KEY),
-      }
+      };
       houseList(
         params,
         ({ data }) => {
-          state.mapdata.app.result.houseinfos = data.response.body.items.item
+          state.mapdata.app.result.houseinfos = data.response.body.items.item;
           // commit("SET_HOUSE_LIST", data.response.body.items.item);
         },
         (error) => {
-          console.log(error)
+          console.log(error);
         }
-      )
+      );
     },
     detailHouse: ({ commit, state }, house) => {
       // 나중에 house.일련번호를 이용하여 API 호출
-      state.mapdata.app.result.detail.houseinfo = house
+      state.mapdata.app.result.detail.houseinfo = house;
       // commit("SET_DETAIL_HOUSE", house);
     },
     setHouseDetail({ state }, house) {
-      state.mapdata.app.result.detail.isUse = false
+      state.mapdata.app.result.detail.isUse = false;
       http
         .get(`/map/deal?aptCode=${house.aptCode}`)
         .then((response) => {
@@ -258,10 +264,10 @@ const mapStore = {
           // this.map.setCenter(moveLatLon);
         })
         .catch((error) => {
-          console.log("setHouseDetailInfo - e " + error)
-        })
+          console.log("setHouseDetailInfo - e " + error);
+        });
     },
   },
-}
+};
 
-export default mapStore
+export default mapStore;

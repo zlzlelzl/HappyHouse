@@ -6,7 +6,11 @@ const newsStore = {
     newsList: [],
   },
 
-  getters: {},
+  getters: {
+    getNewsList(state) {
+      return state.newsList;
+    },
+  },
   mutations: {
     SET_NEWS_LIST: (state, news) => {
       state.newsList = news;
@@ -17,7 +21,7 @@ const newsStore = {
   },
 
   actions: {
-    getNews: ({ commit }, searchText) => {
+    async getNews({ commit }, searchText) {
       // vue cli enviroment variables 검색
       //.env.local file 생성.
       // 반드시 VUE_APP으로 시작해야 한다.
@@ -36,11 +40,11 @@ const newsStore = {
           "X-Naver-Client-Secret": SERVICE_SECRET,
         },
       };
-      getNaverNews(
+      await getNaverNews(
         params,
         header,
         ({ data }) => {
-          //console.log(data.items);
+          console.log(data.items);
           commit("SET_NEWS_LIST", data.items);
         },
         (error) => {
