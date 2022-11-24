@@ -1,7 +1,7 @@
 <template>
   <v-container id="">
     <div>
-      <h3 class="text-h5 font-weight-medium pb-0 text-center">관심목록</h3>
+      <h3 class="text-h5 font-weight-medium pb-0 text-center">최근 본 아파트</h3>
 
       <v-divider></v-divider>
       <v-card height="410px" v-if="list.length == 0">
