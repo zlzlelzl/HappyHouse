@@ -88,10 +88,10 @@
                 <v-btn elevation="2" color="primary" style="margin-right: 5px">
                   <qna-reply :parentno="item.qnano"></qna-reply>
                 </v-btn>
-                <v-btn elevation="2" color="primary" style="margin-right: 5px" @click=";[toModify(), setValue(item)]"
+                <v-btn v-if="userid==item.userid" elevation="2" color="primary" style="margin-right: 5px" @click=";[toModify(), setValue(item)]"
                   >수정</v-btn
                 >
-                <v-btn elevation="2" color="error" @click="deleteArticle(item)">삭제</v-btn>
+                <v-btn v-if="userid==item.userid || userid=='admin'" elevation="2" color="error" @click="deleteArticle(item)">삭제</v-btn>
               </div>
             </div>
           </td>
@@ -175,6 +175,7 @@ export default {
   },
   data() {
     return {
+        userid:"",
       openqnano: -1,
       search: "",
       qnano: "",
@@ -209,6 +210,7 @@ export default {
     // 비동기
     // TODO : 글목록 얻기.
     this.moveList(this.$route.query.pg)
+    this.userid = this.$store.state.memberStore.userInfo.userid
 
     // http.get(`/qna/totalPage`).then(({ data }) => {
     //   this.totalPg = data

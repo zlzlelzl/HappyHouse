@@ -84,7 +84,7 @@
                 </div>
               </div>
 
-              <div id="btnWrapper">
+              <div id="btnWrapper" v-if="userid=='admin'">
                 <v-btn elevation="2" color="primary" style="margin-right: 5px" @click=";[toModify(), setValue(item)]"
                   >수정</v-btn
                 >
@@ -110,7 +110,7 @@
                     <div class="cols">
                       <div style="margin-right: 5px; font-weight: bold">작성자</div>
                       <div class="view">
-                        <input type="text" id="userid" v-model="modArticle.userid" ref="userid" />
+                        <input type="text" id="userid" v-model="userid" ref="userid" />
                       </div>
                     </div>
                   </div>
@@ -170,6 +170,7 @@ export default {
   },
   data() {
     return {
+    userid:"",
       openedarticleno: -1,
       search: "",
       articleno: "",
@@ -203,6 +204,7 @@ export default {
     // 비동기
     // TODO : 글목록 얻기.
     this.moveList(this.$route.query.pg)
+    this.userid = this.$store.state.memberStore.userInfo.userid
   },
   methods: {
     expanded(item, slot) {
