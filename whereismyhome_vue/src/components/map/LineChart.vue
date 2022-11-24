@@ -127,6 +127,8 @@ export default {
     async setChartData(e) {
       //   console.log("prev")
       //   this.getChartData()
+      this.areaMap = {}
+      this.areaOrder = []
 
       let deals = await this.mapdata.app.result.detail.housedeals;
 
