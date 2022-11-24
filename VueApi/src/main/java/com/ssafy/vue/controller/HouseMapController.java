@@ -191,7 +191,7 @@ public class HouseMapController {
             return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
         }
         return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
-    },
+    }
     @GetMapping("/favor/apt")
     public ResponseEntity<List<HouseInfoDto>> getFavoriteApt(FavoriteDto favoriteDto) throws Exception {
         return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getFavoriteApt(favoriteDto), HttpStatus.OK);
