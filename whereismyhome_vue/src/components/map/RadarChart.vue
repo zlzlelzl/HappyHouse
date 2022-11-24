@@ -1,5 +1,6 @@
 <template>
   <div style="width: 100%">
+    <p style="position:right;font-size:1px;">점수 : 1000 - 가장 가까운 인프라의 거리(단위 : m)</p>
     <RadarChartGen
       :chart-options="chartOptions"
       :chart-data="chartData"
@@ -118,10 +119,13 @@ export default {
             this.chartData.datasets[0].data.push(score)
             }
         }
-        // console.log(this.infra)
+        // console.log("totalScore",totalScore);
+        // console.log("avgScore",totalScore/val.length)
+        // console.log("data",datas.length,this.chartData.datasets[0].data)
+        
+        this.avgScore = Math.round(totalScore/val.length)
+        this.chartData.datasets[0].label = "avg : " + this.avgScore
       }
-      // await 때문에 조금 느림
-      console.log(totalScore);
     },
   },
   watch: {
@@ -166,6 +170,7 @@ export default {
 },
   data() {
     return {
+        avgScore:0,
         buttonMapping: [
         "MT1",
         "CS2",
@@ -186,7 +191,7 @@ export default {
         datasets: [
           {
             xAxisID: "x",
-            label: "Data One",
+            label: "avg",
             backgroundColor: "#f87979",
 
             data: [],
@@ -197,9 +202,20 @@ export default {
       chartOptions: {
         responsive: true,
         position: "relative",
+        scale: {
+            r: {
+                suggestedMin: 200,
+                suggestedMax: 200,
+                max: 1000,
+                min: 0,
+                ticks: {
+                    stepSize: 200
+                }
+            }
+        },
         plugins: {
           legend: {
-            display: false,
+            display: true,
           },
           tooltip: {
             callbacks: {
