@@ -139,13 +139,19 @@ const routes = [
       {
         path: "login",
         name: "login",
-        component: () => import("@/components/user/UserLogin2.vue"),
+        component: () => import("@/components/user/UserLogin.vue"),
       },
       {
         path: "mypage",
         name: "mypage",
         beforeEnter: onlyAuthUser,
         component: () => import("@/components/user/UserMyPage.vue"),
+      },
+      {
+        path: "update",
+        name: "update",
+        beforeEnter: onlyAuthUser,
+        component: () => import("@/components/user/UserUpdateForm.vue"),
       },
       ,
       {

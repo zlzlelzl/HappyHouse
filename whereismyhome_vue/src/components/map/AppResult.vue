@@ -8,7 +8,7 @@
     <v-list dense class="overflow-y-auto ma-3" height="88%" :class="scrollbarTheme">
       <v-subheader>아파트 검색 결과</v-subheader>
       <v-list-item-group v-if="mapdata.app.result.houseinfos.length == 0">
-        <v-list-item>검색 결과가 없습닌다.</v-list-item>
+        <v-list-item>검색 결과가 없습니다.</v-list-item>
       </v-list-item-group>
       <v-list-item-group v-else>
         <v-list-item

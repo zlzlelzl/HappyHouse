@@ -7,6 +7,8 @@ import {
   logout,
   regist,
   checkId,
+  del,
+  update,
 } from "@/api/member.js";
 import { apiInstance } from "@/api/http-common";
 const http = apiInstance();
@@ -175,6 +177,7 @@ const memberStore = {
         user,
         ({ data }) => {
           if (data.message === "success") {
+            commit("SET_ID_CHECK", true);
             alert("회원가입 성공했습니다.");
           } else {
             alert("회원가입 실패했습니다.");
@@ -203,6 +206,40 @@ const memberStore = {
         }
       );
     },
+    async userUpdate({ commit }, user) {
+      await update(
+        user,
+        ({ data }) => {
+          if (data.message === "success") {
+            commit("SET_ID_CHECK", true);
+            alert("회원정보 수정에 성공했습니다.");
+          } else {
+            alert("회원정보 수정에  실패했습니다.");
+          }
+        },
+        (error) => {
+          console.log(error);
+          alert("회원정보 수정에  실패했습니다.");
+        }
+      );
+    },
+    async userDelete({ commit }, user) {
+      await del(
+        user,
+        ({ data }) => {
+          if (data.message === "success") {
+            commit("SET_ID_CHECK", true);
+            alert("탈퇴했습니다.");
+          } else {
+            alert("회원탈퇴에 실패했습니다.");
+          }
+        },
+        (error) => {
+          console.log(error);
+          alert("회원탈퇴에 실패했습니다.");
+        }
+      );
+    },
     async insertFavorite({ state, dispatch }, data) {
       console.log(data);
       http
@@ -212,8 +249,8 @@ const memberStore = {
           aptName: data.aptName,
         })
         .then((response) => {
-          console.log(response);
-          dispatch("getFavorite");
+          console.log("insert s");
+          dispatch("getFavorite", data.user_id);
         })
         .catch((error) => {
           console.log(error);
@@ -225,8 +262,8 @@ const memberStore = {
           `/map/favor?user_id=${data.user_id}&dongCode=${data.dongCode}&aptName=${data.aptName}`
         )
         .then((response) => {
-          console.log(response);
-          dispatch("getFavorite");
+          console.log("del s");
+          dispatch("getFavorite", data.user_id);
         })
         .catch((error) => {
           console.log(error);
@@ -236,9 +273,9 @@ const memberStore = {
       console.log(userinfo);
       let list = [];
       await http
-        .get(`/map/favor/apt?user_id=${userinfo.userid}`)
+        .get(`/map/favor/apt?user_id=${userinfo}`)
         .then((response) => {
-          console.log(response);
+          console.log("gets");
           commit("SET_FAVORITE", response.data);
         })
         .catch((error) => {

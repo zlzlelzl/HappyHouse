@@ -1,89 +1,223 @@
 <template>
-  <v-main class=""
-    ><router-view></router-view>
-    <!-- Login Component -->
-    <v-container style="max-width: 450px" fill-height>
-      <v-layout align-center row wrap>
-        <v-flex xs12>
-          <v-card>
-            <div class="pa-10">
-              <h1 style="text-align: center" class="mb-10">로그인</h1>
-              <a id="kakao-login-btn" @click="kakaoLoginBtn">
-                <img src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" width="100%"
-                  alt="카카오 로그인 버튼" />
-              </a>
-              <p id="token-result"></p>
-              <form>
-                <v-text-field 
-                required
-                v-model="user.userid" 
-                label="ID" 
-                prepend-inner-icon="mdi-account" 
-                @keyup.enter="confirm"
-                >
-                </v-text-field>
-                <v-text-field
-                  prepend-inner-icon="mdi-lock"
-                  v-model="user.userpwd"
-                  type="password"
-                  label="Password"
-                  @keyup.enter="confirm"
-                  required
-                >
-                </v-text-field>
-                <v-btn
-                  @click.prevent="confirm"
-                  type="submit"
-                  color="blue lighten-1 text-capitalize"
-                  depressed
-                  large
-                  block
-                  dark
-                  class="mb-3"
-                >
-                  로그인
-                </v-btn>
-                <v-btn
-                  @click.prevent="movePage"
-                  color="blue lighten-1 text-capitalize"
-                  depressed
-                  large
-                  block
-                  dark
-                >
-                  회원가입
-                </v-btn>
-              </form>
-            </div>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </v-main>
+  <v-container id="signinup-form" class="fill-height">
+    <!-- <Notification
+      :message="snackbarMessage"
+      :snackbar="snackbar"
+      :type="snackbarType"
+    /> -->
+    <v-row align="center" justify="center" no-gutters>
+      <v-col cols="12" sm="12" md="12" class="">
+        <v-card class="evelation-12 card ma-16">
+          <v-window v-model="step">
+            <!--SignIn-->
+            <v-window-item :value="1">
+              <v-row class="">
+                <v-col cols="12" md="8" class="pt-16 pb-16">
+                  <v-card-text>
+                    <v-form class="signup-form-form" @click.prevent="confirm">
+                      <h1
+                        class="text-center display-1 mt-16 mb-16"
+                        :class="`${bgColor}--text`"
+                      >
+                        로그인
+                      </h1>
+                      <v-text-field
+                        class="mt-16 mb-8"
+                        required
+                        id="username"
+                        prepend-inner-icon="mdi-account"
+                        v-model="user.userid"
+                        label="User Id"
+                        name="Username"
+                        type="text"
+                        :color="bgColor"
+                        @keyup.enter="confirm"
+                      />
+                      <v-text-field
+                        required
+                        id="password"
+                        prepend-inner-icon="mdi-lock"
+                        v-model="user.userpwd"
+                        label="Password"
+                        name="Password"
+                        type="password"
+                        :color="bgColor"
+                        @keyup.enter="confirm"
+                      />
+                      <div class="text-center"></div>
+                      <div class="text-center mt-16 mb-16">
+                        <v-btn
+                          type="submit"
+                          large
+                          :color="bgColor"
+                          dark
+                          @click.prevent="confirm"
+                          >로그인</v-btn
+                        >
+                      </div>
+                    </v-form>
+                  </v-card-text>
+                </v-col>
+                <v-col cols="12" md="4" class="darken-2 vcenter" :class="`${bgColor}`">
+                  <div>
+                    <v-card-text :class="`${fgColor}--text`">
+                      <h1 class="text-center headline mb-8">회원이 아니신가요?</h1>
+                      <h5 class="text-center overline mb-3"></h5>
+                    </v-card-text>
+                    <div class="text-center mb-6">
+                      <v-btn dark outlined @click="step = 2">회원가입</v-btn>
+                    </div>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <!--SignUp-->
+            <v-window-item :value="2">
+              <v-row class="fill-height">
+                <v-col cols="12" md="4" class="darken-2 vcenter" :class="`${bgColor}`">
+                  <div>
+                    <v-card-text :class="`${fgColor}--text`">
+                      <h1 class="text-center headline mb-3">이미 회원이신가요?</h1>
+                      <h5 class="text-center overline mb-3"></h5>
+                    </v-card-text>
+                    <div class="text-center mb-6">
+                      <v-btn dark outlined @click="step = 1">로그인</v-btn>
+                    </div>
+                  </div>
+                </v-col>
+                <v-col cols="12" md="8" class="mt-16 mb-8">
+                  <v-card-text>
+                    <h1
+                      class="text-center display-1 mt-16 mb-16"
+                      :class="`${bgColor}--text`"
+                    >
+                      회원가입
+                    </h1>
+                    <v-form class="signup-form-form" @submit.prevent="regist">
+                      <v-text-field
+                        required
+                        id="userid"
+                        v-model="user.userid"
+                        label="User Id"
+                        name="userid"
+                        type="text"
+                        @keyup.enter="regist"
+                      />
+                      <v-text-field
+                        required
+                        id="username"
+                        v-model="user.username"
+                        label="User name"
+                        name="username"
+                        type="text"
+                        @keyup.enter="regist"
+                      />
+                      <v-text-field
+                        required
+                        id="email"
+                        v-model="user.email"
+                        label="Email"
+                        name="email"
+                        type="email"
+                        @keyup.enter="regist"
+                      />
+                      <v-text-field
+                        required
+                        id="password"
+                        v-model="user.userpwd"
+                        label="Password"
+                        name="password"
+                        type="password"
+                        @keyup.enter="regist"
+                      />
+                      <div class="text-center mt-6">
+                        <v-btn
+                          type="submit"
+                          large
+                          :color="bgColor"
+                          dark
+                          @click.prevent="regist"
+                        >
+                          회원가입</v-btn
+                        >
+                      </div>
+                    </v-form>
+                  </v-card-text>
+                </v-col>
+              </v-row>
+            </v-window-item>
+          </v-window>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 const memberStore = "memberStore";
 
 export default {
   name: "UserLogin",
+  props: {
+    source: {
+      type: String,
+      default: "",
+    },
+    bgColor: {
+      type: String,
+      default: "indigo",
+    },
+    fgColor: {
+      type: String,
+      default: "white",
+    },
+  },
   data() {
     return {
       // isLoginError: false,
+      step: 1,
       user: {
         userid: null,
         userpwd: null,
+        email: null,
+        username: null,
       },
     };
   },
-  created() { 
+  // data: () => ({
+  //   // username: '',
+  //   // email: '',
+  //   // password: '',
+  //   // login: '',
+  //   // snackbarType: 'success',
+  //   // snackbarMessage: '',
+  //   // snackbar: false,
+  //   user: {
+  //       userid: null,
+  //       userpwd: null,
+  //     },
+  // }),
+  created() {
+    this.SET_ID_CHECK(false);
   },
   computed: {
-    ...mapState(memberStore, ["isLogin", "isLoginError", "userInfo"]),
+    ...mapState(memberStore, ["isLogin", "isLoginError", "userInfo", "idCheck"]),
+    ...mapGetters(memberStore, ["getCheckId"]),
+    getIdCheck() {
+      console.log(" ");
+      console.log(this.idCheck);
+      return this.idCheck;
+    },
   },
   methods: {
-    ...mapActions(memberStore, ["userConfirm", "getUserInfo"]),
+    ...mapActions(memberStore, [
+      "userConfirm",
+      "getUserInfo",
+      "userRegist",
+      "userCheckId",
+    ]),
+    ...mapMutations(memberStore, ["SET_ID_CHECK"]),
     async confirm() {
       await this.userConfirm(this.user);
       let token = sessionStorage.getItem("access-token");
@@ -94,87 +228,52 @@ export default {
         this.$router.push({ name: "Home" });
       }
     },
-    movePage() {
-      this.$router.push({ name: "join" });
-    },
-    //토큰받기
-    kakaoLoginBtn(){
-      if(!window.Kakao.Auth.getAccessToken()){
-        window.Kakao.Auth.login({
-          success: (response) =>{
-            console.log(response);
-            const token = response.access_token;
-            window.Kakao.Auth.setAccessToken(token);
-            getKakaoUserInfo();
-          },
-          fail: function (error) {
-            console.log(error)
-          },
-        });
+    async regist() {
+      //아이디 중복확인
+      console.log(this.getIdCheck);
+      this.SET_ID_CHECK(false);
+      console.log(this.getIdCheck);
+      await this.userCheckId(this.user);
+      if (this.getIdCheck) {
+        console.log(this.getIdCheck);
+        this.SET_ID_CHECK(false);
+        console.log(this.getIdCheck);
+        await this.userRegist(this.user);
+        console.log("this.getIdCheck");
+        console.log(this.getIdCheck);
+        if (this.getIdCheck) this.step = 1;
+        else {
+          this.user.userid = null;
+          this.user.userpwd = null;
+          this.user.email = null;
+          this.user.username = null;
+        }
       }
     },
-    //연결끊기
-    KakaoLogout(){
-      if (window.Kakao.Auth.getAccessToken()) {
-        window.Kakao.API.request({
-          url: '/v1/user/unlink',
-          success: function (response) {
-            console.log(response)
-          },
-          fail: function (error) {
-            console.log(error)
-          },
-        })
-        // window.Kakao.Auth.logout();
-        window.Kakao.Auth.setAccessToken(undefined);
-        console.log("kakao logout");
-      }
-    },
-    //유저정보얻기
-    getKakaoUserInfo(){
-    window.Kakao.API.request({
-      url: '/v2/user/me',
-      data: {
-        property_keys: ["kakao_account.email"]
-      },
-      success: async (response) =>{
-        console.log(response);
-        let code = response.id;
-        let email= response.kakao_account.email;
-        //this.getKakaoAccessToken(code,email);
-      },
-      fail: function (error) {
-        console.log(error);
-        alert("카카오 로그인 실패");
-      },
-    });
-    },
-    //토큰받기
-    getKakaoAccessToken:function(code, email){
-        console.log(code,email);
-        const restApiKey="***REMOVED***";
-        const redirect_uri="https://localhost:9999/vue/oauth";
-        const secretKey="***REMOVED***";
-        const url=`https://kauth.kakao.com/oauth/token?client_id=${restApiKey}&client_secret=${secretKey}&grant_type=authorization_code&redirect_uri=${redirect_uri}&code=${code}`;
-        // axios.
-        //   get(url).
-        //   then((response)=>{
-        //     console.log(response);
-        //   }).catch((error)=>{
-        //     console.log(error);
-        //   });
-      },
   },
 };
 </script>
-</script>
-//유저 처리를 어떻게 할 것인가?
-// social check?
 
-// 토큰의 관리 - social?
-//탈퇴 처리
-//탈퇴했다 재가입시?
-
-//카카오로 회원가입시 컬럼 어캐 넣을 것인가
-//유저정보수정시 카카오 처리
-//
+<style scoped lang="scss">
+.v-input__icon--double .v-input__icon {
+  margin-left: -4.25rem !important;
+}
+a.no-text-decoration {
+  text-decoration: none;
+}
+#signinup-form {
+  max-width: 75rem;
+}
+.signup-form-form {
+  max-width: 23rem;
+  margin: 0 auto;
+}
+.card {
+  overflow: hidden;
+}
+.vcenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

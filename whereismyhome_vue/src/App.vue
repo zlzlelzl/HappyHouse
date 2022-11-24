@@ -23,8 +23,7 @@ export default {
 <template>
   <v-app>
     <main-appbar></main-appbar>
-
-    <v-container class="mt-16" v-scroll:#main="handleScroll">
+    <v-container style="font-family: mfont" class="mt-16" v-scroll:#main="handleScroll">
       <router-view></router-view>
     </v-container>
 
@@ -33,8 +32,8 @@ export default {
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex"
-const mapStore = "mapStore"
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+const mapStore = "mapStore";
 export default {
   name: "App",
 
@@ -44,10 +43,10 @@ export default {
   },
   data: () => ({}),
   created() {
-    console.log(this.mapdata)
+    console.log(this.mapdata);
   },
   beforeMount() {
-    this.INIT_CACHE()
+    this.INIT_CACHE();
     // this.INIT();
   },
   watch: {},
@@ -57,10 +56,11 @@ export default {
   },
   methods: {
     handleScroll(e) {
-      console.log(e)
-      this.scrollPostion = e.target.scrollTop
+      console.log(e);
+      this.scrollPostion = e.target.scrollTop;
     },
     ...mapMutations(mapStore, ["INIT_CACHE", "INIT"]),
   },
-}
+};
 </script>
+<style></style>
