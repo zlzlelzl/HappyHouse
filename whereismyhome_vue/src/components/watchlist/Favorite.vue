@@ -33,7 +33,7 @@
                       :to="{ name: 'Map', query: { aptCode: item.aptCode } }"
                     >
                       <v-img
-                        src="@/assets/house1.jpg"
+                        src="@/assets/house/house1.jpg"
                         :aspect-ratio="16 / 9"
                         gradient="to top, rgba(25,32,72,.4), rgba(25,32,72,.0)"
                         height="200px"
@@ -41,37 +41,40 @@
                         style="border-radius: 16px"
                       >
                         <v-card-text>
-                          <v-btn color="accent"> 이쁜이미지</v-btn>
+                          <v-btn color="accent">HOUSE</v-btn>
                         </v-card-text>
                       </v-img>
 
                       <v-card-text>
                         <div class="text-h5 font-weight-bold primary--text">
+                          <v-avatar color="accent" size="36">
+                            <font-awesome-icon
+                              icon="fa-solid fa-house-chimney-window"
+                              inverse
+                              fixed-width
+                            />
+                          </v-avatar>
                           {{ item.aptName }}
                         </div>
 
-                        <div class="text-body-1 py-4">
-                          {{
-                            item.sidoName +
-                            " " +
-                            item.gugunName +
-                            " " +
-                            item.dongName
-                          }}
+                        <div class="text-body-1 py-3">
+                          {{ item.sidoName + " " + item.gugunName + " " + item.dongName }}
                         </div>
 
-                        <div class="text-body-1 py-4">
-                          <!-- {{ item.recentPrice}}억 -->
-                          {{ Number(item.recentPrice.split(",").join("")) / 10000 }}억
-                          원
+                        <div class="text-body-1 pb-3">
+                          {{ Number(item.recentPrice.split(",").join("")) / 10000 }}억 원
                         </div>
 
                         <div class="d-flex align-center">
                           <v-avatar color="accent" size="36">
-                            <v-icon dark>mdi-feather</v-icon>
+                            <font-awesome-icon
+                              icon="fa-regular fa-calendar"
+                              inverse
+                              fixed-width
+                            />
                           </v-avatar>
 
-                          <div class="pl-2">built {{ item.buildYear }}</div>
+                          <div class="pl-2">building year {{ item.buildYear }}</div>
                         </div>
                       </v-card-text>
                     </v-card>
@@ -88,7 +91,7 @@
 
 <script>
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
-import houseImg from "@/assets/house1.jpg"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 const memberStore = "memberStore";
 const mapStore = "mapStore";
 export default {
@@ -114,8 +117,8 @@ export default {
       return this.isLogin;
     },
     getFavoriteList() {
-      console.log("gfl")
-      console.log(this.favorite)
+      console.log("gfl");
+      console.log(this.favorite);
       return this.favorite;
     },
     getUserInfo() {
@@ -136,7 +139,9 @@ export default {
     },
     showFavoriteList() {
       if (!this.isLoginCheck) return;
-      this.getFavorite(this.getUserInfo);
+      console.log("showFavoriteList");
+      console.log(this.getUserInfo);
+      this.getFavorite(this.getUserInfo.userid);
     },
   },
 };

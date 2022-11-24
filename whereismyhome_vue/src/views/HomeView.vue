@@ -67,7 +67,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <main-footer></main-footer>
   </div>
 </template>
 

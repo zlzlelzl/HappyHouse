@@ -1,5 +1,9 @@
 <template>
-  <v-card class="float-right ma-0" style="z-index: 100; background-color: rgba(255, 255, 255, 0)" v-if="isUseCheck">
+  <v-card
+    class="float-right ma-0"
+    style="z-index: 8; background-color: rgba(255, 255, 255, 0)"
+    v-if="isUseCheck"
+  >
     <v-btn-toggle multiple v-model="isToggle">
       <v-btn v-for="(item, i) in mapdata.infra.categoryGroupCodes" :key="i" class="ma-0">
         <!-- @click="clickInfraButton(item)" -->
@@ -10,25 +14,25 @@
 </template>
 
 <script>
-import { apiInstance } from "@/api/http-common"
-import { mapState, mapGetters, mapActions, mapMutations, Store } from "vuex"
-import axios from "axios"
-import mdistore from "@/assets/map/store_b.png"
-import mdistore24 from "@/assets/map/store-24-hour_b.png"
-import mdicradle from "@/assets/map/cradle_b.png"
-import mdischool from "@/assets/map/school_b.png"
-import mdiparking from "@/assets/map/parking_b.png"
-import mdigasStation from "@/assets/map/gas-station_b.png"
-import mdisubway from "@/assets/map/subway-variant_b.png"
-import mdibank from "@/assets/map/bank_b.png"
-import mdiSFK from "@/assets/map/silverware-fork-knife_b.png"
-import mdicoffee from "@/assets/map/coffee_b.png"
-import mdihospital from "@/assets/map/hospital-box_b.png"
-import mdipill from "@/assets/map/pill_b.png"
-import store from "@/store"
+import { apiInstance } from "@/api/http-common";
+import { mapState, mapGetters, mapActions, mapMutations, Store } from "vuex";
+import axios from "axios";
+import mdistore from "@/assets/map/store_b.png";
+import mdistore24 from "@/assets/map/store-24-hour_b.png";
+import mdicradle from "@/assets/map/cradle_b.png";
+import mdischool from "@/assets/map/school_b.png";
+import mdiparking from "@/assets/map/parking_b.png";
+import mdigasStation from "@/assets/map/gas-station_b.png";
+import mdisubway from "@/assets/map/subway-variant_b.png";
+import mdibank from "@/assets/map/bank_b.png";
+import mdiSFK from "@/assets/map/silverware-fork-knife_b.png";
+import mdicoffee from "@/assets/map/coffee_b.png";
+import mdihospital from "@/assets/map/hospital-box_b.png";
+import mdipill from "@/assets/map/pill_b.png";
+import store from "@/store";
 
-const mapStore = "mapStore"
-const http = apiInstance()
+const mapStore = "mapStore";
+const http = apiInstance();
 
 export default {
   namespaced: true,
@@ -38,8 +42,21 @@ export default {
   data() {
     return {
       // isToggle: [],
-      buttonMapping: ["MT1", "CS2", "PS3", "SC4", "PK6", "OL7", "SW8", "BK9", "FD6", "CE7", "HP8", "PM9"],
-    }
+      buttonMapping: [
+        "MT1",
+        "CS2",
+        "PS3",
+        "SC4",
+        "PK6",
+        "OL7",
+        "SW8",
+        "BK9",
+        "FD6",
+        "CE7",
+        "HP8",
+        "PM9",
+      ],
+    };
   },
   mounted() {
     // this.mapdata.infra=[];
@@ -59,12 +76,12 @@ export default {
   watch: {
     async isUseCheck(val) {
       if (val) {
-        await this.getAllInfra()
+        await this.getAllInfra();
         // await this.clearAllMarker();
-        await this.createAllMarker()
+        await this.createAllMarker();
       } else {
         //모든마커초기화
-        this.clearAllMarker()
+        this.clearAllMarker();
         //버튼 토글값 초기화
         // this.isToggle = [];
       }
@@ -91,21 +108,24 @@ export default {
     ...mapState(mapStore, ["mapdata", "isToggle"]),
     ...mapGetters(mapStore, ["getMapData", "getClusterer", "getMarkers", "getIsToggle"]),
     isUseCheck() {
-      return this.mapdata.app.result.detail.isUse
+      return this.mapdata.app.result.detail.isUse;
     },
     getHouseInfo() {
-      return this.mapdata.app.result.detail.houseinfo
+      return this.mapdata.app.result.detail.houseinfo;
     },
 
     isToggle: {
       get() {
-        if (this.$store.state.isToggle == undefined || this.$store.state.isToggle == null) {
-          this.$store.state.isToggle = []
+        if (
+          this.$store.state.isToggle == undefined ||
+          this.$store.state.isToggle == null
+        ) {
+          this.$store.state.isToggle = [];
         }
-        return this.$store.state.isToggle
+        return this.$store.state.isToggle;
       },
       set(isToggle) {
-        console.log(isToggle)
+        console.log(isToggle);
         // let storeData=this.$store.state.isToggle;
 
         // console.log(storeData);
@@ -117,8 +137,8 @@ export default {
         // console.log("set");
         //   this.$set(storeData,storeData.length,isToggle[isToggle.length-1]);
         // }
-        this.SET_ISTOGGLE(isToggle)
-        this.clickInfraButton(isToggle)
+        this.SET_ISTOGGLE(isToggle);
+        this.clickInfraButton(isToggle);
       },
     },
   },
@@ -128,24 +148,24 @@ export default {
     //차트 ------------------------------------------------------------------------------
     async calcInfraScore(pos) {
       // 인프라 가져오기
-      await this.getAllInfra()
-      let score = 0
+      await this.getAllInfra();
+      let score = 0;
       for (let i = 0; i < this.mapdata.infra.categoryGroupCodes.length; i++) {
-        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"]
+        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"];
         // 0~1000m, 0m에 가까울수록 고득점
         // console.log(this.infra[code][0])
         if (this.mapdata.infra.data[code].length != 0) {
-          score += 1000 - this.infra.data[code][0].distance
+          score += 1000 - this.infra.data[code][0].distance;
         }
         // console.log(this.infra)
       }
       // await 때문에 조금 느림
-      console.log(score)
+      console.log(score);
     },
     async getAllInfra() {
       for (let i = 0; i < this.mapdata.infra.categoryGroupCodes.length; i++) {
-        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"]
-        await this.getInfra(code)
+        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"];
+        await this.getInfra(code);
       }
 
       //  console.log(this.infra)
@@ -165,60 +185,60 @@ export default {
         .then(({ data }) => {
           // this.map.app.result.housedeals = data
           // console.log(this.mapdata.infra.data[code]);
-          this.mapdata.infra.data[code] = data.documents
+          this.mapdata.infra.data[code] = data.documents;
           // console.log("get infra");
           // console.log(this.mapdata.infra.data[code]);
           // console.log(this.mapdata.infra.data[code])
-        })
+        });
     },
 
     displayMarker(data) {
       //마커 초기화
-      let markers = this.getMarkers
+      let markers = this.getMarkers;
       if (markers.length > 0) {
-        markers.forEach((marker) => marker.setMap(null))
+        markers.forEach((marker) => marker.setMap(null));
       }
 
       if (data.length > 0) {
-        markers = []
+        markers = [];
         data.forEach((d) => {
           let marker = new kakao.maps.Marker({
             map: this.map,
             position: new kakao.maps.LatLng(d.lat, d.lng),
             title: JSON.stringify(d),
-          })
-          markers.push(marker)
+          });
+          markers.push(marker);
           // 마커에 클릭이벤트를 등록합니다
           kakao.maps.event.addListener(marker, "click", () => {
             // 마커 위에 인포윈도우를 표시합니다
-            console.log(JSON.parse(marker.getTitle()))
-            this.setHouseDetailInfo(JSON.parse(marker.getTitle()))
-          })
-        })
-        console.log("getcl")
-        console.log(this.getClusterer)
-        let clusterer = this.getClusterer
-        console.log(clusterer)
-        clusterer.addMarkers(markers)
+            console.log(JSON.parse(marker.getTitle()));
+            this.setHouseDetailInfo(JSON.parse(marker.getTitle()));
+          });
+        });
+        console.log("getcl");
+        console.log(this.getClusterer);
+        let clusterer = this.getClusterer;
+        console.log(clusterer);
+        clusterer.addMarkers(markers);
         // this.SET_CLUSTERER(clusterer);
         // this.SET_MARKERS(markers);
       }
     },
     setHouseDetailInfo(house) {
-      this.setHouseDetail(house)
-      this.moveMapLocation(house)
+      this.setHouseDetail(house);
+      this.moveMapLocation(house);
     },
     moveMapLocation(data) {
-      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005)
-      console.log(this.map)
-      this.map.setCenter(moveLatLon)
+      var moveLatLon = new kakao.maps.LatLng(data.lat, Number(data.lng) - 0.005);
+      console.log(this.map);
+      this.map.setCenter(moveLatLon);
     },
     //마커---------------------------------------------------------------------------
     clearAllMarker() {
-      console.log("cls all marker")
+      console.log("cls all marker");
       if (this.mapdata.infra.markers == null || this.mapdata.infra.markers == undefined) {
-        console.log("cls all marker ret")
-        return
+        console.log("cls all marker ret");
+        return;
       }
       // console.log(this.mapdata.infra.markers);
 
@@ -226,11 +246,11 @@ export default {
         this.mapdata.infra.markers[this.buttonMapping[i]].forEach((data) => {
           // if (list == null || list == undefined) return;
           // list.forEach((data) => {
-          data.setMap(null)
+          data.setMap(null);
           // });
           // list = [];
-        })
-        this.mapdata.infra.markers[this.buttonMapping[i]] = []
+        });
+        this.mapdata.infra.markers[this.buttonMapping[i]] = [];
       }
       // this.mapdata.infra.markers.forEach((list) => {
       //   if (list == null || list == undefined) return;
@@ -242,64 +262,71 @@ export default {
       // });
     },
     createAllMarker() {
-      console.log("insert all marker")
-      let imageSize = new kakao.maps.Size(22, 26)
+      console.log("insert all marker");
+      let imageSize = new kakao.maps.Size(22, 26);
       let imageOptions = {
         // spriteOrigin: new kakao.maps.Point(10, 72),
         // spriteSize: new kakao.maps.Size(36, 98),
-      }
+      };
       for (let i = 0; i < this.buttonMapping.length; ++i) {
-        let markers = []
+        let markers = [];
 
         this.mapdata.infra.data[this.buttonMapping[i]].forEach((info) => {
-          var markerImage = this.createMarkerImage(this.getImageSrc(info.category_group_code), imageSize, imageOptions)
-          let title = JSON.stringify(info)
-          let position = new kakao.maps.LatLng(info.y, info.x)
-          let marker = this.createMarker(position, markerImage)
+          var markerImage = this.createMarkerImage(
+            this.getImageSrc(info.category_group_code),
+            imageSize,
+            imageOptions
+          );
+          let title = JSON.stringify(info);
+          let position = new kakao.maps.LatLng(info.y, info.x);
+          let marker = this.createMarker(position, markerImage);
           // let overlay = this.createOverlay(this.createInfoWindowContent(title), marker);
-          let infoWindow = this.createInfoWindow(this.createInfoWindowContent(title))
-          this.setMouseEvent(infoWindow, marker)
-          markers.push(marker)
-        })
-        this.mapdata.infra.markers[this.buttonMapping[i]] = markers
+          let infoWindow = this.createInfoWindow(this.createInfoWindowContent(title));
+          this.setMouseEvent(infoWindow, marker);
+          markers.push(marker);
+        });
+        this.mapdata.infra.markers[this.buttonMapping[i]] = markers;
       }
-      console.log("insert all marker done")
+      console.log("insert all marker done");
     },
     changeMarker(type, flg) {
-      var val = null
-      if (flg == 1) val = this.map
+      var val = null;
+      if (flg == 1) val = this.map;
       this.mapdata.infra.markers[type].forEach((marker) => {
-        marker.setMap(val)
-      })
+        marker.setMap(val);
+      });
     },
     createMarker(position, markerImage, title) {
       let marker = new kakao.maps.Marker({
         position: position,
         title: title,
         image: markerImage,
-      })
-      return marker
+      });
+      return marker;
     },
 
     createInfoWindow(content) {
       let infowindow = new kakao.maps.InfoWindow({
         content: content,
-      })
-      return infowindow
+      });
+      return infowindow;
     },
     createInfoWindowContent(input) {
-      input = JSON.parse(input)
+      input = JSON.parse(input);
       // console.log(input);
-      let ret = '<div style="padding:5px; width:100%;">' + input.place_name + "&nbsp &nbsp </div>"
-      return ret
+      let ret =
+        '<div style="padding:5px; width:100%;">' +
+        input.place_name +
+        "&nbsp &nbsp </div>";
+      return ret;
     },
     setMouseEvent(infowindow, marker) {
       kakao.maps.event.addListener(marker, "mouseover", () => {
-        infowindow.open(this.map, marker)
-      })
+        infowindow.open(this.map, marker);
+      });
       kakao.maps.event.addListener(marker, "mouseout", () => {
-        infowindow.close()
-      })
+        infowindow.close();
+      });
       // kakao.maps.event.addListener(marker, "mouseover", function () {
       //   infowindow.open(map, marker);
       // });
@@ -308,57 +335,57 @@ export default {
       // });
     },
     closeOverlay(a) {
-      a.setMap(null)
+      a.setMap(null);
     },
     createMarkerImage(src, size, options) {
-      var markerImage = new kakao.maps.MarkerImage(src, size, options)
-      return markerImage
+      var markerImage = new kakao.maps.MarkerImage(src, size, options);
+      return markerImage;
     },
     clickInfraButton(item) {
       // console.log("item");
       // console.log(item);
-      let flgList = []
+      let flgList = [];
       for (let i = 0; i < this.buttonMapping.length; ++i) {
-        flgList.push(0)
+        flgList.push(0);
       }
       item.forEach((data) => {
-        flgList[data] = 1
-      })
+        flgList[data] = 1;
+      });
 
       for (let i = 0; i < this.buttonMapping.length; ++i) {
-        this.changeMarker(this.buttonMapping[i], flgList[i])
+        this.changeMarker(this.buttonMapping[i], flgList[i]);
       }
     },
     getImageSrc(input) {
       switch (input) {
         case "MT1":
-          return mdistore
+          return mdistore;
         case "CS2":
-          return mdistore24
+          return mdistore24;
         case "PS3":
-          return mdicradle
+          return mdicradle;
         case "SC4":
-          return mdischool
+          return mdischool;
         case "PK6":
-          return mdiparking
+          return mdiparking;
         case "OL7":
-          return mdigasStation
+          return mdigasStation;
         case "SW8":
-          return mdisubway
+          return mdisubway;
         case "BK9":
-          return mdibank
+          return mdibank;
         case "FD6":
-          return mdiSFK
+          return mdiSFK;
         case "CE7":
-          return mdicoffee
+          return mdicoffee;
         case "HP8":
-          return mdihospital
+          return mdihospital;
         case "PM9":
-          return mdipill
+          return mdipill;
       }
     },
   },
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

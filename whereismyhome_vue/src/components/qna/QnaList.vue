@@ -7,7 +7,13 @@
             <v-col md="6"> Q&A </v-col>
 
             <v-col md="2">
-              <v-select :items="keys" v-model="queryKey" label="선택" single-line hide-details></v-select>
+              <v-select
+                :items="keys"
+                v-model="queryKey"
+                label="선택"
+                single-line
+                hide-details
+              ></v-select>
             </v-col>
             <v-col md="4">
               <v-text-field
@@ -78,7 +84,15 @@
                 </div>
                 <div id="sectorFour">
                   <div style="font-weight: bold; margin-bottom: 5px">내용</div>
-                  <div class="view" style="border: 1px solid #eeeeee; margin: 5px; width: 95%; height: 200px">
+                  <div
+                    class="view"
+                    style="
+                      border: 1px solid #eeeeee;
+                      margin: 5px;
+                      width: 95%;
+                      height: 200px;
+                    "
+                  >
                     {{ item.content }}
                   </div>
                 </div>
@@ -88,10 +102,16 @@
                 <v-btn elevation="2" color="primary" style="margin-right: 5px">
                   <qna-reply :parentno="item.qnano"></qna-reply>
                 </v-btn>
-                <v-btn elevation="2" color="primary" style="margin-right: 5px" @click=";[toModify(), setValue(item)]"
+                <v-btn
+                  elevation="2"
+                  color="primary"
+                  style="margin-right: 5px"
+                  @click="[toModify(), setValue(item)];"
                   >수정</v-btn
                 >
-                <v-btn elevation="2" color="error" @click="deleteArticle(item)">삭제</v-btn>
+                <v-btn elevation="2" color="error" @click="deleteArticle(item)"
+                  >삭제</v-btn
+                >
               </div>
             </div>
           </td>
@@ -113,7 +133,12 @@
                     <div class="cols">
                       <div style="margin-right: 5px; font-weight: bold">작성자</div>
                       <div class="view">
-                        <input type="text" id="userid" v-model="modArticle.userid" ref="userid" />
+                        <input
+                          type="text"
+                          id="userid"
+                          v-model="modArticle.userid"
+                          ref="userid"
+                        />
                       </div>
                     </div>
                   </div>
@@ -130,13 +155,25 @@
                   <div id="sectorFour">
                     <div style="font-weight: bold; margin-bottom: 5px">내용</div>
                     <div class="view">
-                      <textarea id="content" v-model="modArticle.content" ref="content" cols="200" rows="5"></textarea>
+                      <textarea
+                        id="content"
+                        v-model="modArticle.content"
+                        ref="content"
+                        cols="200"
+                        rows="5"
+                      ></textarea>
                     </div>
                   </div>
                 </div>
 
                 <div id="btnWrapper">
-                  <v-btn elevation="2" color="primary" style="margin-right: 5px" @click="checkValue">확인</v-btn>
+                  <v-btn
+                    elevation="2"
+                    color="primary"
+                    style="margin-right: 5px"
+                    @click="checkValue"
+                    >확인</v-btn
+                  >
                   <v-btn elevation="2" color="error" @click="toDetail">취소</v-btn>
                 </div>
               </div>
@@ -149,20 +186,21 @@
         v-model="page"
         :length="pageCount"
         :total-visible="7"
+        size="sm"
       ></v-pagination>
     </v-card>
   </div>
 </template>
 
 <script>
-import { apiInstance } from "@/api/http-common"
+import { apiInstance } from "@/api/http-common";
 
-const http = apiInstance()
-import QnaListItem from "@/components/qna/QnaListItem"
-import QnaDetail from "@/components/qna/QnaDetail"
-import QnaWrite from "@/components/qna/QnaWrite"
-import QnaModify from "@/components/qna/QnaModify"
-import QnaReply from "@/components/qna/QnaReply"
+const http = apiInstance();
+import QnaListItem from "@/components/qna/QnaListItem";
+import QnaDetail from "@/components/qna/QnaDetail";
+import QnaWrite from "@/components/qna/QnaWrite";
+import QnaModify from "@/components/qna/QnaModify";
+import QnaReply from "@/components/qna/QnaReply";
 
 export default {
   name: "QnaList",
@@ -203,12 +241,12 @@ export default {
       queryWord: this.$route.query.word,
       articles: [],
       modArticle: {},
-    }
+    };
   },
   created() {
     // 비동기
     // TODO : 글목록 얻기.
-    this.moveList(this.$route.query.pg)
+    this.moveList(this.$route.query.pg);
 
     // http.get(`/qna/totalPage`).then(({ data }) => {
     //   this.totalPg = data
@@ -223,35 +261,38 @@ export default {
   methods: {
     expanded(item, slot) {
       if (this.qnano != item.qnano) {
-        http.get(`/qna/${item.qnano}`).then(({ data }) => {})
-        this.qnano = item.qnano
-        item.hit++
+        http.get(`/qna/${item.qnano}`).then(({ data }) => {});
+        this.qnano = item.qnano;
+        item.hit++;
       } else {
-        this.qnano = -1
+        this.qnano = -1;
       }
-      return slot.expand(!slot.isExpanded)
+      return slot.expand(!slot.isExpanded);
     },
     handlePagination(e) {
-      this.getQueryList(e)
+      this.getQueryList(e);
     },
     setReplyRow(item) {
-      return item.parentno == 0 ? "white" : "grey lighten-3"
+      return item.parentno == 0 ? "white" : "grey lighten-3";
     },
     setValue(item) {
-      Object.assign(this.modArticle, item)
+      Object.assign(this.modArticle, item);
     },
 
     toDetail() {
-      this.isModify = false
+      this.isModify = false;
     },
     toModify() {
-      this.isModify = true
+      this.isModify = true;
     },
 
     filterOnlyCapsText(value, search, item) {
       return (
-        value != null && search != null && typeof value === "string" && item.subject.toString().indexOf(search) !== -1
-      )
+        value != null &&
+        search != null &&
+        typeof value === "string" &&
+        item.subject.toString().indexOf(search) !== -1
+      );
     },
     // headers() {
     //   return [
@@ -268,72 +309,83 @@ export default {
     getQueryList(e) {
       // this.moveList()
       // console.log(this.querySubject, this.queryWord)
-      location.href = `/qna/list?pg=${!e ? 1 : e}&key=${!this.queryKey ? "" : this.queryKey}&word=${
-        !this.queryWord ? "" : this.queryWord
-      }`
+      location.href = `/qna/list?pg=${!e ? 1 : e}&key=${
+        !this.queryKey ? "" : this.queryKey
+      }&word=${!this.queryWord ? "" : this.queryWord}`;
       // this.$router.go(`/notice/list?pg=1&subject=${this.querySubject}&word=${this.queryWord}`)
       // this.$router.go(this.$router.currentRoute);
     },
     checkValue() {
       // 사용자 입력값 체크하기
       // 작성자아이디, 제목, 내용이 없을 경우 각 항목에 맞는 메세지를 출력
-      let err = true
-      let msg = ""
-      !this.modArticle.userid && ((msg = "작성자 입력해주세요"), (err = false), this.$refs.userid.focus())
-      err && !this.modArticle.subject && ((msg = "제목 입력해주세요"), (err = false), this.$refs.subject.focus())
-      err && !this.modArticle.content && ((msg = "내용 입력해주세요"), (err = false), this.$refs.content.focus())
+      let err = true;
+      let msg = "";
+      !this.modArticle.userid &&
+        ((msg = "작성자 입력해주세요"), (err = false), this.$refs.userid.focus());
+      err &&
+        !this.modArticle.subject &&
+        ((msg = "제목 입력해주세요"), (err = false), this.$refs.subject.focus());
+      err &&
+        !this.modArticle.content &&
+        ((msg = "내용 입력해주세요"), (err = false), this.$refs.content.focus());
 
-      if (!err) alert(msg)
+      if (!err) alert(msg);
       // 만약, 내용이 다 입력되어 있다면 registArticle 호출
-      else this.modifyArticle()
+      else this.modifyArticle();
     },
     modifyArticle() {
-      console.log("글수정 하러가자!!!!")
+      console.log("글수정 하러가자!!!!");
       // 비동기
       // TODO : 글번호에 해당하는 글정보 수정.
       http.put("/qna", this.modArticle).then(({ data }) => {
-        let msg = "수정중 문제발생"
-        if (data === "success") msg = "수정 성공"
-        alert(msg)
-        this.$router.go(this.$router.currentRoute)
-      })
+        let msg = "수정중 문제발생";
+        if (data === "success") msg = "수정 성공";
+        alert(msg);
+        this.$router.go(this.$router.currentRoute);
+      });
     },
     moveList(pg) {
-      console.log("글목록 보러가자!!!")
+      console.log("글목록 보러가자!!!");
       // this.$router.push({ name: "qnalist" })
       //   this.$router.go(this.$router.currentRoute)
 
-      console.log(this.queryKey, this.queryWord)
+      console.log(this.queryKey, this.queryWord);
 
       http
-        .get(`/qna/totalPage?key=${!this.queryKey ? "" : this.queryKey}&word=${!this.queryWord ? "" : this.queryWord}`)
-        .then(({ data }) => {
-          this.totalPg = data
-          console.log(data)
-        })
-      this.pg = pg == undefined ? "1" : pg
-      this.page = Number(pg)
-      http
         .get(
-          `/qna?pg=${this.pg}&key=${!this.queryKey ? "" : this.queryKey}&word=${!this.queryWord ? "" : this.queryWord}`
+          `/qna/totalPage?key=${!this.queryKey ? "" : this.queryKey}&word=${
+            !this.queryWord ? "" : this.queryWord
+          }`
         )
         .then(({ data }) => {
-          this.articles = data
-          console.log(data)
-        })
+          this.totalPg = data;
+          console.log(data);
+        });
+      this.pg = pg == undefined ? "1" : pg;
+      this.page = Number(pg);
+      http
+        .get(
+          `/qna?pg=${this.pg}&key=${!this.queryKey ? "" : this.queryKey}&word=${
+            !this.queryWord ? "" : this.queryWord
+          }`
+        )
+        .then(({ data }) => {
+          this.articles = data;
+          console.log(data);
+        });
     },
     deleteArticle(item) {
       // TODO : 글번호에 해당하는 글을 삭제.
       http.delete(`/qna/${item.qnano}`).then(({ data }) => {
-        let msg = "삭제중 문제발생"
-        if (data === "success") msg = "삭제 성공"
-        alert(msg)
+        let msg = "삭제중 문제발생";
+        if (data === "success") msg = "삭제 성공";
+        alert(msg);
         // this.$router.push({ name: "qnalist" })
-        this.moveList()
-      })
+        this.moveList();
+      });
     },
   },
-}
+};
 </script>
 
 <style>

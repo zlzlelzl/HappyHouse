@@ -1,3 +1,27 @@
+@font-face {
+  font-family: "mfont";
+  src: url("@/assets/font/LeferiBaseRegular.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "mfont-b";
+  src: url("@/assets/font/LeferiBaseBold.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "mfont-w";
+  src: url("@/assets/font/LeferiPointWhite.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "mfont-s";
+  src: url("@/assets/font/LeferiPointSpecial.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
 $material-light: (
   "background": #f8f9fe,
 );
