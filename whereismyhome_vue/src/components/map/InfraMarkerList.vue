@@ -126,22 +126,6 @@ export default {
     ...mapMutations(mapStore, ["SET_MARKERS", "SET_CLUSTERER", "SET_ISTOGGLE"]),
     ...mapActions(mapStore, ["setHouseDetail"]),
     //차트 ------------------------------------------------------------------------------
-    async calcInfraScore(pos) {
-      // 인프라 가져오기
-      await this.getAllInfra()
-      let score = 0
-      for (let i = 0; i < this.mapdata.infra.categoryGroupCodes.length; i++) {
-        let code = this.mapdata.infra.categoryGroupCodes[i]["Name"]
-        // 0~1000m, 0m에 가까울수록 고득점
-        // console.log(this.infra[code][0])
-        if (this.mapdata.infra.data[code].length != 0) {
-          score += 1000 - this.infra.data[code][0].distance
-        }
-        // console.log(this.infra)
-      }
-      // await 때문에 조금 느림
-      console.log(score)
-    },
     async getAllInfra() {
       for (let i = 0; i < this.mapdata.infra.categoryGroupCodes.length; i++) {
         let code = this.mapdata.infra.categoryGroupCodes[i]["Name"]
