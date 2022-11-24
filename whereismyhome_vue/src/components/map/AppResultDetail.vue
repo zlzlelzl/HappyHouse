@@ -7,7 +7,7 @@
     </VBtn>
 
     <VBtn class="float-right" color="rgb(0, 0, 0, 1)" icon @click="changeFavorite">
-      <VIcon>{{iconName[iconFlg]}}</VIcon>
+      <VIcon>{{ iconName[iconFlg] }}</VIcon>
     </VBtn>
     <v-card
       outlined
@@ -30,24 +30,46 @@
       </v-card>
 
       <!-- 아파트 상세정보 -->
-      <v-card class="mb-10" style="width: 100%; height: 300px; border-radius: 25px">
-        <h6 class="text-h8 text-center pa-5">
-          {{ mapdata.app.result.detail.houseinfo }}
+      <v-card class="mb-10" style="width: 100%; height: 180px; border-radius: 25px">
+        <h6 class="text-h8 text-left pt-5 px-5 pb-3">
+          아파트 명 : {{ mapdata.app.result.detail.houseinfo.aptName }}
+        </h6>
+        <h6 class="text-h8 text-left px-5 pb-3">
+          주소 : {{ mapdata.app.result.detail.houseinfo.sidoName }}
+          {{ mapdata.app.result.detail.houseinfo.gugunName }}
+          {{ mapdata.app.result.detail.houseinfo.dongName }}
+        </h6>
+        <h6 class="text-h8 text-left px-5 pb-3">
+          건설 년도 : {{ mapdata.app.result.detail.houseinfo.buildYear }}년
+        </h6>
+        <h6 class="text-h8 text-left px-5 pb-3">
+          최근 거래가 : {{ mapdata.app.result.detail.houseinfo.recentPrice }}억
         </h6>
       </v-card>
 
       <!-- 라인차트 거래가추이 -->
+      <!-- <v-header class="text-center">거래가 추이</v-header> -->
+      <v-subheader class="text-center">거래가 추이</v-subheader>
       <h5 class="text-h10 text-center mb-5">거래가 추이</h5>
       <v-card class="mb-10" height="30%">
         <line-chart></line-chart>
       </v-card>
 
       <!-- 다각형차트 인프라점수 -->
-      <v-card class="mb-10">
+      <v-subheader class="text-center">인프라 점수</v-subheader>
+      <h5 class="text-h10 text-center mb-5">인프라 점수</h5>
+      <v-card class="mb-10" v-show="raderChartShow">
         <radar-chart></radar-chart>
       </v-card>
 
+      <v-card class="mb-10" v-show="!raderChartShow">
+        <h5 class="text-h10 text-center mb-5">
+          차트를 나타내기 위해 인프라를 최소 3개 선택해주세요
+        </h5>
+      </v-card>
+
       <!-- 거래내역 -->
+      <v-subheader class="text-center">아파트 거래내역</v-subheader>
       <v-list
         outlined
         dense
@@ -56,7 +78,6 @@
         height="55%"
         :class="scrollbarTheme"
       >
-        <v-subheader class="text-center">아파트 거래내역</v-subheader>
         <v-list-item-group v-if="mapdata.app.result.detail.housedeals.length == 0">
           <v-list-item>거래 내역이 없습니다.</v-list-item>
         </v-list-item-group>
@@ -102,23 +123,34 @@ export default {
       dataPerPage: 4,
       curPageNum: 1,
 
-      iconFlg:0,
-      iconName:["mdi-star-outline","mdi-star"],
+      iconFlg: 0,
+      iconName: ["mdi-star-outline", "mdi-star"],
+
+      raderChartShow: false,
+
       benched: 0,
     };
   },
   created() {},
   mounted() {
     this.setRoadView();
-    // this.checkIsFavorite();
+    this.checkIsFavorite();
   },
   watch: {
-    // getIsFavorite(val){
-    //   if(val)this.iconFlg=1;
-    //   else this.iconFlg=0;
-    // },
+    getIsToggle(val) {
+      console.log("getIsToggle");
+      console.log(val);
+      if (val.length > 2) {
+        this.raderChartShow = true;
+      } else {
+        this.raderChartShow = false;
+      }
+      console.log(this.raderChartShow);
+    },
   },
   computed: {
+    ...mapState(mapStore, ["mapdata", "isToggle"]),
+    ...mapGetters(mapStore, ["getMapData", "getClusterer", "getMarkers", "getIsToggle"]),
     startOffset() {
       return (this.curPageNum - 1) * this.dataPerPage;
     },
@@ -148,23 +180,30 @@ export default {
     scrollbarTheme() {
       return this.$vuetify.theme.dark ? "dark" : "light";
     },
-    getIsFavorite(){
-      if(this.mapdata.app.result.detail.isFavorite)this.iconFlg=1;
-      else this.iconFlg=0;
+    getIsFavorite() {
+      if (this.mapdata.app.result.detail.isFavorite) this.iconFlg = 1;
+      else this.iconFlg = 0;
       return this.mapdata.app.result.detail.isFavorite;
     },
-    getUserInfo(){
+    getUserInfo() {
       return this.userInfo;
     },
   },
   methods: {
     ...mapActions(mapStore, ["detailHouse", "getHouseList"]),
-    ...mapActions(memberStore, ["insertFavorite", "deleteFavorite", "getFavorite","getFavoriteAll"]),
+    ...mapActions(memberStore, [
+      "insertFavorite",
+      "deleteFavorite",
+      "getFavorite",
+      "getFavoriteAll",
+    ]),
     ...mapMutations(mapStore, [
       "SET_HOUSE_LIST",
       "CLEAR_APT_LIST",
       "SET_DETAIL_HOUSE",
-      "CLEAR_DETAIL_APT","FLIP_IS_FAVORITE","SET_IS_FAVORITE",
+      "CLEAR_DETAIL_APT",
+      "FLIP_IS_FAVORITE",
+      "SET_IS_FAVORITE",
     ]),
     //디테일창 닫기 버튼
     closeDetail() {
@@ -190,42 +229,50 @@ export default {
         roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
       });
     },
-    changeFavorite(){
+    changeFavorite() {
       this.checkIsFavorite();
-      let data={user_id:this.getUserInfo.userid,aptName:this.gethouseinfo.aptName,dongCode:this.gethouseinfo.dongCode};
+      let data = {
+        user_id: this.getUserInfo.userid,
+        aptName: this.gethouseinfo.aptName,
+        dongCode: this.gethouseinfo.dongCode,
+      };
       console.log("changeFavorite");
       // console.log(data);
-      
-      if(this.getIsFavorite){
+
+      if (this.getIsFavorite) {
         // user_id,aptName,dongCode
         this.deleteFavorite(data);
         // 아이콘바꾸기
-      }else{
+      } else {
         this.insertFavorite(data);
       }
-      
-      this.iconFlg=(this.iconFlg+1)%2;
+
+      this.iconFlg = (this.iconFlg + 1) % 2;
       this.FLIP_IS_FAVORITE();
     },
-    async checkIsFavorite(){
-      const userInfo= this.getUserInfo;
-      const houseinfo= this.gethouseinfo;
-      console.log("checkIsFavorite")
-      console.log(userInfo)
-      if(userInfo==undefined||userInfo==null ||userInfo==""){
+    async checkIsFavorite() {
+      const userInfo = this.getUserInfo;
+      const houseinfo = this.gethouseinfo;
+      console.log("checkIsFavorite");
+      console.log(userInfo);
+      if (userInfo == undefined || userInfo == null || userInfo == "") {
         alert("로그인이 필요한 기능입니다..");
         this.$router.push({ name: "login" });
       }
       // let returnValue=0;
       const list = await this.getFavoriteAll();
-      list.forEach(data => {
-          console.log(data)
-        if(data.user_id!=userInfo.userid ||houseinfo.dongCode!=data.dongCode || houseinfo.aptName!=data.aptName)return;
-          this.SET_IS_FAVORITE(true);
-          this.iconFlg=1,
-          console.log("11111111111111111")
+      list.forEach((data) => {
+        console.log(data);
+        if (
+          data.user_id != userInfo.userid ||
+          houseinfo.dongCode != data.dongCode ||
+          houseinfo.aptName != data.aptName
+        )
+          return;
+        this.SET_IS_FAVORITE(true);
+        (this.iconFlg = 1), console.log("11111111111111111");
       });
-    }
+    },
   },
 };
 </script>

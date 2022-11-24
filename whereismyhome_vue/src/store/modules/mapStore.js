@@ -51,7 +51,7 @@ const mapStore = {
           },
           {
             Name: "PS3",
-            Description: "어린이집, 유치원",
+            Description: "어린이집",
             icon: "mdi-cradle",
             iconSrc: "mdicradle",
           },
@@ -64,7 +64,7 @@ const mapStore = {
           },
           {
             Name: "OL7",
-            Description: "주유소, 충전소",
+            Description: "주유소",
             icon: "mdi-gas-station",
             iconSrc: "mdigasStation",
           },
@@ -206,7 +206,8 @@ const mapStore = {
       state.mapdata.app.result.detail.isFavorite = val;
     },
     FLIP_IS_FAVORITE(state) {
-      state.mapdata.app.result.detail.isFavorite = !state.mapdata.app.result.detail.isFavorite;
+      state.mapdata.app.result.detail.isFavorite =
+        !state.mapdata.app.result.detail.isFavorite;
     },
   },
   actions: {
