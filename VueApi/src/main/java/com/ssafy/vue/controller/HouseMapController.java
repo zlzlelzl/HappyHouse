@@ -176,7 +176,7 @@ public class HouseMapController {
     @GetMapping("/favor")
     public ResponseEntity<List<FavoriteDto>> listFavorite()
             throws Exception {
-        logger.info("listFavorite - 호출");
+        logger.info("listFavorite - 호출{}",favoriteService.listFavorite());
         return new ResponseEntity<List<FavoriteDto>>(favoriteService.listFavorite(),
                 HttpStatus.OK);
     }
@@ -192,8 +192,17 @@ public class HouseMapController {
         }
         return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
     }
+//    @GetMapping("/favor/apt")
+//    public ResponseEntity<List<HouseInfoDto>> getFavoriteApt(FavoriteDto favoriteDto) throws Exception {
+//        return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getFavoriteApt(favoriteDto), HttpStatus.OK);
+//    }
+    
+    @ApiOperation(value = "즐겨찾기 목록", notes = "즐겨찾기 모든 정보 반환.", response = List.class)
     @GetMapping("/favor/apt")
-    public ResponseEntity<List<HouseInfoDto>> getFavoriteApt(FavoriteDto favoriteDto) throws Exception {
-        return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.getFavoriteApt(favoriteDto), HttpStatus.OK);
+    public ResponseEntity<List<HouseInfoDto>> listFavoriteT(FavoriteDto favoriteDto)
+            throws Exception {
+//        logger.info("listFavorite - 호출{}",favoriteService.listFavorite());
+        return new ResponseEntity<List<HouseInfoDto>>(haHouseMapService.listFavoriteT(favoriteDto),
+                HttpStatus.OK);
     }
 }

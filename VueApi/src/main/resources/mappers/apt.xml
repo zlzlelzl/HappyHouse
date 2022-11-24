@@ -135,14 +135,16 @@
 		where aptCode = #{aptCode} 
 	</select>
 
-		<select id="getFavoriteApt" parameterType="favoriteDto" resultType="houseInfoDto">
-		select h.aptCode, h.aptName, h.buildyear, h.dongCode, h.dongName, h.jibun, h.lat, h.lng, si.sidoname, gu.gugunname,
+		<select id="listFavoriteT" parameterType="favoriteDto" resultType="houseInfoDto">
+		select h.aptCode, h.aptName, h.buildyear, h.dongCode, h.dongName, h.jibun, h.lat, h.lng, si.sidoname, gu.gugunname, 
 				(select dealAmount from housedeal where aptCode = h.aptCode and no = (select max(no) from housedeal where aptCode = h.aptCode)) recentPrice
-		from houseinfo h
+		from favorite as f
+		left join houseinfo h
+		on  h.aptName = f.aptName and h.dongCode = f.dongCode
 		left join sidocode si
 		on left(h.dongcode,2) = left(si.sidocode,2)
 		left join guguncode gu
 		on left(h.dongcode,5) = left(gu.guguncode,5)
-		where aptName = #{aptName} and h.dongCode = #{dongCode}
+		where f.user_id = #{user_id};
 	</select>
 </mapper>

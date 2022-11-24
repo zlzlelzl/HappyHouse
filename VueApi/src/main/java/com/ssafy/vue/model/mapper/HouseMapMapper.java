@@ -40,6 +40,7 @@ public interface HouseMapMapper {
 	
 	HouseInfoDto getAptByAptCode(String aptCode) throws Exception ;
 
-	List<HouseInfoDto> getFavoriteApt(FavoriteDto favoriteDto);
-
+	List<HouseInfoDto> getFavoriteApt(FavoriteDto favoriteDto)throws Exception;
+	
+    List<HouseInfoDto> listFavoriteT(FavoriteDto favoriteDto) throws Exception;
 }

@@ -13,8 +13,24 @@
 		select user_id, dongCode, aptName, reg_time
 		from favorite
 		order by reg_time
-	</select>
+	</select> 
 	
+	<!--  
+	<select id="listFavorite" parameterType="favoriteDto" resultType="houseInfoDto">
+		select h.aptCode, h.aptName, h.buildyear, h.dongCode, h.dongName, h.jibun, h.lat, h.lng, si.sidoname, gu.gugunname, 
+				(select dealAmount from housedeal where aptCode = h.aptCode and no = (select max(no) from housedeal where aptCode = h.aptCode)) recentPrice
+		from favorite as f
+		left join houseinfo h
+		on  h.aptName = f.aptName
+		left join sidocode si
+		on left(h.dongcode,2) = left(si.sidocode,2)
+		left join guguncode gu
+		on left(h.dongcode,5) = left(gu.guguncode,5)
+		where h.aptName = #{aptName} and h.dongCode = #{dongCode} and f.user_id = #{user_id};
+	</select>
+	-->
+	
+		
 	<delete id="deleteFavorite" parameterType="favoriteDto">
 		delete from favorite
 		where user_id = #{user_id}
