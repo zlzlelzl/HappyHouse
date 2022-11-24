@@ -149,26 +149,38 @@ public class MemberController {
 	@PutMapping(value = "")
 	public ResponseEntity<?> userModify(@RequestBody MemberDto memberDto) {
 		logger.debug("userModify memberDto : {}", memberDto);
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
 		try {
 			memberService.updateMember(memberDto);
 			List<MemberDto> list = memberService.listMember(null);
-			return new ResponseEntity<List<MemberDto>>(list, HttpStatus.OK);
+			resultMap.put("message", SUCCESS);
+			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			resultMap.put("message", e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+
 	}
 
 	@ApiOperation(value = "회원정보삭제", notes = "회원정보를 삭제합니다.")
 	@PutMapping(value = "/{userid}")
 	public ResponseEntity<?> userDelete(@PathVariable("userid") String userId) {
 		logger.debug("userDelete userid : {}", userId);
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
 		try {
 			memberService.deleteMember(userId);
 			List<MemberDto> list = memberService.listMember(null);
-			return new ResponseEntity<List<MemberDto>>(list, HttpStatus.OK);
+			resultMap.put("message", SUCCESS);
+			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			resultMap.put("message", e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+
 	}
 
 	@ApiOperation(value = "회원목록", notes = "회원의 <big>전체 목록</big>을 반환해 줍니다.")

@@ -125,7 +125,7 @@ export default {
         return this.$store.state.isToggle;
       },
       set(isToggle) {
-        console.log(isToggle);
+        // console.log(isToggle);
         // let storeData=this.$store.state.isToggle;
 
         // console.log(storeData);
@@ -199,10 +199,10 @@ export default {
             this.setHouseDetailInfo(JSON.parse(marker.getTitle()));
           });
         });
-        console.log("getcl");
-        console.log(this.getClusterer);
+        // console.log("getcl");
+        // console.log(this.getClusterer);
         let clusterer = this.getClusterer;
-        console.log(clusterer);
+        // console.log(clusterer);
         clusterer.addMarkers(markers);
         // this.SET_CLUSTERER(clusterer);
         // this.SET_MARKERS(markers);
@@ -219,7 +219,7 @@ export default {
     },
     //마커---------------------------------------------------------------------------
     clearAllMarker() {
-      console.log("cls all marker");
+      // console.log("cls all marker");
       if (this.mapdata.infra.markers == null || this.mapdata.infra.markers == undefined) {
         console.log("cls all marker ret");
         return;
@@ -246,7 +246,7 @@ export default {
       // });
     },
     createAllMarker() {
-      console.log("insert all marker");
+      // console.log("insert all marker");
       let imageSize = new kakao.maps.Size(22, 26);
       let imageOptions = {
         // spriteOrigin: new kakao.maps.Point(10, 72),

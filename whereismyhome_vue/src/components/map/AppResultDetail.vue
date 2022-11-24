@@ -68,7 +68,7 @@
       <!-- <v-header class="text-center">거래가 추이</v-header> -->
       <!-- <v-subheader class="text-center">거래가 추이</v-subheader> -->
       <h5 class="text-h10 text-center mb-5">거래가 추이</h5>
-      <v-card class="mb-10" height="30%">
+      <v-card class="mb-10">
         <line-chart></line-chart>
       </v-card>
 
@@ -176,7 +176,7 @@ export default {
   created() {},
   mounted() {
     this.setRoadView();
-    this.checkIsFavorite();
+    if (this.userInfo != undefined && this.userInfo != null) this.checkIsFavorite();
   },
   watch: {
     getIsToggle(val) {
@@ -277,6 +277,12 @@ export default {
       });
     },
     changeFavorite() {
+      const userInfo = this.getUserInfo;
+      if (userInfo == undefined || userInfo == null || userInfo == "") {
+        alert("로그인이 필요한 기능입니다..");
+        this.$router.push({ name: "login" });
+      }
+
       // this.checkIsFavorite();
       let data = {
         user_id: this.getUserInfo.userid,

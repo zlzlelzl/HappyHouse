@@ -28,8 +28,12 @@
       <v-row>
         <v-col cols="4">
           <div class="pt-16">
-            <v-card width="100%" height="500px">
-              <img />
+            <v-card width="100%" height="500px" class="py-16">
+              <v-img
+                witdh="100%"
+                class="py-16 align-center justify-center"
+                src="@/assets/house/Animated_House.gif"
+              />
             </v-card>
           </div>
         </v-col>

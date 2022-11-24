@@ -1,6 +1,8 @@
 <template>
   <div style="width: 100%">
-    <p style="position:right;font-size:1px;">점수 : 1000 - 가장 가까운 인프라의 거리(단위 : m)</p>
+    <p class="pt-5 px-5 mb-0 grey--text float-center" style="font-size: 1px">
+      점수 : 1000 - 가장 가까운 인프라의 거리(단위 : m)
+    </p>
     <RadarChartGen
       :chart-options="chartOptions"
       :chart-data="chartData"
@@ -16,8 +18,8 @@
 </template>
 
 <script>
-import { Radar as RadarChartGen } from "vue-chartjs"
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex"
+import { Radar as RadarChartGen } from "vue-chartjs";
+import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import {
   Chart as ChartJS2,
   Title,
@@ -28,11 +30,20 @@ import {
   CategoryScale,
   PointElement,
   RadialLinearScale,
-} from "chart.js"
+} from "chart.js";
 
-const mapStore = "mapStore"
+const mapStore = "mapStore";
 
-ChartJS2.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, RadialLinearScale)
+ChartJS2.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  RadialLinearScale
+);
 export default {
   namespaced: true,
   name: "RadarChart",
@@ -67,42 +78,42 @@ export default {
       default: () => [],
     },
   },
-  
+
   computed: {
     ...mapState(mapStore, ["mapdata", "isToggle"]),
     ...mapGetters(mapStore, ["getIsToggle"]),
-    getIsToggle(val){  
+    getIsToggle(val) {
       console.log("rader toggle");
       console.log(val);
       return this.$store.getters["getIsToggle"];
     },
   },
   created() {
-    this.infra = this.mapdata.infra
+    this.infra = this.mapdata.infra;
   },
   mounted() {
-    this.changeInfra()
+    this.changeInfra();
   },
   methods: {
     ...mapMutations(mapStore, ["SET_ISTOGGLE"]),
     changeInfra() {
-    console.log("rader toggle")
-      console.log(this.isToggle)
+      console.log("rader toggle");
+      console.log(this.isToggle);
       //   console.log(this.mapdata.infra)
       //   this.mapdata.infra.data[this.buttonMapping[i]]
     },
     calcInfraScore(val) {
       // 인프라 가져오기
       let totalScore = 0;
-      let categoryMap = this.infra.categoryGroupCodes
+      let categoryMap = this.infra.categoryGroupCodes;
 
-    this.chartData.labels = []
-      this.chartData.datasets[0].data = []
+      this.chartData.labels = [];
+      this.chartData.datasets[0].data = [];
 
       for (let i = 0; i < val.length; i++) {
-        let order = val[i]
-        let code = this.buttonMapping[order]
-        let datas = this.mapdata.infra.data[code]
+        let order = val[i];
+        let code = this.buttonMapping[order];
+        let datas = this.mapdata.infra.data[code];
         // console.log("this.mapdata.infra.data[code]",
         // this.mapdata.infra.data[code])
         // console.log("code", code)
@@ -111,41 +122,39 @@ export default {
         // console.log(this.infra[code][0])
         if (datas.length != 0) {
           let score = 1000 - datas[0].distance;
-          totalScore += score
+          totalScore += score;
 
-            // 삼각형부터 구분 가능
-            if(val.length >= 3){
-            this.chartData.labels.push(categoryMap[order].Description)
-            this.chartData.datasets[0].data.push(score)
-            }
+          // 삼각형부터 구분 가능
+          if (val.length >= 3) {
+            this.chartData.labels.push(categoryMap[order].Description);
+            this.chartData.datasets[0].data.push(score);
+          }
         }
         // console.log("totalScore",totalScore);
         // console.log("avgScore",totalScore/val.length)
         // console.log("data",datas.length,this.chartData.datasets[0].data)
-        
-        this.avgScore = Math.round(totalScore/val.length)
-        this.chartData.datasets[0].label = "avg : " + this.avgScore
+
+        this.avgScore = Math.round(totalScore / val.length);
+        this.chartData.datasets[0].label = "avg : " + this.avgScore;
       }
     },
   },
   watch: {
-
-    isToggle(val){
+    isToggle(val) {
       console.log("rader toggle watch2");
       console.log(val);
 
-      console.log(this.chartData.labels)
-      console.log(this.chartData.datasets[0].data)
-        this.calcInfraScore(val)
-    //   console.log(this.mapdata.infra.data)
-    //   console.log(this.buttonMapping)
+      console.log(this.chartData.labels);
+      console.log(this.chartData.datasets[0].data);
+      this.calcInfraScore(val);
+      //   console.log(this.mapdata.infra.data)
+      //   console.log(this.buttonMapping)
 
-    //   for(let v in val){
-    //     if (this.mapdata.infra.data[this.buttonMapping[val[v]]].length != 0) {
-    //       score += 1000 - this.mapdata.infra.data[this.buttonMapping[val[v]]].distance
-    //     }
-    //   }
-      
+      //   for(let v in val){
+      //     if (this.mapdata.infra.data[this.buttonMapping[val[v]]].length != 0) {
+      //       score += 1000 - this.mapdata.infra.data[this.buttonMapping[val[v]]].distance
+      //     }
+      //   }
     },
     // getIsToggle: {
     //   // This will let Vue know to look inside the array
@@ -155,7 +164,7 @@ export default {
     //   handler(){
     //     console.log('The list of colours has changed!');
     //   }
-    
+
     // },
     // isToggle: {
     //   // This will let Vue know to look inside the array
@@ -165,13 +174,11 @@ export default {
     //   handler(){
     //     console.log('The list of colours has changed!');
     //   }
-    
-    
-},
+  },
   data() {
     return {
-        avgScore:0,
-        buttonMapping: [
+      avgScore: 0,
+      buttonMapping: [
         "MT1",
         "CS2",
         "PS3",
@@ -203,15 +210,15 @@ export default {
         responsive: true,
         position: "relative",
         scale: {
-            r: {
-                suggestedMin: 200,
-                suggestedMax: 200,
-                max: 1000,
-                min: 0,
-                ticks: {
-                    stepSize: 200
-                }
-            }
+          r: {
+            suggestedMin: 200,
+            suggestedMax: 200,
+            max: 1000,
+            min: 0,
+            ticks: {
+              stepSize: 200,
+            },
+          },
         },
         plugins: {
           legend: {
@@ -220,16 +227,15 @@ export default {
           tooltip: {
             callbacks: {
               label: function (context) {
-                return context.formattedValue
+                return context.formattedValue;
               },
             },
           },
         },
       },
-    }
+    };
   },
   actions: {
-    
     // async getAllInfra() {
     //   for (let i = 0; i < this.categoryGroupCodes.length; i++) {
     //     let code = this.categoryGroupCodes[i]["Name"];
@@ -293,5 +299,5 @@ export default {
     // }
     // },
   },
-}
+};
 </script>
