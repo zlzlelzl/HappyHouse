@@ -8,7 +8,7 @@
         <v-container>
           <v-row>
             <v-col cols="12" sm="6" md="4">
-              <v-text-field label="작성자(추후 고정)*" v-model="userid"></v-text-field>
+              <v-text-field label="작성자" v-model="userid" readonly></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field label="제목*" required v-model="subject"></v-text-field>
@@ -39,10 +39,13 @@ export default {
   data() {
     return {
       dialog: false,
-      userid: null,
-      subject: null,
-      content: null,
+      userid: "",
+      subject: "",
+      content: "",
     }
+  },
+  created(){
+    this.userid = this.$store.state.memberStore.userInfo.userid
   },
   methods: {
     // 입력값 체크하기 - 체크가 성공하면 registArticle 호출
