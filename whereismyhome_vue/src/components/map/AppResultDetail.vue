@@ -6,8 +6,8 @@
       <VIcon>mdi-close</VIcon>
     </VBtn>
 
-    <VBtn class="float-right" color="rgb(0, 0, 0, 1)" icon @click="changeFavorite">
-      <VIcon>{{ iconName[iconFlg] }}</VIcon>
+    <VBtn class="float-right" color="rgb(255, 255, 0, 1)" icon @click="changeFavorite">
+      <VIcon>{{ iconName[this.iconFlg] }}</VIcon>
     </VBtn>
     <v-card
       outlined
@@ -30,21 +30,38 @@
       </v-card>
 
       <!-- 아파트 상세정보 -->
-      <v-card class="mb-10" style="width: 100%; height: 180px; border-radius: 25px">
-        <h6 class="text-h8 text-left pt-5 px-5 pb-3">
-          아파트 명 : {{ mapdata.app.result.detail.houseinfo.aptName }}
-        </h6>
-        <h6 class="text-h8 text-left px-5 pb-3">
-          주소 : {{ mapdata.app.result.detail.houseinfo.sidoName }}
-          {{ mapdata.app.result.detail.houseinfo.gugunName }}
-          {{ mapdata.app.result.detail.houseinfo.dongName }}
-        </h6>
-        <h6 class="text-h8 text-left px-5 pb-3">
-          건설 년도 : {{ mapdata.app.result.detail.houseinfo.buildYear }}년
-        </h6>
-        <h6 class="text-h8 text-left px-5 pb-3">
-          최근 거래가 : {{ mapdata.app.result.detail.houseinfo.recentPrice }}억
-        </h6>
+      <v-card class="mb-10" style="width: 100%; height: 240px; border-radius: 25px">
+        <v-container>
+          <v-row>
+            <v-col cols="5">아파트 명</v-col>
+            <v-col cols="7" style="font-family: mfont-w" text-center>
+              {{ mapdata.app.result.detail.houseinfo.aptName }}
+            </v-col>
+            <v-col cols="3">주소</v-col>
+            <v-col
+              cols="9"
+              style="font-family: mfont-w; font-size: 0.9em"
+              class="text-h10 text-center"
+            >
+              {{ mapdata.app.result.detail.houseinfo.sidoName }}
+              {{ mapdata.app.result.detail.houseinfo.gugunName }}
+              {{ mapdata.app.result.detail.houseinfo.dongName }}
+            </v-col>
+            <v-col cols="5">건설 년도</v-col>
+            <v-col cols="7" style="font-family: mfont-w" class="text-h10 text-left">
+              {{ mapdata.app.result.detail.houseinfo.buildYear }}년
+            </v-col>
+            <v-col cols="5">최근 거래가</v-col>
+            <v-col cols="7" style="font-family: mfont-w" class="text-h10 text-left">
+              {{
+                Number(
+                  mapdata.app.result.detail.houseinfo.recentPrice.split(",").join("")
+                ) / 10000
+              }}억
+            </v-col>
+            <!-- <h6 class="text-h8 text-left px-5 pb-3" style="font-family: mfont-w"></h6> -->
+          </v-row>
+        </v-container>
       </v-card>
 
       <!-- 라인차트 거래가추이 -->
@@ -63,13 +80,29 @@
       </v-card>
 
       <v-card class="mb-10" v-show="!raderChartShow">
-        <h5 class="text-h10 text-center mb-5">
-          차트를 나타내기 위해 인프라를 최소 3개 선택해주세요
-        </h5>
+        <v-container class="pt-8 pb-16 ma-0">
+          <v-row>
+            <v-col cols="12" class="text-center pb-4 grey--text" style="font-size: 0.7em"
+              >인프라 점수를 나타내기 위해</v-col
+            >
+            <v-col cols="5" class="text-right pa-0 grey--text" style="font-size: 0.7em"
+              >인프라를 최소</v-col
+            >
+            <v-col cols="1" class="text-center pa-0 red--text" style="font-size: 0.8em">
+              3
+            </v-col>
+            <v-col cols="4" class="text-left pa-0 grey--text" style="font-size: 0.7em">
+              &nbsp개 선택해주세요
+            </v-col>
+
+            <!-- <h6 class="text-h8 text-left px-5 pb-3" style="font-family: mfont-w"></h6> -->
+          </v-row>
+        </v-container>
       </v-card>
 
       <!-- 거래내역 -->
-      <v-subheader class="text-center">아파트 거래내역</v-subheader>
+      <h5 class="text-h10 text-center mb-5">아파트 거래내역</h5>
+      <!-- <v-subheader class="text-center">아파트 거래내역</v-subheader> -->
       <v-list
         outlined
         dense
@@ -92,13 +125,22 @@
                 >날짜 : {{ deal.dealYear }} 년{{ deal.dealMonth }} 월
                 {{ deal.dealDay }}일</v-list-item-title
               >
-              <v-list-item-subtitle>금액 : {{ deal.dealAmount }}</v-list-item-subtitle>
+              <v-list-item-subtitle
+                >금액 :
+                {{ Number(deal.dealAmount.split(",").join("")) / 10000 }}
+                억</v-list-item-subtitle
+              >
               <v-list-item-subtitle>{{ deal.floor }} 층</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
       </v-list>
-      <v-pagination v-model="curPageNum" :length="numOfPages" circle></v-pagination>
+      <v-pagination
+        v-model="curPageNum"
+        :length="numOfPages"
+        circle
+        size="sm"
+      ></v-pagination>
     </v-card>
   </div>
 </template>
@@ -147,6 +189,10 @@ export default {
       }
       console.log(this.raderChartShow);
     },
+    getIsFavorite(val) {
+      if (val) this.iconFlg = 1;
+      else this.iconFlg = 0;
+    },
   },
   computed: {
     ...mapState(mapStore, ["mapdata", "isToggle"]),
@@ -181,12 +227,13 @@ export default {
       return this.$vuetify.theme.dark ? "dark" : "light";
     },
     getIsFavorite() {
-      if (this.mapdata.app.result.detail.isFavorite) this.iconFlg = 1;
-      else this.iconFlg = 0;
       return this.mapdata.app.result.detail.isFavorite;
     },
     getUserInfo() {
       return this.userInfo;
+    },
+    getIconFlg() {
+      return this.iconFlg;
     },
   },
   methods: {
@@ -230,14 +277,14 @@ export default {
       });
     },
     changeFavorite() {
-      this.checkIsFavorite();
+      // this.checkIsFavorite();
       let data = {
         user_id: this.getUserInfo.userid,
         aptName: this.gethouseinfo.aptName,
         dongCode: this.gethouseinfo.dongCode,
       };
       console.log("changeFavorite");
-      // console.log(data);
+      console.log(this.iconFlg);
 
       if (this.getIsFavorite) {
         // user_id,aptName,dongCode
@@ -248,6 +295,8 @@ export default {
       }
 
       this.iconFlg = (this.iconFlg + 1) % 2;
+      console.log("changeFavorite2");
+      console.log(this.iconFlg);
       this.FLIP_IS_FAVORITE();
     },
     async checkIsFavorite() {
@@ -260,6 +309,8 @@ export default {
         this.$router.push({ name: "login" });
       }
       // let returnValue=0;
+      this.iconFlg = 0;
+      this.SET_IS_FAVORITE(false);
       const list = await this.getFavoriteAll();
       list.forEach((data) => {
         console.log(data);
@@ -270,7 +321,8 @@ export default {
         )
           return;
         this.SET_IS_FAVORITE(true);
-        (this.iconFlg = 1), console.log("11111111111111111");
+        this.iconFlg = 1;
+        if ((this.iconFlg = 1)) console.log("11111111111111111");
       });
     },
   },

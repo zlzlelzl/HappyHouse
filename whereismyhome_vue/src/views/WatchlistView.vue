@@ -21,7 +21,7 @@
                   ></v-img>
                 </template>
 
-                <v-app-bar-title>관심목록</v-app-bar-title>
+                <v-app-bar-title style="font-size: 0.9em">관심목록</v-app-bar-title>
 
                 <v-spacer></v-spacer>
 

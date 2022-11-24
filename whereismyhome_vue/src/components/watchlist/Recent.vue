@@ -12,7 +12,7 @@
             <!-- <v-card >
               <template v-if="list.length<1"></template>
               <v-card height="40vh"></v-card> -->
-            <v-row >
+            <v-row>
               <v-col v-if="list.length == 0">
                 <h3 class="text-h6 grey--text text-center py-3">
                   최근 본 아파트가 없습니다.
@@ -29,7 +29,7 @@
                       :to="{ name: 'Map', query: { aptCode: item.v.aptCode } }"
                     >
                       <v-img
-                        src="@/assets/house1.jpg"
+                        src="@/assets/house/house2.jpg"
                         :aspect-ratio="16 / 9"
                         gradient="to top, rgba(25,32,72,.4), rgba(25,32,72,.0)"
                         height="200px"
@@ -37,16 +37,23 @@
                         style="border-radius: 16px"
                       >
                         <v-card-text>
-                          <v-btn color="accent"> 이쁜이미지</v-btn>
+                          <v-btn color="accent">HOUSE</v-btn>
                         </v-card-text>
                       </v-img>
 
                       <v-card-text>
                         <div class="text-h5 font-weight-bold primary--text">
+                          <v-avatar color="accent" size="36">
+                            <font-awesome-icon
+                              icon="fa-solid fa-house-chimney-window"
+                              inverse
+                              fixed-width
+                            />
+                          </v-avatar>
                           {{ item.v.aptName }}
                         </div>
 
-                        <div class="text-body-1 py-4">
+                        <div class="text-body-1 py-3">
                           {{
                             item.v.sidoName +
                             " " +
@@ -56,24 +63,27 @@
                           }}
                         </div>
 
-                        <div class="text-body-1 py-4">
+                        <div class="text-body-1 pb-3">
                           {{ Number(item.v.recentPrice.split(",").join("")) / 10000 }}억
                           원
                         </div>
 
                         <div class="d-flex align-center">
                           <v-avatar color="accent" size="36">
-                            <v-icon dark>mdi-feather</v-icon>
+                            <font-awesome-icon
+                              icon="fa-regular fa-calendar"
+                              inverse
+                              fixed-width
+                            />
                           </v-avatar>
-
-                          <div class="pl-2">built {{ item.v.buildYear }}</div>
+                          <div class="pl-2">building year {{ item.v.buildYear }}</div>
                         </div>
                       </v-card-text>
                     </v-card>
                   </div>
                 </v-hover>
               </v-col>
-            </v-row></v-card>
+            </v-row>
           </div>
         </div>
       </v-col>

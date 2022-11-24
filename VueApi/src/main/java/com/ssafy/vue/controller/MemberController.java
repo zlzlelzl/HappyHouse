@@ -192,14 +192,20 @@ public class MemberController {
 	@PostMapping(value = "/")
 	public ResponseEntity<?> userRegister(@RequestBody MemberDto memberDto) {
 		logger.debug("userRegister memberDto : {}", memberDto);
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
 		try {
 			memberService.joinMember(memberDto);
 			List<MemberDto> list = memberService.listMember(null);
-			return new ResponseEntity<List<MemberDto>>(list, HttpStatus.OK);
+			status = HttpStatus.ACCEPTED;
+			resultMap.put("message", SUCCESS);
 		} catch (Exception e) {
+			resultMap.put("message", FAIL);
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
 			return exceptionHandling(e);
 		}
 
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 
 	@ApiOperation(value = "회원중복확인", notes = "회원의 아이디 확인.")

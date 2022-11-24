@@ -23,10 +23,19 @@ async function logout(userid, success, fail) {
 
 async function regist(user, success, fail) {
   // console.log(user, success);
-  await api.post(`/user`, JSON.stringify(user)).then(success).catch(fail);
+  await api.post(`/user/`, JSON.stringify(user)).then(success).catch(fail);
 }
 async function checkId(user, success, fail) {
   // console.log(user);
   await api.get(`/user/idcheck?userid=${user.userid}`).then(success).catch(fail);
 }
-export { login, findById, tokenRegeneration, logout,regist ,checkId};
+
+async function update(user, success, fail) {
+  // console.log(user, success);
+  await api.put(`/user/`, JSON.stringify(user)).then(success).catch(fail);
+}
+async function del(user, success, fail) {
+  // console.log(user, success);
+  await api.delete(`/user/`, JSON.stringify(user)).then(success).catch(fail);
+}
+export { login, findById, tokenRegeneration, logout, regist, checkId, del, update };

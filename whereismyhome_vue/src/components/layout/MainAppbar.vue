@@ -1,4 +1,4 @@
-<template>
+<template style="z-index: 35">
   <div>
     <v-navigation-drawer
       v-if="!$vuetify.breakpoint.smAndUp"
@@ -167,6 +167,28 @@ export default {
       },
     ],
     barItems: [
+      {
+        title: "홈",
+        to: "/",
+      },
+      {
+        title: "공지사항",
+        to: "/notice",
+      },
+      {
+        title: "Q&A",
+        to: "/qna",
+      },
+      {
+        title: "지도",
+        to: "/map",
+      },
+      {
+        title: "관심목록",
+        to: "/watchlist",
+      },
+    ],
+    btnItems: [
       {
         title: "홈",
         to: "/",
