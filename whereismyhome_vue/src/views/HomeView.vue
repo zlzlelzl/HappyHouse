@@ -44,7 +44,7 @@
 
               <v-hover v-slot:default="{ hover }" close-delay="50" open-delay="50">
                 <v-card rounded>
-                  <v-carousel class="mb-10">
+                  <v-carousel cycle class="mb-10">
                     <template v-for="news in newsList">
                       <a :href="news.link" target="_blank">
                         <v-carousel-item src="@/assets/main.jpg"
