@@ -96,14 +96,14 @@ export default {
       this.regex();
     },
     regex() {
-      console.log("regex");
       console.log(this.newsList);
       this.newsList.forEach((data) => {
-        console.log("regex2");
-        console.log(data.title);
-        data.title = String(data.title).replace(/<+[|w]>/g, "sesss");
-        data.title = String(data.title).replace(/&+[|w];/g, "sesss");
-        console.log(data.title);
+        data.title = data.title.replace(/<[^>]*(>|$)|&[a-zA-Z]+;/g, "");
+        // console.log(data.title);
+        if (data.title.length > 25) {
+          data.title = data.title.slice(0, 25);
+          data.title += "...";
+        }
       });
       return this.getNewsList;
     },
