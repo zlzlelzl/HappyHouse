@@ -99,8 +99,6 @@ export default {
       console.log(this.chartData.datasets[0].data)
     },
     async setChartData(e) {
-      console.log(e)
-
       //   console.log("prev")
       //   this.getChartData()
         
@@ -116,8 +114,10 @@ export default {
           y: deals[i].dealAmount,
         })
       }
+      
+      this.areaOrder.sort((a, b) => Number(a) - Number(b))
+      console.log("areaOrder",this.areaOrder)
       console.log("areaMap",this.areaMap)
-      this.areaOrder.sort()
       // console.log(this.areaMap)
       for (let i = 0; i < this.areaOrder.length; i++) {
         this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x)
