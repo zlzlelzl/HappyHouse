@@ -65,12 +65,15 @@
       </v-card>
 
       <!-- 라인차트 거래가추이 -->
+      <!-- <v-header class="text-center">거래가 추이</v-header> -->
+      <!-- <v-subheader class="text-center">거래가 추이</v-subheader> -->
       <h5 class="text-h10 text-center mb-5">거래가 추이</h5>
       <v-card class="mb-10" height="30%">
         <line-chart></line-chart>
       </v-card>
 
       <!-- 다각형차트 인프라점수 -->
+      <!-- <v-subheader class="text-center">인프라 점수</v-subheader> -->
       <h5 class="text-h10 text-center mb-5">인프라 점수</h5>
       <v-card class="mb-10" v-show="raderChartShow">
         <radar-chart></radar-chart>
