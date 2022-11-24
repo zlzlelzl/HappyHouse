@@ -2,7 +2,7 @@
 <div>
     <v-btn-toggle>
       <v-btn v-for="(item, i) in areaOrder" :key="i" @click="setArea(i)">
-        <v-icon v-text="item"></v-icon>
+        <v-icon>{{item+"㎡"}}</v-icon>
       </v-btn>
     </v-btn-toggle>
   <div style="width: 100%">
