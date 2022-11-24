@@ -1,5 +1,12 @@
 <template>
+<div>
+    <v-btn-toggle>
+      <v-btn v-for="(item, i) in areaOrder" :key="i" @click="setArea(i)">
+        <v-icon v-text="item"></v-icon>
+      </v-btn>
+    </v-btn-toggle>
   <div style="width: 100%">
+    
     <LineChartGen
       :chart-options="chartOptions"
       :chart-data="chartData"
@@ -11,6 +18,7 @@
       :width="width"
       :height="height"
     />
+  </div>
   </div>
 </template>
 
@@ -76,6 +84,9 @@ export default {
     // this.getDetails()
   },
   methods: {
+    setArea(e){
+        this.setChartData(e)
+    },
     areaChange() {
       this.isAreaChanged = true
       console.log(this.isAreaChanged)
@@ -87,14 +98,14 @@ export default {
       console.log(this.chartData.labels)
       console.log(this.chartData.datasets[0].data)
     },
-    async setChartData() {
-      this.areaMap = {}
-      this.areaOrder = []
+    async setChartData(e) {
+      console.log(e)
 
       //   console.log("prev")
       //   this.getChartData()
-
+        
       let deals = await this.mapdata.app.result.detail.housedeals
+      
       for (let i = 0; i < deals.length; i++) {
         if (!this.areaMap[deals[i]["area"]]) {
           this.areaMap[deals[i]["area"]] = []
@@ -105,6 +116,7 @@ export default {
           y: deals[i].dealAmount,
         })
       }
+      console.log("areaMap",this.areaMap)
       this.areaOrder.sort()
       // console.log(this.areaMap)
       for (let i = 0; i < this.areaOrder.length; i++) {
@@ -113,7 +125,7 @@ export default {
       //   console.log("this.areaMap", this.areaMap)
       //   console.log("this.areaOrder", this.areaOrder)
 
-      //   console.log(this.areaOrder[0])
+      //   console.log(this.areaOrder[e])
       this.chartData.labels = []
       this.chartData.datasets[0].data = []
       //   console.log(deals.length)
@@ -121,9 +133,9 @@ export default {
       for (let i = 0; i < deals.length; i++) {
         // 가장 작은 것을 매핑
         // 나중에 집 크기 버튼 만들면 모두 매핑해야됨
-        if (deals[i].area == this.areaOrder[0]) {
-          this.chartData.labels.push(this.areaMap[this.areaOrder[0]][cnt].x)
-          this.chartData.datasets[0].data.push(Number(this.areaMap[this.areaOrder[0]][cnt].y.split(",").join("")))
+        if (deals[i].area == this.areaOrder[e]) {
+          this.chartData.labels.push(this.areaMap[this.areaOrder[e]][cnt].x)
+          this.chartData.datasets[0].data.push(Number(this.areaMap[this.areaOrder[e]][cnt].y.split(",").join("")))
           cnt++
         }
       }
@@ -143,6 +155,9 @@ export default {
   },
   data() {
     return {
+        areaMap : {},
+      areaOrder : [],
+        areas:{},
       isAreaChanged: false,
       chartData: {
         labels: [],
@@ -191,88 +206,10 @@ export default {
   },
   watch: {
     isAreaChanged() {
-      this.setChartData()
+      this.setChartData(0)
     },
   },
   actions: {
-    // async calcInfraScore(pos) {
-    //   // 인프라 가져오기
-    //   await this.getAllInfra();
-    //   let score = 0;
-    //   for (let i = 0; i < this.categoryGroupCodes.length; i++) {
-    //     let code = this.categoryGroupCodes[i]["Name"];
-    //     // 0~1000m, 0m에 가까울수록 고득점
-    //     // console.log(this.infra[code][0])
-    //     if (this.infra[code].length != 0) {
-    //       score += 1000 - this.infra[code][0].distance;
-    //     }
-    //     // console.log(this.infra)
-    //   }
-    //   // await 때문에 조금 느림
-    //   console.log(score);
-    // },
-    // async getAllInfra() {
-    //   for (let i = 0; i < this.categoryGroupCodes.length; i++) {
-    //     let code = this.categoryGroupCodes[i]["Name"];
-    //     await this.getInfra(code);
-    //   }
-    //   //  console.log(this.infra)
-    // },
-    // // async getInfra(code) {
-    // //   // console.log(code)
-    // //   await axios
-    // //     .get(
-    // //       `https://dapi.kakao.com/v2/local/search/category.json?x=${this.pos[1]}&y=${this.pos[0]}&radius=1000&category_group_code=${code}&sort=distance`,
-    // //       { headers: { Authorization: "KakaoAK eabef36bdbe62ae96579c8dc428e0a1f" } }
-    // //     )
-    // //     .then(({ data }) => {
-    // //       // this.map.app.result.housedeals = data
-    // //       this.infra[code] = data.documents;
-    // //       // console.log(this.infra[code])
-    // //     });
-    // // },
-    // getHouseInfos(dongcode) {
-    //   http.get(`/map/apt?dong=${dongcode}`).then(({ data }) => {
-    //     this.map.app.result.houseinfos = data;
-    //     console.log(data);
-    //   });
-    // },
-    // async getHouseDeals(aptCode) {
-    //   await http.get(`/map/deal?aptCode=${aptCode}`).then(({ data }) => {
-    //     this.map.app.result.housedeals = data;
-    //     // console.log(data)
-    //   });
-    // },
-    // async setChart(aptCode) {
-    //   await this.setChartData(aptCode);
-    //   console.log(this.areaMap, this.areaOrder);
-    // },
-    // async setChartData(aptCode) {
-    //   await this.getHouseDeals(aptCode);
-    //   this.areaMap = {};
-    //   this.areaOrder = [];
-    //   let deals = this.map.app.result.housedeals;
-    //   for (let i = 0; i < deals.length; i++) {
-    //     if (!this.areaMap[deals[i]["area"]]) {
-    //       this.areaMap[deals[i]["area"]] = [];
-    //       this.areaOrder.push(deals[i]["area"]);
-    //     }
-    //     this.areaMap[deals[i]["area"]].push({
-    //       x: new Date(deals[i].dealYear, deals[i].dealMonth, deals[i].dealDay).getTime(),
-    //       y: deals[i].dealAmount,
-    //     });
-    //   }
-    //   this.areaOrder.sort();
-    //   // console.log(this.areaMap)
-    //   for (let i = 0; i < this.areaOrder.length; i++) {
-    //     this.areaMap[this.areaOrder[i]].sort((a, b) => a.x - b.x);
-    //   }
-    //   // console.log(this.areaMap)
-    //   // for(let i=0;i<deals.length;i++){
-    //   //     if(deals[i].area=="59.98")
-    //   //         console.log(new Date(deals[i].dealYear,deals[i].dealMonth,deals[i].dealDay).getTime(), deals[i].dealAmount)
-    //   // }
-    // },
   },
 }
 </script>
