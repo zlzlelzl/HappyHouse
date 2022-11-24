@@ -89,4 +89,9 @@ public class HouseMapServiceImpl implements HouseMapService {
 		return sqlSession.getMapper(HouseMapMapper.class).getFavoriteApt(favoriteDto);
 	}
 
+	@Override
+	public List<HouseInfoDto> listFavoriteT(FavoriteDto favoriteDto) throws Exception {
+		return sqlSession.getMapper(HouseMapMapper.class).listFavoriteT(favoriteDto);
+	}
+
 }
