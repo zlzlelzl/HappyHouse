@@ -1,35 +1,42 @@
 <template>
   <div>
-    <v-btn-toggle class="pt-5 justify-center">
-      <v-col cols="12">
-        <v-btn
-          width="65"
-          v-for="(item, i) in areaOrder"
-          :key="i"
-          @click="setArea(i)"
-          small
-          class="pa-1 ma-1 justify-center"
-        >
-          <v-icon small>{{ item + "㎡" }}</v-icon>
-        </v-btn>
-      </v-col>
-    </v-btn-toggle>
-    <p class="pt-0 pr-8 mb-0 grey--text float-right" style="font-size: 1px">
-      평수 별로 거래가를 보려면 버튼을 눌러주세요
-    </p>
-    <div style="width: 100%">
-      <LineChartGen
-        :chart-options="chartOptions"
-        :chart-data="chartData"
-        :chart-id="chartId"
-        :dataset-id-key="datasetIdKey"
-        :plugins="plugins"
-        :css-classes="cssClasses"
-        :styles="styles"
-        :width="width"
-        :height="height"
-      />
-    </div>
+    <template v-if="areaOrder.length == 0">
+      <p class="py-16  grey--text text-center" style="font-size: 1px">
+        최근 거래 내역이 없습니다
+      </p>
+    </template>
+    <template v-else>
+      <v-btn-toggle class="pt-5 justify-center">
+        <v-col cols="12">
+          <v-btn
+            width="65"
+            v-for="(item, i) in areaOrder"
+            :key="i"
+            @click="setArea(i)"
+            small
+            class="pa-1 ma-1 justify-center"
+          >
+            <v-icon small>{{ item + "㎡" }}</v-icon>
+          </v-btn>
+        </v-col>
+      </v-btn-toggle>
+      <p class="pt-0 pr-8 mb-0 grey--text float-right" style="font-size: 1px">
+        평수 별로 거래가를 보려면 버튼을 눌러주세요
+      </p>
+      <div style="width: 100%">
+        <LineChartGen
+          :chart-options="chartOptions"
+          :chart-data="chartData"
+          :chart-id="chartId"
+          :dataset-id-key="datasetIdKey"
+          :plugins="plugins"
+          :css-classes="cssClasses"
+          :styles="styles"
+          :width="width"
+          :height="height"
+        />
+      </div>
+    </template>
   </div>
 </template>
 

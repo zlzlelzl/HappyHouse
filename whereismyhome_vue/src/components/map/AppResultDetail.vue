@@ -112,7 +112,9 @@
         :class="scrollbarTheme"
       >
         <v-list-item-group v-if="mapdata.app.result.detail.housedeals.length == 0">
-          <v-list-item>거래 내역이 없습니다.</v-list-item>
+          <v-list-item class="grey--text justify-center"
+            >거래 내역이 없습니다.</v-list-item
+          >
         </v-list-item-group>
         <v-list-item-group v-else>
           <v-list-item v-for="(deal, i) in calData" :key="i">
